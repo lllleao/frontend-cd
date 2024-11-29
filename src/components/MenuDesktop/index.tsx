@@ -4,6 +4,7 @@ import { handleRedDown } from '../../utils'
 import { useNavigate } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 import { Link } from 'react-router-dom'
+import { useGetCookieMutation } from '../../services/api'
 
 type RedDown = {
     hero: boolean
@@ -15,6 +16,8 @@ type RedDown = {
 }
 
 const MenuDesktop = () => {
+    // const [ getToken ] = useGetCookieMutation()
+    const [getToken] = useGetCookieMutation()
     const navigate = useNavigate()
 
     const [redDown, setRedDown] = useState<RedDown>({
@@ -27,7 +30,21 @@ const MenuDesktop = () => {
     })
 
     const handleClickCart = (elementName: string) => {
-        handleRedDown(elementName, setRedDown, navigate)
+        handleRedDown(elementName, setRedDown)
+
+        if (elementName === 'user') {
+            getToken().then(res => {
+                if (res.error) {
+                    console.log('opa opa')
+                    console.error(res.error)
+    
+                    navigate('/login')
+                    throw new Error(`HTTP request error`)
+                }
+    
+                navigate('/profile')
+            })
+        }
     }
 
     return (

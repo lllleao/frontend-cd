@@ -3,10 +3,11 @@ import { AboutBook, BookImg, BooksPurchase } from './styles'
 import { useEffect, useState } from 'react'
 import ButtonPurchase from '../ButtonPurchase'
 import { apiUrl } from '../../utils'
-import addToCart from '../../utils/fetchs/addCart'
+import { useAddToCartMutation } from '../../services/api'
 
 let isSeeMore: boolean = false
 const Book = () => {
+    const [ addToCart ] = useAddToCartMutation()
     const [data, setData] = useState<BooksPurchase>()
     const [valueQuant, setValueQuant] = useState('1')
     const [priceCalc, setPriceCalc] = useState(10)

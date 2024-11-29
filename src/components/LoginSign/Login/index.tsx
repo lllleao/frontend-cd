@@ -1,16 +1,18 @@
 import { useDispatch, useSelector } from "react-redux"
 import { handleBlur, handleFocus } from "../../../utils/contactFunctions"
 import { handleValidEmail } from "../../../utils/validationLoginSign"
-import { useHandleSubmit } from "../formsFetch"
+import { useHandleLogin } from "../formsFetch"
 import { ButtonLoginSign } from "../styles"
 import { useFormeState } from "../useFormState"
 import { RootReducer } from "../../../store"
 import { EmailUserMsgContainer } from "./styles"
-import { Navigate } from "react-router-dom"
+import { useLoginUserMutation } from "../../../services/api"
+import { useNavigate } from "react-router-dom"
 
 const Login = () => {
     const { loginUserExist, passWordCorrect } = useSelector((state: RootReducer) => state.loginSigin)
-    const loginSuccess = localStorage.getItem('loginSuccess')
+    const [makeLogin] = useLoginUserMutation()
+    const navigate = useNavigate()
 
     const dispatch = useDispatch()
 
@@ -33,10 +35,6 @@ const Login = () => {
         password
     }
 
-    if (loginSuccess) {
-        return <Navigate to="/" />
-    }
-
     return (
         <>
             <EmailUserMsgContainer>
@@ -51,7 +49,7 @@ const Login = () => {
                 <div className="login-sign__title">
                     <p>Login</p>
                 </div>
-                <form className="form" onSubmit={(e) => useHandleSubmit(e, isEmailValid, password, true, data, dispatch)}>
+                <form className="form" onSubmit={(e) => useHandleLogin(e, isEmailValid, password, data, dispatch, makeLogin, navigate)}>
                     <div className="form__text-field">
                         <input
                             className={`input email ${emailBorderError ? '' : 'login-email-error'}`}
