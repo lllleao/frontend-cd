@@ -15,7 +15,7 @@ const Book = () => {
     const { id } = useParams()
 
     useEffect(() => {
-        fetch(`${apiUrl}/store-books/${id}`, {
+        fetch(`https://backend-cidadeclipse.vercel.app/store-books/${id}`, {
             method: 'GET'
         }).then(res => res.json())
             .then(res => {
