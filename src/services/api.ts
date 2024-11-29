@@ -10,7 +10,7 @@ type User = {
 
 const api = createApi({
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:9001/',
+        baseUrl: 'https://backend-cidadeclipse.vercel.app/',
         credentials: 'include'
     }),
     endpoints: (builder) => ({
