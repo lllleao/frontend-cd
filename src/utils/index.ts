@@ -1,5 +1,3 @@
-import { NavigateFunction } from "react-router-dom"
-
 export function brFunction(dates: string): {
     firstPart: string
     secondPart: string
@@ -33,7 +31,7 @@ type RedDown = {
     user: boolean
 }
 
-export const handleRedDown = (textElement: string, setFunction: React.Dispatch<React.SetStateAction<RedDown>>, navigate: NavigateFunction) => {
+export const handleRedDown = (textElement: string, setFunction: React.Dispatch<React.SetStateAction<RedDown>>) => {
     if (textElement === 'hero') {
         setFunction({
             hero: true,
@@ -71,7 +69,6 @@ export const handleRedDown = (textElement: string, setFunction: React.Dispatch<R
             user: false
         })
     } else if (textElement === 'user') {
-        navigate('/user')
         setFunction({
             hero: false,
             publicLb: false,

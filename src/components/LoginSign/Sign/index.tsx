@@ -2,17 +2,17 @@ import { handleBlur, handleFocus, nameMask } from "../../../utils/contactFunctio
 import { handleValidEmail } from "../../../utils/validationLoginSign"
 import { ButtonLoginSign } from "../styles"
 import { useFormeState } from "../useFormState"
-import { useHandleSubmit } from "../formsFetch"
+import { useHandleSign } from "../formsFetch"
 import { EmailUserExist } from "./styles"
 import { useDispatch, useSelector } from "react-redux"
 import { RootReducer } from "../../../store"
-import { Navigate } from "react-router-dom"
+import { useSignUserMutation } from "../../../services/api"
 
 const Sign = () => {
     const { signUserExist, msg } = useSelector((state: RootReducer) => state.loginSigin)
+    const [ makeSign ] = useSignUserMutation()
     const dispatch = useDispatch()
-    const loginSuccess = localStorage.getItem('loginSuccess')
-
+    
     const { emailEmpty,
         email,
         isEmailValid,
@@ -37,10 +37,6 @@ const Sign = () => {
         password
     }
 
-    if (loginSuccess) {
-        return <Navigate to="/" />
-    }
-
     return (
         <>
             <EmailUserExist className={signUserExist ? 'user-exist' : ''} >{msg} já existe</EmailUserExist>
@@ -48,7 +44,7 @@ const Sign = () => {
                 <div className="login-sign__title">
                     <p>Cadastro</p>
                 </div>
-                <form className="form" onSubmit={(e) => useHandleSubmit(e, isEmailValid, password, false, data, dispatch, name)}>
+                <form className="form" onSubmit={(e) => useHandleSign(e, isEmailValid, password, data, dispatch, name, makeSign)}>
                     <div className="form__text-field">
                         <input
                             className="input name"

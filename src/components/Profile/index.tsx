@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom"
 import { ButtonLogout, ProfileContainer } from "./styles"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { apiUrl } from "../../utils"
+import Header from "../../containers/Header"
+import { useGetCookieMutation, useGetProfileDataQuery } from "../../services/api"
 
 export type User = {
     email: string
@@ -10,11 +12,9 @@ export type User = {
 }
 
 const Profile = () => {
-    const [user, setUser] = useState<User>({
-        email: '',
-        id: '',
-        name: ''
-    })
+    const [getToken] = useGetCookieMutation()
+    const { data } = useGetProfileDataQuery()
+    
     const navigate = useNavigate()
 
     const handleLogout = () => {
@@ -40,28 +40,24 @@ const Profile = () => {
     }
 
     useEffect(() => {
-        fetch(`${apiUrl}/profile`, {
-            method: 'GET',
-            credentials: 'include'
-        },
-        ).then(res => {
+        getToken().then(res => {
+            if (res.error) {
+                console.error(res.error)
 
-            return res.json()
+                navigate('/login')
+                throw new Error(`HTTP request error`)
+            }
 
-        }).then(res => {
-            setUser(res)
-        }).catch(err => {
-            console.log('caiu aqui')
-            console.error(err)
-            localStorage.removeItem('loginSuccess')
+            navigate('/profile')
         })
     }, [])
 
     return (
         <>
+            <Header />
             <ProfileContainer>
-                <h1>{user.name}</h1>
-                <h2>{user.email}</h2>
+                <h1>{data?.name}</h1>
+                <h2>{data?.email}</h2>
                 <ButtonLogout onClick={handleLogout}>Sair</ButtonLogout>
             </ProfileContainer>
         </>
