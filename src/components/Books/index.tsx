@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom'
 import { AboutBook, BookImg, BooksPurchase } from './styles'
 import { useEffect, useState } from 'react'
 import ButtonPurchase from '../ButtonPurchase'
-import { apiUrl } from '../../utils'
 import { useAddToCartMutation } from '../../services/api'
 
 let isSeeMore: boolean = false
