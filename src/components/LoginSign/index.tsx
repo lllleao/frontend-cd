@@ -23,7 +23,6 @@ const LoginSign = () => {
     useEffect(() => {
         getToken().then(res => {
             if (res.error) {
-                console.log('opa opa')
                 console.error(res.error)
 
                 navigate('/login')
