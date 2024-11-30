@@ -58,7 +58,6 @@ const PublicLib = () => {
         if (carrousselRef.current && data && !hasMounted.current) {
             hasMounted.current = true
             const carrousselInner = carrousselRef.current.querySelectorAll('.card_lib')
-            console.log(carrousselInner)
             setCarrousselItems(carrousselRef.current.querySelectorAll('.card_lib'))
             const itemsInner = [...carrousselInner]
             setItems(itemsInner)
