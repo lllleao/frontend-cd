@@ -29,7 +29,7 @@ const api = createApi({
         getSpecificStoreBook: builder.query<BooksPurchase, string>({
             query: (id) => `store-books/${id}`
         }),
-        getItemsCart: builder.query<BooksCart, string>({
+        getItemsCart: builder.query<BooksCart, void>({
             query: () => ({
                 url: 'cartItems'
             })
