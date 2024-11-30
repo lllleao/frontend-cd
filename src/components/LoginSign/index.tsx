@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { ButtonLoginSign, FormContainer, LoginSignContainer, SignSuccess } from "./styles"
 import logo3 from '../../assets/logo-nova/logo3.png'
 import Sign from "./Sign"
@@ -7,14 +7,32 @@ import { useDispatch, useSelector } from "react-redux"
 import { checkLoginUser, checkSignUser } from "../../store/reducers/loginSign"
 import { RootReducer } from "../../store"
 import Header from "../../containers/Header"
+import { useGetCookieMutation } from "../../services/api"
+import { useNavigate } from "react-router-dom"
 
 const LoginSign = () => {
     const isLoginScreen = localStorage.getItem('isLoginScreen')
     const [loginScreenState, setLoginScreenState] = useState(Boolean(isLoginScreen))
+    const navigate = useNavigate()
+    const [ getToken ] = useGetCookieMutation()
 
     const { signSuccess } = useSelector((state: RootReducer) => state.loginSigin)
 
     const dispatch = useDispatch()
+
+    useEffect(() => {
+        getToken().then(res => {
+            if (res.error) {
+                console.log('opa opa')
+                console.error(res.error)
+
+                navigate('/login')
+                throw new Error(`HTTP request error`)
+            }
+
+            navigate('/profile')
+        })
+    }, [])
 
     const handleChangeLogin = () => {
         dispatch(checkSignUser({ signUserExist: false }))

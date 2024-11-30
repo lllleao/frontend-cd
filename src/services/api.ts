@@ -26,7 +26,10 @@ const api = createApi({
         getStoreBooks: builder.query<Books[], void>({
             query: () => 'store-books'
         }),
-        getItemsCart: builder.query<BooksCart, void>({
+        getSpecificStoreBook: builder.query<BooksPurchase, string>({
+            query: (id) => `store-books/${id}`
+        }),
+        getItemsCart: builder.query<BooksCart, string>({
             query: () => ({
                 url: 'cartItems'
             })
@@ -90,6 +93,7 @@ export const {
     useGetProfileDataQuery,
     useLoginUserMutation,
     useSignUserMutation,
-    useAddToCartMutation
+    useAddToCartMutation,
+    useGetSpecificStoreBookQuery
 } = api
 export default api

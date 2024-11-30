@@ -1,27 +1,22 @@
 import { useParams } from 'react-router-dom'
 import { AboutBook, BookImg, BooksPurchase } from './styles'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import ButtonPurchase from '../ButtonPurchase'
-import { useAddToCartMutation } from '../../services/api'
+import { useAddToCartMutation, useGetSpecificStoreBookQuery } from '../../services/api'
 
 let isSeeMore: boolean = false
+
+type BookParams = {
+    id: string
+}
 const Book = () => {
     const [ addToCart ] = useAddToCartMutation()
-    const [data, setData] = useState<BooksPurchase>()
+    // const [data, setData] = useState<BooksPurchase>()
     const [valueQuant, setValueQuant] = useState('1')
     const [priceCalc, setPriceCalc] = useState(10)
     const [textIsHidden, setTextIsHidden] = useState(true)
-    const { id } = useParams()
-
-    useEffect(() => {
-        fetch(`https://backend-cidadeclipse.vercel.app/store-books/${id}`, {
-            method: 'GET'
-        }).then(res => res.json())
-            .then(res => {
-                setData(res)
-            })
-            .catch(err => console.error('There was a problem with the fetch operation:', err))
-    }, [])
+    const { id } = useParams() as BookParams
+    const { data } = useGetSpecificStoreBookQuery(id)
 
     const only212Characters = () => {
         const appear = data?.summary.slice(0, 212)
