@@ -2,8 +2,11 @@ import { useEffect, useRef, useState } from "react"
 import { ContactContainer } from "./styles"
 import { authentic } from "../../utils"
 import { handleBlur, handleFocus, nameMask } from "../../utils/contactFunctions"
+import { useGetCSRFTokenQuery, useSendEmailMutation } from "../../services/api"
 
 const Contact = () => {
+    const { data: csrfToken } = useGetCSRFTokenQuery()
+    const [ sendEmailForm ] = useSendEmailMutation()
     const [inputErrorName, setInputErrorName] = useState(false)
     const [inputErrorMessage, setInputErrorMessage] = useState(false)
     const [inputErrorEmail, setInputErrorEmail] = useState(false)
@@ -49,15 +52,6 @@ const Contact = () => {
         }
     }, [emailUser, numEmail])
 
-    async function getCsrfToken() {
-        const response = await fetch(`https://backend-cidadeclipse.vercel.app/csrf-token`, {
-            method: 'GET',
-            credentials: 'include'
-        })
-        const data = await response.json()
-        return data.csrfToken
-    }
-
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
@@ -77,38 +71,31 @@ const Contact = () => {
         nameIsValid ? setInputErrorName(true) : setInputErrorName(false)
         messageIsValid ? setInputErrorMessage(true) : setInputErrorMessage(false)
 
-        if (emailIsValid && !nameIsValid && !messageIsValid && numberIsValid && !successForm) {
+        if (emailIsValid && !nameIsValid && !messageIsValid && numberIsValid && !successForm && csrfToken) {
 
-            const csrfToken = await getCsrfToken()
             setSuccessForm(true)
 
-            fetch(`https://backend-cidadeclipse.vercel.app/api/send`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'CSRF-Token': csrfToken
-                },
-                body: JSON.stringify(data)
-            }).then(response => {
-                response.json()
-                setName('')
-                setEmailUser('')
-                setNumEmail('')
-                setText('')
-
-                setNameEmpty(false)
-                setEmailEmpty(false)
-                setNumEmpty(false)
-
-                setMessageSuccess(false)
-                setTimeout(() => {
-                    setSuccessForm(false)
-                }, 3000)
-            })
-                .catch(error => {
-                    console.error(error)
+            sendEmailForm({
+                csrfToken: csrfToken.csrfToken,
+                data
+            }).then(() => {
+                    setName('')
+                    setEmailUser('')
+                    setNumEmail('')
+                    setText('')
+    
+                    setNameEmpty(false)
+                    setEmailEmpty(false)
+                    setNumEmpty(false)
+    
+                    setMessageSuccess(false)
+                    setTimeout(() => {
+                        setSuccessForm(false)
+                    }, 3000)
                 })
+                    .catch(error => {
+                        console.error(error)
+                    })
         }
     }
 

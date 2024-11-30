@@ -8,9 +8,23 @@ type User = {
     name: string
 }
 
+type CsrfProp = {
+    csrfToken: string
+}
+
+type EmailDataProp = {
+    csrfToken: string,
+    data: {
+        emailUser: string;
+        text: string;
+        number: string;
+        name: string;
+    }
+}
+
 const api = createApi({
     baseQuery: fetchBaseQuery({
-        baseUrl: 'https://backend-cidadeclipse.vercel.app/',
+        baseUrl: 'http://localhost:9001/',
         credentials: 'include'
     }),
     endpoints: (builder) => ({
@@ -18,6 +32,20 @@ const api = createApi({
             query: () => ({
                 url: 'getCookie',
                 method: 'GET'
+            })
+        }),
+        getCSRFToken: builder.query<CsrfProp, void>({
+            query: () => 'csrf-token'
+        }),
+        sendEmail: builder.mutation<void, EmailDataProp>({
+            query: (emailData) => ({
+                url: 'api/send',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': emailData.csrfToken
+                },
+                body: emailData.data
             })
         }),
         getPublicBooks: builder.query<Books[], void>({
@@ -94,6 +122,8 @@ export const {
     useLoginUserMutation,
     useSignUserMutation,
     useAddToCartMutation,
-    useGetSpecificStoreBookQuery
+    useGetSpecificStoreBookQuery,
+    useGetCSRFTokenQuery,
+    useSendEmailMutation
 } = api
 export default api

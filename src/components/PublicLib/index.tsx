@@ -32,6 +32,7 @@ const PublicLib = () => {
                     (item as HTMLElement).style.cssText = `transform: none;`
                 })
             } else if (carrousselItems) {
+                
                 setElementWidth(carrousselItems[0].clientWidth)
                 setRemoveTouchStart(false)
                 setRemoveTouchEnd(false)
@@ -57,6 +58,7 @@ const PublicLib = () => {
         if (carrousselRef.current && data && !hasMounted.current) {
             hasMounted.current = true
             const carrousselInner = carrousselRef.current.querySelectorAll('.card_lib')
+            console.log(carrousselInner)
             setCarrousselItems(carrousselRef.current.querySelectorAll('.card_lib'))
             const itemsInner = [...carrousselInner]
             setItems(itemsInner)
@@ -83,14 +85,14 @@ const PublicLib = () => {
                 <span className="mask-left"></span>
                 <span className="mask-right"></span>
                 <Carrossel ref={carrousselRef} className="card_container carroussel">
-                    <CardsClone setRemoveTouchMove={setRemoveTouchMove} setRemoveTouchEnd={setRemoveTouchEnd} mainLib={mainLib} items={items} elementWidth={elementWidth} clonedMainRight={clonedMainRight} clonedMainLibLeft={clonedMainLibLeft} carrousselItems={carrousselItems} removeTouchEnd={removeTouchEnd} removeTouchMove={removeTouchMove} removeTouchStart={removeTouchStart} idName="main_cloned_left" quant={data?.length} />
+                    <CardsClone setRemoveTouchMove={setRemoveTouchMove} setRemoveTouchEnd={setRemoveTouchEnd} mainLib={mainLib} items={items} elementWidth={elementWidth} clonedMainRight={clonedMainRight} clonedMainLibLeft={clonedMainLibLeft} carrousselItems={carrousselItems} removeTouchEnd={removeTouchEnd} removeTouchMove={removeTouchMove} removeTouchStart={removeTouchStart} idName="main_cloned_left" quant={data?.length} data={data} />
                     {
                         data && data.map(({ title, id, link, photo, desc }) => (
                             <Card mainLib={mainLib} elementWidth={elementWidth} setRemoveTouchMove={setRemoveTouchMove} setRemoveTouchEnd={setRemoveTouchEnd} items={items} clonedMainRight={clonedMainRight} clonedMainLibLeft={clonedMainLibLeft} carrousselItems={carrousselItems} removeTouchEnd={removeTouchEnd} removeTouchMove={removeTouchMove} removeTouchStart={removeTouchStart} idName="main" title={title} id={id} link={link}
                                 photo={photo} desc={desc} key={id} />
                         ))
                     }
-                    <CardsClone setRemoveTouchMove={setRemoveTouchMove} setRemoveTouchEnd={setRemoveTouchEnd} mainLib={mainLib} items={items} elementWidth={elementWidth} clonedMainRight={clonedMainRight} clonedMainLibLeft={clonedMainLibLeft} carrousselItems={carrousselItems} removeTouchEnd={removeTouchEnd} removeTouchMove={removeTouchMove} removeTouchStart={removeTouchStart} idName="main_cloned_right" quant={3} />
+                    <CardsClone setRemoveTouchMove={setRemoveTouchMove} setRemoveTouchEnd={setRemoveTouchEnd} mainLib={mainLib} items={items} elementWidth={elementWidth} clonedMainRight={clonedMainRight} clonedMainLibLeft={clonedMainLibLeft} carrousselItems={carrousselItems} removeTouchEnd={removeTouchEnd} removeTouchMove={removeTouchMove} removeTouchStart={removeTouchStart} idName="main_cloned_right" quant={3} data={data} />
                 </Carrossel>
             </div>
         </PublicLibContainer>
