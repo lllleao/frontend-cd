@@ -11,7 +11,7 @@ type BookParams = {
 }
 const Book = () => {
     const [ addToCart ] = useAddToCartMutation()
-    // const [data, setData] = useState<BooksPurchase>()
+    
     const [valueQuant, setValueQuant] = useState('1')
     const [priceCalc, setPriceCalc] = useState(10)
     const [textIsHidden, setTextIsHidden] = useState(true)
