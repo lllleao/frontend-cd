@@ -2,7 +2,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { AboutBook, BookImg, BooksPurchase } from './styles'
 import { useState } from 'react'
 import ButtonPurchase from '../ButtonPurchase'
-import { useAddToCartMutation, useGetItemsCartQuery, useGetSpecificStoreBookQuery, useGetStoreBooksQuery } from '../../services/api'
+import {
+    useAddToCartMutation,
+    useGetItemsCartQuery,
+    useGetSpecificStoreBookQuery,
+    useGetStoreBooksQuery
+} from '../../services/api'
 import Card from '../Card'
 
 let isSeeMore: boolean = false
@@ -39,13 +44,14 @@ const Book = () => {
         } else {
             return allText
         }
-
     }
 
-    const handleChangeOption = (element: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleChangeOption = (
+        element: React.ChangeEvent<HTMLSelectElement>
+    ) => {
         const quant = element.target.value
         setValueQuant(quant)
-        const currentValue = (data && data.price * Number(quant))
+        const currentValue = data && data.price * Number(quant)
         setPriceCalc(currentValue as number)
 
         return currentValue
@@ -54,7 +60,7 @@ const Book = () => {
     const handleAddToCart = () => {
         if (data) {
             const channel = new BroadcastChannel(channelName)
-            channel.postMessage({ type: "UPDATE_COUNT", value: 'opa' })
+            channel.postMessage({ type: 'UPDATE_COUNT', value: 'opa' })
             channel.close()
             setTimeout(refetch, 1000)
             addToCart({
@@ -67,9 +73,14 @@ const Book = () => {
                         id: data.id
                     }
                 ]
-            }).then(res => {
+            }).then((res) => {
                 // Isso aqui existe porque aqui acaba tendo uma união de tipos FetchBaseQueryError | SerializedError, por isso é preciso verificar também se existe a propriedade status em error
-                if (res.error && 'status' in res.error && 'data' in res.error && res.error.data) {
+                if (
+                    res.error &&
+                    'status' in res.error &&
+                    'data' in res.error &&
+                    res.error.data
+                ) {
                     const errorData = res.error.data as PropData
                     if (errorData.msg === 'criado') {
                         setIsItemAdd(true)
@@ -89,10 +100,15 @@ const Book = () => {
             <div className="container">
                 <div className="book">
                     <BookImg>
-                        <img src={data?.photo} alt='' />
+                        <img src={data?.photo} alt="" />
                         <p className="price-container">
                             <span className="price">[ R$ {priceCalc},00 ]</span>
-                            <select onChange={(e) => handleChangeOption(e)} className="quant" name="quant" value={valueQuant}>
+                            <select
+                                onChange={(e) => handleChangeOption(e)}
+                                className="quant"
+                                name="quant"
+                                value={valueQuant}
+                            >
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
@@ -100,9 +116,7 @@ const Book = () => {
                         </p>
                     </BookImg>
                     <AboutBook $isSeeMore={isSeeMore}>
-                        <h3>
-                            {data?.title}
-                        </h3>
+                        <h3>{data?.title}</h3>
                         <p className="sinopse">
                             <span className="sinopse-title">Sinopse: </span>
                             <span className="sinopse__view">
@@ -113,49 +127,88 @@ const Book = () => {
                                     <span className="sinopse__view__first">
                                         {only212Characters()}
                                     </span>
-                                    <span className="sinopse__view__second">
-
-                                    </span>
+                                    <span className="sinopse__view__second"></span>
                                     {textIsHidden ? (
-                                        <span onClick={() => setTextIsHidden(false)} className='see-more'>[Ver mais]</span>
-                                    ) :
-                                        (
-                                            <span onClick={() => setTextIsHidden(true)} className='see-more'>[Ver menos]</span>
-                                        )}
+                                        <span
+                                            onClick={() =>
+                                                setTextIsHidden(false)
+                                            }
+                                            className="see-more"
+                                        >
+                                            [Ver mais]
+                                        </span>
+                                    ) : (
+                                        <span
+                                            onClick={() =>
+                                                setTextIsHidden(true)
+                                            }
+                                            className="see-more"
+                                        >
+                                            [Ver menos]
+                                        </span>
+                                    )}
                                 </span>
                             </span>
                         </p>
                         <div className="others-informations">
                             <ul>
                                 {data?.isbn && (
-                                    <li><span className="sinopse-title">ISBN: </span>{data.isbn}</li>
+                                    <li>
+                                        <span className="sinopse-title">
+                                            ISBN:{' '}
+                                        </span>
+                                        {data.isbn}
+                                    </li>
                                 )}
                                 <li>
-                                    <span className="sinopse-title">Tamanho: </span> {data?.width}
+                                    <span className="sinopse-title">
+                                        Tamanho:{' '}
+                                    </span>{' '}
+                                    {data?.width}
                                 </li>
                                 <li>
-                                    <span className="sinopse-title">Número de Páginas: </span> {data?.pageQuant}
+                                    <span className="sinopse-title">
+                                        Número de Páginas:{' '}
+                                    </span>{' '}
+                                    {data?.pageQuant}
                                 </li>
-                                {data?.credits.map(item => (
-                                    <li key={item.person}><span className="sinopse-title">{item.type}: </span>{item.person}</li>
+                                {data?.credits.map((item) => (
+                                    <li key={item.person}>
+                                        <span className="sinopse-title">
+                                            {item.type}:{' '}
+                                        </span>
+                                        {item.person}
+                                    </li>
                                 ))}
                             </ul>
                         </div>
-                        <div className="tags">
-                            {data?.tags}
-                        </div>
+                        <div className="tags">{data?.tags}</div>
                     </AboutBook>
                 </div>
                 <div className="buttons">
                     <ButtonPurchase>Comprar agora</ButtonPurchase>
-                    <ButtonPurchase isItemAdd={isItemAdd} addToCart={handleAddToCart}>{isItemAdd ? 'Item já adicionado' : 'Adicionar ao carrinho'}</ButtonPurchase>
+                    <ButtonPurchase
+                        isItemAdd={isItemAdd}
+                        addToCart={handleAddToCart}
+                    >
+                        {isItemAdd
+                            ? 'Item já adicionado'
+                            : 'Adicionar ao carrinho'}
+                    </ButtonPurchase>
                 </div>
                 <div className="cards-store-container">
-                    {
-                        booksStore && booksStore.map(({ desc, id, photo, title, price }) => (
-                            <Card type key={id} desc={desc} price={price} link={`/store-books/${id}`} photo={photo} title={title} />
-                        ))
-                    }
+                    {booksStore &&
+                        booksStore.map(({ desc, id, photo, title, price }) => (
+                            <Card
+                                type
+                                key={id}
+                                desc={desc}
+                                price={price}
+                                link={`/store-books/${id}`}
+                                photo={photo}
+                                title={title}
+                            />
+                        ))}
                 </div>
             </div>
         </BooksPurchase>

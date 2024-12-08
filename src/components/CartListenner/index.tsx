@@ -1,5 +1,5 @@
-import { useEffect } from "react"
-import { useGetItemsCartQuery } from "../../services/api"
+import { useEffect } from 'react'
+import { useGetItemsCartQuery } from '../../services/api'
 
 const CartListenner = () => {
     const { refetch } = useGetItemsCartQuery()
@@ -11,14 +11,14 @@ const CartListenner = () => {
         channel.onmessage = (event) => {
             if (event.data.type === 'UPDATE_COUNT') {
                 setTimeout(refetch, 1000)
-
             }
         }
 
         return () => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             channel.close
         }
-    }, [])
+    }, [refetch])
     return null
 }
 

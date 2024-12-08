@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled from 'styled-components'
 
 export const ProfileContainer = styled.div`
     height: calc(100vh - 162px);
@@ -17,7 +17,6 @@ export const ProfileContainer = styled.div`
 
     @media (max-width: 767px) {
         height: calc(100vh - 52px);
-
     }
 `
 export const ButtonLogout = styled.button`

@@ -2,7 +2,6 @@ import logo3 from '../../assets/logo-nova/logo3.png'
 import { AnimationHero, HeroContainer } from './styles'
 
 const Hero = () => {
-
     return (
         <HeroContainer id="hero" className="container">
             <img

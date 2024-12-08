@@ -1,9 +1,9 @@
-import styled from "styled-components";
-import { CardContainer } from "../Card/styles";
+import styled from 'styled-components'
+import { CardContainer } from '../Card/styles'
 
-export const BooksPurchase = styled.section<{$isFeching: boolean}>`
+export const BooksPurchase = styled.section<{ $isFeching: boolean }>`
     padding: 2rem 0;
-    height: ${({$isFeching}) => $isFeching ? '100vh' : 'auto'};
+    height: ${({ $isFeching }) => ($isFeching ? '100vh' : 'auto')};
     background-color: #000;
     .book {
         display: flex;
@@ -109,7 +109,6 @@ export const AboutBook = styled.div<{ $isSeeMore: boolean }>`
         line-height: 2rem;
 
         &__view {
-
             &__part {
                 display: none;
             }
@@ -132,11 +131,12 @@ export const AboutBook = styled.div<{ $isSeeMore: boolean }>`
                     .see-more {
                         text-align: center;
                         padding: 8px;
-                        display: ${({ $isSeeMore }) => $isSeeMore ? 'block' : 'none'};
+                        display: ${({ $isSeeMore }) =>
+                            $isSeeMore ? 'block' : 'none'};
                         cursor: pointer;
                     }
                 }
-        }
+            }
         }
     }
 

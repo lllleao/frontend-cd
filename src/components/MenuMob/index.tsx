@@ -11,7 +11,7 @@ type MenuProps = {
 
 const MenuMob = ({ viweNumberCart, dataLength }: MenuProps) => {
     const [menuClicked, setMenuClicked] = useState(false)
-    const [ getToken ] = useGetCookieMutation()
+    const [getToken] = useGetCookieMutation()
     const navigate = useNavigate()
 
     function handleClickCart(): void {
@@ -21,7 +21,7 @@ const MenuMob = ({ viweNumberCart, dataLength }: MenuProps) => {
     function handleClickUser() {
         setMenuClicked(false)
 
-        getToken().then(res => {
+        getToken().then((res) => {
             if (res.error) {
                 console.error(res.error)
 
@@ -35,7 +35,9 @@ const MenuMob = ({ viweNumberCart, dataLength }: MenuProps) => {
 
     return (
         <MenuBobContainer>
-            <div className={`alert ${viweNumberCart ? 'alert--visible' : ''}`}>!</div>
+            <div className={`alert ${viweNumberCart ? 'alert--visible' : ''}`}>
+                !
+            </div>
             <div
                 className={`hamburguer-wrapper ${menuClicked ? 'hamburguer-wrapper__is-active-menu' : ''}`}
                 onClick={() => setMenuClicked(!menuClicked)}
@@ -68,10 +70,26 @@ const MenuMob = ({ viweNumberCart, dataLength }: MenuProps) => {
                     </HashLink>
                 </li>
                 <li>
-                    <a href="/cart" className={`menu-mob__item cartIcon menu-mob__item__cart`} onClick={handleClickCart}><i className="fa-solid fa-cart-shopping" /> <div className={`number-items-mob ${viweNumberCart ? 'number-items-mob--visible' : ''}`}>{dataLength}</div></a>
+                    <a
+                        href="/cart"
+                        className={`menu-mob__item cartIcon menu-mob__item__cart`}
+                        onClick={handleClickCart}
+                    >
+                        <i className="fa-solid fa-cart-shopping" />{' '}
+                        <div
+                            className={`number-items-mob ${viweNumberCart ? 'number-items-mob--visible' : ''}`}
+                        >
+                            {dataLength}
+                        </div>
+                    </a>
                 </li>
                 <li>
-                    <div onClick={handleClickUser} className="menu-mob__item userIcon"><i className="fa-solid fa-user" /></div>
+                    <div
+                        onClick={handleClickUser}
+                        className="menu-mob__item userIcon"
+                    >
+                        <i className="fa-solid fa-user" />
+                    </div>
                 </li>
             </ul>
         </MenuBobContainer>

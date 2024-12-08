@@ -1,9 +1,11 @@
-import { useNavigate } from "react-router-dom"
-import { ButtonLogout, ProfileContainer } from "./styles"
-import { useEffect } from "react"
-import { apiUrl } from "../../utils"
-import Header from "../../containers/Header"
-import { useGetCookieMutation, useGetProfileDataQuery } from "../../services/api"
+import { useNavigate } from 'react-router-dom'
+import { ButtonLogout, ProfileContainer } from './styles'
+import { useEffect } from 'react'
+import Header from '../../containers/Header'
+import {
+    useGetCookieMutation,
+    useGetProfileDataQuery
+} from '../../services/api'
 
 export type User = {
     email: string
@@ -14,34 +16,33 @@ export type User = {
 const Profile = () => {
     const [getToken] = useGetCookieMutation()
     const { data } = useGetProfileDataQuery()
-    
+
     const navigate = useNavigate()
 
     const handleLogout = () => {
-
         localStorage.removeItem('loginSuccess')
 
         navigate('/')
 
-        fetch(`${apiUrl}/logout`, {
+        fetch(`http://localhost:9001/logout`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
             credentials: 'include'
-        },
-        ).then(res => {
-            if (!res.ok) {
-                throw new Error
-            }
-            return res.json()
-        }).then(() => {
-            
-        }).catch(err => console.error(err))
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error()
+                }
+                return res.json()
+            })
+            .then(() => {})
+            .catch((err) => console.error(err))
     }
 
     useEffect(() => {
-        getToken().then(res => {
+        getToken().then((res) => {
             if (res.error) {
                 console.error(res.error)
 
@@ -51,7 +52,7 @@ const Profile = () => {
 
             navigate('/profile')
         })
-    }, [])
+    }, [getToken, navigate])
 
     return (
         <>

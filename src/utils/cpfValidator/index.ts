@@ -5,14 +5,14 @@ const cpfValidator = (cpf: string) => {
         return false // Verifica se todos os dígitos são iguais (ex.: "111.111.111-11")
     }
 
-    let sum, remainder;
+    let sum, remainder
 
     // Validação do primeiro dígito
     sum = 0
     for (let i = 0; i < 9; i++) {
         sum += parseInt(cpf[i]) * (10 - i)
     }
-    remainder = (sum * 10) % 11;
+    remainder = (sum * 10) % 11
     if (remainder === 10 || remainder === 11) remainder = 0
     if (remainder !== parseInt(cpf[9])) return false
 
@@ -25,7 +25,7 @@ const cpfValidator = (cpf: string) => {
     if (remainder === 10 || remainder === 11) remainder = 0
     if (remainder !== parseInt(cpf[10])) return false
 
-    return true;
+    return true
 }
 
 export default cpfValidator

@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 export const ContactContainer = styled.section`
     &.contact-us {
@@ -107,119 +107,123 @@ export const ContactContainer = styled.section`
                 }
             }
 
-        &__form {
-            font-size: 22px;
+            &__form {
+                font-size: 22px;
 
-            .text-field {
-                position: relative;
+                .text-field {
+                    position: relative;
 
-                &__input,
-                &__textarea {
-                    color: #000;
-                    padding: 6px;
-                    width: 100%;
-                    outline: none;
-                    resize: none;
-                    font-size: 22px;
-                    border-radius: 8px;
-                    border: 1px solid #fff;
+                    &__input,
+                    &__textarea {
+                        color: #000;
+                        padding: 6px;
+                        width: 100%;
+                        outline: none;
+                        resize: none;
+                        font-size: 22px;
+                        border-radius: 8px;
+                        border: 1px solid #fff;
 
-                    &-is-error {
-                        border: 1px solid red;
+                        &-is-error {
+                            border: 1px solid red;
+                        }
                     }
-                }
 
-                &__textarea {
-                    height: 100px;
-                }
+                    &__textarea {
+                        height: 100px;
+                    }
 
-                &__input {
-                    margin-bottom: 34px;
-                }
+                    &__input {
+                        margin-bottom: 34px;
+                    }
 
-                &__label {
-                    position: absolute;
-                    z-index: 1;
-                    top: 8px;
-                    left: 8px;
-                    display: block;
-                    color: #000000c2;
-                    pointer-events: none;
-                    font-size: 22px;
-                    transition: top 0.3s, left 0.3s, color 0.3s;
-                }
+                    &__label {
+                        position: absolute;
+                        z-index: 1;
+                        top: 8px;
+                        left: 8px;
+                        display: block;
+                        color: #000000c2;
+                        pointer-events: none;
+                        font-size: 22px;
+                        transition:
+                            top 0.3s,
+                            left 0.3s,
+                            color 0.3s;
+                    }
 
-                &__input--empty {
-                    .text-field__label {
-                        top: -24px;
-                        left: 4px;
-                        color: #eee;
+                    &__input--empty {
+                        .text-field__label {
+                            top: -24px;
+                            left: 4px;
+                            color: #eee;
 
-                        @media (max-width: 767px) {
-                            top: -32px;
+                            @media (max-width: 767px) {
+                                top: -32px;
+                            }
                         }
                     }
                 }
-            }
 
-            .button-contact {
-                margin-top: 16px;
-                font-family: 22px;
-                box-shadow: 13px 13px 10px #1c1c1c, -13px -13px 10px #262626;
-                transform: translate(0);
-                font-size: 18px;
-                transition:
-                box-shadow 0.3s ease,
-                transform 0.3s ease,
-                background-color 0.3s ease;
+                .button-contact {
+                    margin-top: 16px;
+                    font-family: 22px;
+                    box-shadow:
+                        13px 13px 10px #1c1c1c,
+                        -13px -13px 10px #262626;
+                    transform: translate(0);
+                    font-size: 18px;
+                    transition:
+                        box-shadow 0.3s ease,
+                        transform 0.3s ease,
+                        background-color 0.3s ease;
 
-                &:active {
-                    box-shadow: none;
-                    transform: translateY(5px);
+                    &:active {
+                        box-shadow: none;
+                        transform: translateY(5px);
+                    }
                 }
             }
         }
     }
-}
 
-@keyframes copied {
-    0% {
-        transform: translateX(0);
+    @keyframes copied {
+        0% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateY(-5px);
+        }
+
+        50% {
+            transform: translateY(5px);
+        }
+
+        75% {
+            transform: translateY(-5px);
+        }
+
+        95% {
+            transform: translateY(5px);
+        }
+
+        100% {
+            transform: translateY(0);
+        }
     }
 
-    25% {
-        transform: translateY(-5px);
+    @keyframes successFieldBack {
+        100% {
+            opacity: 0;
+            top: -1rem;
+        }
     }
 
-    50% {
-        transform: translateY(5px);
+    @keyframes successField {
+        100% {
+            opacity: 1;
+            top: 8rem;
+        }
     }
-
-    75% {
-        transform: translateY(-5px);
-    }
-
-    95% {
-        transform: translateY(5px);
-    }
-
-    100% {
-        transform: translateY(0);
-    }
-}
-
-@keyframes successFieldBack {
-    100% {
-        opacity: 0;
-        top: -1rem;
-    }
-}
-
-@keyframes successField {
-    100% {
-        opacity: 1;
-        top: 8rem;
-    }
-}
-
 `

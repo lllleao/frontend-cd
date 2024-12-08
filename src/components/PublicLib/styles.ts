@@ -53,7 +53,6 @@ export const PublicLibContainer = styled.section`
                 display: none;
             }
 
-
             @media (max-width: 767px) {
                 .mask-left,
                 .mask-right {
@@ -65,9 +64,9 @@ export const PublicLibContainer = styled.section`
 `
 
 export const Carrossel = styled.div`
-        .cloned {
-            display: none;
-        }
+    .cloned {
+        display: none;
+    }
 
     &.carroussel {
         @media (min-width: 768px) {

@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const MenuDesktopContainer = styled.nav<{$addAnimateCart: boolean}>`
+export const MenuDesktopContainer = styled.nav<{ $addAnimateCart: boolean }>`
     .nav__list {
         display: flex;
         justify-content: space-between;
@@ -34,8 +34,8 @@ export const MenuDesktopContainer = styled.nav<{$addAnimateCart: boolean}>`
 
                 &--is-down {
                     &::before {
-                    top: 0;
-                }
+                        top: 0;
+                    }
                 }
             }
         }
@@ -71,22 +71,30 @@ export const MenuDesktopContainer = styled.nav<{$addAnimateCart: boolean}>`
                 display: block;
             }
         }
-        animation: ${({$addAnimateCart}) => $addAnimateCart ? 'animateCart 1s linear' : ''};
+        animation: ${({ $addAnimateCart }) =>
+            $addAnimateCart ? 'animateCart 1s linear' : ''};
     }
 
     @keyframes animateCart {
-        0%, 25%, 55%, 85%, 100% {
-        animation-timing-function: ease-out;
-        transform: scale(1);
-    }
-    41%, 44% {
-        animation-timing-function: ease-in;
-        transform: scale(1.5);
-    }
-    70% {
-        animation-timing-function: ease-in;
-        transform: scale(1.3);
-    }
-    90% { transform: scale(1.1) }
+        0%,
+        25%,
+        55%,
+        85%,
+        100% {
+            animation-timing-function: ease-out;
+            transform: scale(1);
+        }
+        41%,
+        44% {
+            animation-timing-function: ease-in;
+            transform: scale(1.5);
+        }
+        70% {
+            animation-timing-function: ease-in;
+            transform: scale(1.3);
+        }
+        90% {
+            transform: scale(1.1);
+        }
     }
 `

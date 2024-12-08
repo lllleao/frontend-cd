@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 export const LoginSignContainer = styled.section`
     background-color: #000;
@@ -53,7 +53,9 @@ export const FormContainer = styled.div`
         border-radius: 1rem;
         width: 350px;
         padding: 2rem;
-        transition: opacity 0.5s, left 0.5s;
+        transition:
+            opacity 0.5s,
+            left 0.5s;
         &__title {
             text-align: center;
             font-size: 1.5rem;
@@ -97,7 +99,6 @@ export const FormContainer = styled.div`
                     padding: 0.6rem 0.2rem 0.6rem 2rem;
                     color: #000;
                     outline: none;
-
                 }
                 & .sign-email-error,
                 & .login-email-error {
@@ -116,7 +117,9 @@ export const FormContainer = styled.div`
         display: var(--display-logo);
         position: absolute;
         padding: 2rem;
-        transition: right 1s, left 1s;
+        transition:
+            right 1s,
+            left 1s;
         z-index: 2;
     }
 
@@ -138,7 +141,7 @@ export const FormContainer = styled.div`
 
     .logo3 {
         margin-bottom: 2rem;
-        width:  420px;
+        width: 420px;
     }
 
     .logo-right {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 // States
 type StateProps = {
     startPoint: number
@@ -18,7 +19,7 @@ const state: StateProps = {
     indexCurrent: 0,
     positionSavedBefore: 0,
     positionSavedAfter: 0,
-    positionSavedTotal: 0,
+    positionSavedTotal: 0
 }
 let count = 0
 let testLoop: boolean
@@ -30,15 +31,25 @@ export const handleTouch = (
     items: Element[] | undefined,
     clonedMainRight: number | undefined,
     clonedMainLibLeft: number | undefined,
-    setRemoveTouchMove: ((value: React.SetStateAction<boolean>) => void) | undefined,
-    setRemoveTouchEnd: ((value: React.SetStateAction<boolean>) => void) | undefined
+    setRemoveTouchMove:
+        | ((value: React.SetStateAction<boolean>) => void)
+        | undefined,
+    setRemoveTouchEnd:
+        | ((value: React.SetStateAction<boolean>) => void)
+        | undefined
 ) => {
     if (carrousselItems) {
         const index = items?.indexOf(event.currentTarget as Element)
 
-        touchMoves(event, index as number, clonedMainRight, clonedMainLibLeft, setRemoveTouchMove, setRemoveTouchEnd)
+        touchMoves(
+            event,
+            index as number,
+            clonedMainRight,
+            clonedMainLibLeft,
+            setRemoveTouchMove,
+            setRemoveTouchEnd
+        )
     }
-
 }
 
 export const touchMoves = (
@@ -46,7 +57,13 @@ export const touchMoves = (
     index: number,
     clonedMainRight: number | undefined,
     clonedMainLibLeft: number | undefined,
-    setRemoveTouchMove: ((value: React.SetStateAction<boolean>) => void) | undefined, setRemoveTouchEnd: ((value: React.SetStateAction<boolean>) => void) | undefined) => {
+    setRemoveTouchMove:
+        | ((value: React.SetStateAction<boolean>) => void)
+        | undefined,
+    setRemoveTouchEnd:
+        | ((value: React.SetStateAction<boolean>) => void)
+        | undefined
+) => {
     state.indexCurrent = index
 
     if (index === clonedMainRight || index === clonedMainLibLeft) {
@@ -67,13 +84,16 @@ export const touchMoves = (
 export const onMouseMove = (
     e: React.TouchEvent<HTMLAnchorElement>,
     carrousselItems: NodeListOf<Element> | null | undefined,
-    setRemoveTouchEnd: ((value: React.SetStateAction<boolean>) => void) | undefined
+    setRemoveTouchEnd:
+        | ((value: React.SetStateAction<boolean>) => void)
+        | undefined
 ) => {
     state.moviment = e.targetTouches[0].clientX - state.currentPoint
     state.positionSaved = state.moviment
 
     carrousselItems?.forEach((item) => {
-        (item as HTMLElement).style.cssText = `transform: translateX(${state.moviment}px);`
+        ;(item as HTMLElement).style.cssText =
+            `transform: translateX(${state.moviment}px);`
         setRemoveTouchEnd && setRemoveTouchEnd(false)
     })
 }
@@ -86,24 +106,41 @@ export const onMouseUp = (
     carrousselItems: NodeListOf<Element> | null | undefined
 ) => {
     state.positionSavedAfter = state.moviment
-    state.positionSavedTotal = state.positionSavedAfter - state.positionSavedBefore
+    state.positionSavedTotal =
+        state.positionSavedAfter - state.positionSavedBefore
 
     if (elementWidth && mainLib && clonedMainLibLeft && carrousselItems) {
         if (state.positionSavedTotal < -100) {
-            count = countTheElementsToPass(mainLib, clonedMainLibLeft, clonedMainRight) ? 1 : count + 1 // por ultimo
+            count = countTheElementsToPass(
+                mainLib,
+                clonedMainLibLeft,
+                clonedMainRight
+            )
+                ? 1
+                : count + 1 // por ultimo
             const position = count * (elementWidth + 16)
             setTranslate(-position, carrousselItems)
-
         } else if (state.positionSavedTotal > 100) {
-            count = countTheElementsToPass(mainLib, clonedMainLibLeft, clonedMainRight) ? -1 : count - 1
+            count = countTheElementsToPass(
+                mainLib,
+                clonedMainLibLeft,
+                clonedMainRight
+            )
+                ? -1
+                : count - 1
             const position = count * (elementWidth + 16)
             setTranslate(-position, carrousselItems)
         } else {
-            const position = (state.indexCurrent - mainLib) * (elementWidth + 16)
+            const position =
+                (state.indexCurrent - mainLib) * (elementWidth + 16)
             setTranslate(-position, carrousselItems)
         }
 
-        testLoop = state.positionSaved === ((elementWidth + 16) * (mainLib - clonedMainLibLeft)) || state.positionSaved === ((elementWidth + 16) * (clonedMainLibLeft - mainLib))
+        testLoop =
+            state.positionSaved ===
+                (elementWidth + 16) * (mainLib - clonedMainLibLeft) ||
+            state.positionSaved ===
+                (elementWidth + 16) * (clonedMainLibLeft - mainLib)
     }
 }
 
@@ -113,20 +150,22 @@ function countTheElementsToPass(
     clonedMainLibLeft: number | undefined,
     clonedMainRight: number | undefined
 ) {
-    const resetCountTest = state.indexCurrent === mainLib || state.indexCurrent === clonedMainLibLeft || state.indexCurrent === clonedMainRight
+    const resetCountTest =
+        state.indexCurrent === mainLib ||
+        state.indexCurrent === clonedMainLibLeft ||
+        state.indexCurrent === clonedMainRight
 
     return resetCountTest
 }
 
 function setTranslate(
     position: number,
-    carrousselItems: NodeListOf<Element> | null,
+    carrousselItems: NodeListOf<Element> | null
 ) {
-
-    carrousselItems?.forEach(item => {
-        (item as HTMLElement).style.cssText = `transform: translateX(${position}px);`;
-
-        (item as HTMLElement).style.transition = 'transform 0.3s'
+    carrousselItems?.forEach((item) => {
+        ;(item as HTMLElement).style.cssText =
+            `transform: translateX(${position}px);`
+        ;(item as HTMLElement).style.transition = 'transform 0.3s'
     })
 
     state.positionSaved = position
@@ -135,11 +174,10 @@ function setTranslate(
 export const loop = (e: React.TransitionEvent<HTMLAnchorElement>) => {
     const element = e.currentTarget as HTMLElement
     if (testLoop) {
-
         element.style.cssText = `transform: translateX(${0}px);`
         element.style.transition = 'none'
 
-        for (let states in state) {
+        for (const states in state) {
             state[states as keyof StateProps] = 0
         }
     }

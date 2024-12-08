@@ -39,7 +39,7 @@ export const CheckoutContainer = styled.div<CheckoutProps>`
                     left: 50%;
                     background-color: #4b4747;
                 }
-                
+
                 &:nth-child(3) {
                     position: absolute;
                     top: -30px;
@@ -60,10 +60,12 @@ export const CheckoutContainer = styled.div<CheckoutProps>`
             font-weight: bold;
 
             .cep {
-                border: ${({ $errorCEP }) => $errorCEP ? '2px solid red' : ''};
+                border: ${({ $errorCEP }) =>
+                    $errorCEP ? '2px solid red' : ''};
             }
             .cpf {
-                border: ${({ $errorCPF }) => $errorCPF ? '2px solid red' : ''};
+                border: ${({ $errorCPF }) =>
+                    $errorCPF ? '2px solid red' : ''};
             }
 
             &__label {
@@ -77,7 +79,7 @@ export const CheckoutContainer = styled.div<CheckoutProps>`
                 color: #000;
                 outline: none;
                 /* border: 2px solid #000; */
-                &[type="number"]::-webkit-inner-spin-button {
+                &[type='number']::-webkit-inner-spin-button {
                     -webkit-appearance: none;
                 }
             }

@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { CardContainer } from "../Card/styles";
+import styled from 'styled-components'
+import { CardContainer } from '../Card/styles'
 
 export const PurchaseContainer = styled.section`
     /* display: none; */
@@ -63,24 +63,24 @@ export const PurchaseContainer = styled.section`
 
     .store--is-active {
         .card_container__book {
-                -webkit-transform: translateY(0);
-                -webkit-filter: blur(0);
-                -webkit-opacity: 1;
-                transform: translateY(0);
-                opacity: 1;
-                filter: blur(0);
-                -webkit-transition: 2s ease;
-                transition: 2s ease;
-                transition-delay: 0.5s;
+            -webkit-transform: translateY(0);
+            -webkit-filter: blur(0);
+            -webkit-opacity: 1;
+            transform: translateY(0);
+            opacity: 1;
+            filter: blur(0);
+            -webkit-transition: 2s ease;
+            transition: 2s ease;
+            transition-delay: 0.5s;
 
-                &:nth-child(2) {
-                    transition-delay: 1.5s;
-                }
-
-                &:nth-child(3) {
-                    transition-delay: 2.5s;
-                }
+            &:nth-child(2) {
+                transition-delay: 1.5s;
             }
+
+            &:nth-child(3) {
+                transition-delay: 2.5s;
+            }
+        }
     }
 
     ${CardContainer} {
@@ -93,5 +93,4 @@ export const PurchaseContainer = styled.section`
             margin: 1rem auto 0;
         }
     }
-
 `

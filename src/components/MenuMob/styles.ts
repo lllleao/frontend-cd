@@ -87,7 +87,7 @@ export const MenuBobContainer = styled.nav`
         &__item__cart {
             display: flex;
             justify-content: space-between;
-            
+
             .number-items-mob {
                 display: none;
                 background-color: red;
@@ -101,7 +101,6 @@ export const MenuBobContainer = styled.nav`
                     display: block;
                 }
             }
-
         }
 
         &__is-active-menu {

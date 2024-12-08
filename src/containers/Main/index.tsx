@@ -5,7 +5,6 @@ import Purchase from '../../components/Purchase'
 import { MainContainer } from './styles'
 
 const Main = () => {
-
     return (
         <MainContainer>
             <Hero />

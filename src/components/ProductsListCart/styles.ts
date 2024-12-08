@@ -1,6 +1,6 @@
-import styled from "styled-components";
-import { ButtonContainer } from "../ButtonPurchase/styles";
-import { CardContainer } from "../Card/styles";
+import styled from 'styled-components'
+import { ButtonContainer } from '../ButtonPurchase/styles'
+import { CardContainer } from '../Card/styles'
 
 export const ProductsListCartContainer = styled.section`
     background-color: #000;
@@ -35,8 +35,6 @@ export const ProductsListCartContainer = styled.section`
                     margin-bottom: 0.5rem;
                 }
             }
-
-            
 
             .name-text {
                 font-weight: bold;
@@ -99,7 +97,6 @@ export const ProductsListCartContainer = styled.section`
                 text-align: center;
 
                 p {
-
                     width: 50%;
                     margin: 1rem auto 0;
                 }

@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react"
-import { PurchaseContainer } from "./styles"
-import Card from "../Card"
-import { useGetStoreBooksQuery } from "../../services/api"
-import Loader from "../Loader"
+import { useEffect, useRef, useState } from 'react'
+import { PurchaseContainer } from './styles'
+import Card from '../Card'
+import { useGetStoreBooksQuery } from '../../services/api'
+import Loader from '../Loader'
 
 const Purchase = () => {
     const { data, isLoading } = useGetStoreBooksQuery()
@@ -11,10 +11,9 @@ const Purchase = () => {
 
     useEffect(() => {
         function handleObserver(entries: IntersectionObserverEntry[]) {
-
-            entries.forEach(entry => {
+            entries.forEach((entry) => {
                 setInView(entry.isIntersecting)
-        })
+            })
         }
 
         const purchaseObserver = new IntersectionObserver(handleObserver)
@@ -25,6 +24,7 @@ const Purchase = () => {
 
         return () => {
             if (storeRef.current) {
+                // eslint-disable-next-line react-hooks/exhaustive-deps
                 purchaseObserver.unobserve(storeRef.current)
             }
             purchaseObserver.disconnect()
@@ -33,15 +33,30 @@ const Purchase = () => {
 
     return (
         <PurchaseContainer ref={storeRef} id="purchase" className="container">
-            <h2 className="purchase__title">Que tal aproveitar e olhar os nossos materiais físicos [e pagos]?</h2>
+            <h2 className="purchase__title">
+                Que tal aproveitar e olhar os nossos materiais físicos [e
+                pagos]?
+            </h2>
             <span>[clique na capa para comprar]</span>
-            <div className={`store card_container ${inView ? 'store--is-active' : ''}`}>
+            <div
+                className={`store card_container ${inView ? 'store--is-active' : ''}`}
+            >
                 {isLoading ? (
                     <Loader />
-                ) : data && data.map(({desc, id, photo, title, price}) => (
-                    <Card type key={id} desc={desc} price={price} link={`/store-books/${id}`} photo={photo} title={title} />
-                ))
-                }
+                ) : (
+                    data &&
+                    data.map(({ desc, id, photo, title, price }) => (
+                        <Card
+                            type
+                            key={id}
+                            desc={desc}
+                            price={price}
+                            link={`/store-books/${id}`}
+                            photo={photo}
+                            title={title}
+                        />
+                    ))
+                )}
             </div>
         </PurchaseContainer>
     )

@@ -7,7 +7,12 @@ export function brFunction(dates: string): {
     return { firstPart, secondPart }
 }
 
-export function authentic(emailUser: string, numEmail?: string, name?: string, text?: string) {
+export function authentic(
+    emailUser: string,
+    numEmail?: string,
+    name?: string,
+    text?: string
+) {
     const regex = /^\s+$/
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]{2,}\.[a-zA-Z]{3,}$/
     const emailIsValid = emailPattern.test(emailUser)
@@ -22,5 +27,3 @@ export function authentic(emailUser: string, numEmail?: string, name?: string, t
         messageIsValid
     }
 }
-
-export const apiUrl = import.meta.env.VITE_API_URL

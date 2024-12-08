@@ -10,21 +10,17 @@ const Header = () => {
     const [addAnimateCart, setAddAnimateCart] = useState(false)
 
     useEffect(() => {
-
         refetch().then((res) => {
             if (!res.isSuccess) {
                 return setViweNumberCart(false)
             }
         })
-        
+
         if (!data) {
             setViweNumberCart(false)
-        }
-        else if (data.items.length as number === 0) {
+        } else if ((data.items.length as number) === 0) {
             setViweNumberCart(false)
-        }
-        else {
-            
+        } else {
             setTimeout(refetch, 1000)
             setViweNumberCart(true)
             setAddAnimateCart(false)
@@ -32,12 +28,19 @@ const Header = () => {
                 setAddAnimateCart(true)
             }, 1000)
         }
-    }, [data])
+    }, [data, refetch])
 
     return (
         <HeaderContainer>
-            <MenuDesktop addAnimateCart={addAnimateCart} viweNumberCart={viweNumberCart} dataLength={data?.items.length} />
-            <MenuMob dataLength={data?.items.length} viweNumberCart={viweNumberCart} />
+            <MenuDesktop
+                addAnimateCart={addAnimateCart}
+                viweNumberCart={viweNumberCart}
+                dataLength={data?.items.length}
+            />
+            <MenuMob
+                dataLength={data?.items.length}
+                viweNumberCart={viweNumberCart}
+            />
         </HeaderContainer>
     )
 }

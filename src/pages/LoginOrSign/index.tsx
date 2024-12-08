@@ -1,4 +1,4 @@
-import LoginSign from "../../components/LoginSign"
+import LoginSign from '../../components/LoginSign'
 
 const LoginOrSign = () => {
     return (

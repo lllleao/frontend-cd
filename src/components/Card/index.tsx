@@ -24,8 +24,28 @@ export type Props = {
     setRemoveTouchMove?: (value: React.SetStateAction<boolean>) => void
     setRemoveTouchEnd?: (value: React.SetStateAction<boolean>) => void
 }
-const Card = ({ mainLib, elementWidth, setRemoveTouchEnd, setRemoveTouchMove, clonedMainLibLeft, clonedMainRight, items, carrousselItems, title, link, photo, desc, type, clone, id, idName, removeTouchStart, removeTouchMove, removeTouchEnd, price }: Props) => {
-
+const Card = ({
+    mainLib,
+    elementWidth,
+    setRemoveTouchEnd,
+    setRemoveTouchMove,
+    clonedMainLibLeft,
+    clonedMainRight,
+    items,
+    carrousselItems,
+    title,
+    link,
+    photo,
+    desc,
+    type,
+    clone,
+    id,
+    idName,
+    removeTouchStart,
+    removeTouchMove,
+    removeTouchEnd,
+    price
+}: Props) => {
     function emptyFunction() {
         //
     }
@@ -38,32 +58,50 @@ const Card = ({ mainLib, elementWidth, setRemoveTouchEnd, setRemoveTouchMove, cl
             className={`card_container__book ${type ? 'product' : 'card_lib'} ${clone ? 'cloned' : ''}`}
             rel="noreferrer"
             id={id == 2 ? idName : ''}
-            onTouchStart={(e) => removeTouchStart ? emptyFunction : handleTouch(e, carrousselItems, items, clonedMainRight, clonedMainLibLeft, setRemoveTouchMove, setRemoveTouchEnd)}
-            onTouchMove={(e) => removeTouchMove ? emptyFunction : onMouseMove(e, carrousselItems, setRemoveTouchEnd)}
-            onTouchEnd={() => removeTouchEnd ? emptyFunction : onMouseUp(elementWidth, mainLib, clonedMainLibLeft, clonedMainRight, carrousselItems)}
+            onTouchStart={(e) =>
+                removeTouchStart
+                    ? emptyFunction
+                    : handleTouch(
+                          e,
+                          carrousselItems,
+                          items,
+                          clonedMainRight,
+                          clonedMainLibLeft,
+                          setRemoveTouchMove,
+                          setRemoveTouchEnd
+                      )
+            }
+            onTouchMove={(e) =>
+                removeTouchMove
+                    ? emptyFunction
+                    : onMouseMove(e, carrousselItems, setRemoveTouchEnd)
+            }
+            onTouchEnd={() =>
+                removeTouchEnd
+                    ? emptyFunction
+                    : onMouseUp(
+                          elementWidth,
+                          mainLib,
+                          clonedMainLibLeft,
+                          clonedMainRight,
+                          carrousselItems
+                      )
+            }
             onTransitionEnd={(e) => loop(e)}
         >
             <img src={photo} alt={desc} />
             <h3>
-                {
-                    type ? (
-                        title
-                    ) : (
-                        <>
-                            {brFunction(title).firstPart}
-                            < br />
-                            {brFunction(title).secondPart}
-                        </>
-                    )
-                }
-            </h3>
-            {
-                type ? (
-                    <p>R$ {price},00</p>
+                {type ? (
+                    title
                 ) : (
-                    <></>
-                )
-            }
+                    <>
+                        {brFunction(title).firstPart}
+                        <br />
+                        {brFunction(title).secondPart}
+                    </>
+                )}
+            </h3>
+            {type ? <p>R$ {price},00</p> : <></>}
         </CardContainer>
     )
 }

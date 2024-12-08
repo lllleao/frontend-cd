@@ -13,7 +13,8 @@ export const CardContainer = styled.a`
         width: 100%;
     }
 
-    h3, p {
+    h3,
+    p {
         text-align: center;
         margin-top: 8px;
         text-decoration: none;

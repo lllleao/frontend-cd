@@ -8,9 +8,9 @@ type User = {
 }
 
 type DataProp = {
-    name?: string;
-    email: string;
-    password: string;
+    name?: string
+    email: string
+    password: string
 }
 
 type BooksCart = {
@@ -42,18 +42,18 @@ type CsrfProp = {
 }
 
 type EmailDataProp = {
-    csrfToken: string,
+    csrfToken: string
     data: {
-        emailUser: string;
-        text: string;
-        number: string;
-        name: string;
+        emailUser: string
+        text: string
+        number: string
+        name: string
     }
 }
 
 type UpdataPrice = {
     quantBefore: number
-    quantCurrent: number,
+    quantCurrent: number
     idItem: number | undefined
     price: number
 }
@@ -63,11 +63,11 @@ type TotalPriceProps = {
 }
 
 type ItemsInfo = {
-    price: number;
-    quant: number;
-    id?: number;
-    name: string;
-    photo: string;
+    price: number
+    quant: number
+    id?: number
+    name: string
+    photo: string
 }
 
 type PurchaseDataProps = {
@@ -137,40 +137,34 @@ const api = createApi({
             })
         }),
         loginUser: builder.mutation<EmailUser, DataProp>({
-            query: (data) => (
-                {
-                    url: 'login',
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: data
-                }
-            )
+            query: (data) => ({
+                url: 'login',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: data
+            })
         }),
         signUser: builder.mutation<EmailUser, DataProp>({
-            query: (data) => (
-                {
-                    url: 'create',
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: data
-                }
-            )
+            query: (data) => ({
+                url: 'create',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: data
+            })
         }),
         addToCart: builder.mutation<void, BooksCart>({
-            query: (data) => (
-                {
-                    url: 'addCart',
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: data.items[0]
-                }
-            )
+            query: (data) => ({
+                url: 'addCart',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: data.items[0]
+            })
         }),
         updataPrice: builder.mutation<void, UpdataPrice>({
             query: (updataData) => ({
@@ -191,7 +185,7 @@ const api = createApi({
                 },
                 body: purchaseData
             })
-        }),
+        })
     })
 })
 

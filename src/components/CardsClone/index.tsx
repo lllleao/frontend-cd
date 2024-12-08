@@ -1,7 +1,7 @@
-import Card from "../Card"
+import Card from '../Card'
 
 type PropsClone = {
-    data: Books[] |undefined
+    data: Books[] | undefined
     quant: number | undefined
     idName: string
     removeTouchStart: boolean
@@ -31,18 +31,35 @@ const CardsClone = ({
     items,
     mainLib,
     setRemoveTouchEnd,
-    setRemoveTouchMove,
-
+    setRemoveTouchMove
 }: PropsClone) => {
     const clones = data?.slice(0, quant)
 
     return (
         <>
-            {
-                clones?.map(({ id, title, link, photo, desc }) => (
-                    <Card setRemoveTouchMove={setRemoveTouchMove} setRemoveTouchEnd={setRemoveTouchEnd} mainLib={mainLib} elementWidth={elementWidth} clonedMainRight={clonedMainRight} items={items} clonedMainLibLeft={clonedMainLibLeft} carrousselItems={carrousselItems} removeTouchEnd={removeTouchEnd} removeTouchMove={removeTouchMove} removeTouchStart={removeTouchStart} idName={idName} key={id} clone id={id} title={title} link={link} photo={photo} desc={desc} />
-                ))
-            }
+            {clones?.map(({ id, title, link, photo, desc }) => (
+                <Card
+                    setRemoveTouchMove={setRemoveTouchMove}
+                    setRemoveTouchEnd={setRemoveTouchEnd}
+                    mainLib={mainLib}
+                    elementWidth={elementWidth}
+                    clonedMainRight={clonedMainRight}
+                    items={items}
+                    clonedMainLibLeft={clonedMainLibLeft}
+                    carrousselItems={carrousselItems}
+                    removeTouchEnd={removeTouchEnd}
+                    removeTouchMove={removeTouchMove}
+                    removeTouchStart={removeTouchStart}
+                    idName={idName}
+                    key={id}
+                    clone
+                    id={id}
+                    title={title}
+                    link={link}
+                    photo={photo}
+                    desc={desc}
+                />
+            ))}
         </>
     )
 }

@@ -1,4 +1,4 @@
-import { ButtonContainer } from "./styles"
+import { ButtonContainer } from './styles'
 
 type Props = {
     children: string
@@ -6,9 +6,11 @@ type Props = {
     isItemAdd?: boolean
 }
 
-const ButtonPurchase = ({children, addToCart, isItemAdd}: Props) => {
+const ButtonPurchase = ({ children, addToCart, isItemAdd }: Props) => {
     return (
-        <ButtonContainer $isItemAdd={isItemAdd} onClick={addToCart}>{children}</ButtonContainer>
+        <ButtonContainer $isItemAdd={isItemAdd} onClick={addToCart}>
+            {children}
+        </ButtonContainer>
     )
 }
 
