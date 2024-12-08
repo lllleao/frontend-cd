@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react"
 import { PurchaseContainer } from "./styles"
 import Card from "../Card"
 import { useGetStoreBooksQuery } from "../../services/api"
+import Loader from "../Loader"
 
 const Purchase = () => {
-    const { data } = useGetStoreBooksQuery()
+    const { data, isLoading } = useGetStoreBooksQuery()
     const [inView, setInView] = useState(false)
     const storeRef = useRef<HTMLElement>(null)
 
@@ -35,10 +36,11 @@ const Purchase = () => {
             <h2 className="purchase__title">Que tal aproveitar e olhar os nossos materiais físicos [e pagos]?</h2>
             <span>[clique na capa para comprar]</span>
             <div className={`store card_container ${inView ? 'store--is-active' : ''}`}>
-                {
-                    data && data.map(({desc, id, photo, title, price}) => (
-                        <Card type key={id} desc={desc} price={price} link={`/store-books/${id}`} photo={photo} title={title} />
-                    ))
+                {isLoading ? (
+                    <Loader />
+                ) : data && data.map(({desc, id, photo, title, price}) => (
+                    <Card type key={id} desc={desc} price={price} link={`/store-books/${id}`} photo={photo} title={title} />
+                ))
                 }
             </div>
         </PurchaseContainer>

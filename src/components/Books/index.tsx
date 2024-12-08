@@ -1,22 +1,32 @@
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { AboutBook, BookImg, BooksPurchase } from './styles'
 import { useState } from 'react'
 import ButtonPurchase from '../ButtonPurchase'
-import { useAddToCartMutation, useGetSpecificStoreBookQuery } from '../../services/api'
+import { useAddToCartMutation, useGetItemsCartQuery, useGetSpecificStoreBookQuery, useGetStoreBooksQuery } from '../../services/api'
+import Card from '../Card'
 
 let isSeeMore: boolean = false
+
+type PropData = {
+    msg: string
+}
 
 type BookParams = {
     id: string
 }
 const Book = () => {
-    const [ addToCart ] = useAddToCartMutation()
-    
+    const channelName = 'cart_channel'
+    const [addToCart] = useAddToCartMutation()
+    const { refetch } = useGetItemsCartQuery()
+    const navigate = useNavigate()
+
     const [valueQuant, setValueQuant] = useState('1')
     const [priceCalc, setPriceCalc] = useState(10)
     const [textIsHidden, setTextIsHidden] = useState(true)
+    const [isItemAdd, setIsItemAdd] = useState(false)
     const { id } = useParams() as BookParams
-    const { data } = useGetSpecificStoreBookQuery(id)
+    const { data, isFetching } = useGetSpecificStoreBookQuery(id)
+    const { data: booksStore } = useGetStoreBooksQuery()
 
     const only212Characters = () => {
         const appear = data?.summary.slice(0, 212)
@@ -43,32 +53,50 @@ const Book = () => {
 
     const handleAddToCart = () => {
         if (data) {
+            const channel = new BroadcastChannel(channelName)
+            channel.postMessage({ type: "UPDATE_COUNT", value: 'opa' })
+            channel.close()
+            setTimeout(refetch, 1000)
             addToCart({
                 items: [
                     {
                         photo: data.photo,
                         price: priceCalc,
                         quant: Number(valueQuant),
-                        name: data.title
+                        name: data.title,
+                        id: data.id
                     }
                 ]
+            }).then(res => {
+                // Isso aqui existe porque aqui acaba tendo uma união de tipos FetchBaseQueryError | SerializedError, por isso é preciso verificar também se existe a propriedade status em error
+                if (res.error && 'status' in res.error && 'data' in res.error && res.error.data) {
+                    const errorData = res.error.data as PropData
+                    if (errorData.msg === 'criado') {
+                        setIsItemAdd(true)
+                        setTimeout(() => {
+                            setIsItemAdd(false)
+                        }, 3000)
+                    } else {
+                        navigate('/login')
+                    }
+                }
             })
         }
     }
 
     return (
-        <BooksPurchase>
+        <BooksPurchase $isFeching={isFetching}>
             <div className="container">
                 <div className="book">
                     <BookImg>
                         <img src={data?.photo} alt='' />
                         <p className="price-container">
-                        <span className="price">[ R$ {priceCalc},00 ]</span>
-                        <select onChange={(e) => handleChangeOption(e)} className="quant" name="quant" value={valueQuant}>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                        </select>
+                            <span className="price">[ R$ {priceCalc},00 ]</span>
+                            <select onChange={(e) => handleChangeOption(e)} className="quant" name="quant" value={valueQuant}>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
                         </p>
                     </BookImg>
                     <AboutBook $isSeeMore={isSeeMore}>
@@ -83,7 +111,7 @@ const Book = () => {
                                 </span>
                                 <span className="sinopse__view__part">
                                     <span className="sinopse__view__first">
-                                            {only212Characters()}
+                                        {only212Characters()}
                                     </span>
                                     <span className="sinopse__view__second">
 
@@ -91,9 +119,9 @@ const Book = () => {
                                     {textIsHidden ? (
                                         <span onClick={() => setTextIsHidden(false)} className='see-more'>[Ver mais]</span>
                                     ) :
-                                    (
-                                        <span onClick={() => setTextIsHidden(true)} className='see-more'>[Ver menos]</span>
-                                    )}
+                                        (
+                                            <span onClick={() => setTextIsHidden(true)} className='see-more'>[Ver menos]</span>
+                                        )}
                                 </span>
                             </span>
                         </p>
@@ -120,7 +148,14 @@ const Book = () => {
                 </div>
                 <div className="buttons">
                     <ButtonPurchase>Comprar agora</ButtonPurchase>
-                    <ButtonPurchase addToCart={handleAddToCart}>Adicionar ao carrinho</ButtonPurchase>
+                    <ButtonPurchase isItemAdd={isItemAdd} addToCart={handleAddToCart}>{isItemAdd ? 'Item já adicionado' : 'Adicionar ao carrinho'}</ButtonPurchase>
+                </div>
+                <div className="cards-store-container">
+                    {
+                        booksStore && booksStore.map(({ desc, id, photo, title, price }) => (
+                            <Card type key={id} desc={desc} price={price} link={`/store-books/${id}`} photo={photo} title={title} />
+                        ))
+                    }
                 </div>
             </div>
         </BooksPurchase>

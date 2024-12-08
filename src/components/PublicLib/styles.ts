@@ -4,6 +4,13 @@ export const PublicLibContainer = styled.section`
     padding-top: 32px;
     padding-bottom: 122px;
 
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-left: auto;
+    }
+
     & .public-lb {
         &__title {
             text-align: center;

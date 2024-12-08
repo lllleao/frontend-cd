@@ -1,72 +1,59 @@
-import { useState } from 'react'
 import { MenuDesktopContainer } from './styles'
-import { handleRedDown } from '../../utils'
 import { useNavigate } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
-import { Link } from 'react-router-dom'
 import { useGetCookieMutation } from '../../services/api'
 
-type RedDown = {
-    hero: boolean
-    publicLb: boolean
-    purchase: boolean
-    contactUs: boolean
-    cart: boolean
-    user: boolean
+type MenuProps = {
+    viweNumberCart: boolean
+    dataLength: number | undefined
+    addAnimateCart: boolean
 }
 
-const MenuDesktop = () => {
-    // const [ getToken ] = useGetCookieMutation()
+const MenuDesktop = ({ viweNumberCart, dataLength, addAnimateCart }: MenuProps) => {
+
     const [getToken] = useGetCookieMutation()
+
     const navigate = useNavigate()
 
-    const [redDown, setRedDown] = useState<RedDown>({
-        hero: false,
-        publicLb: false,
-        purchase: false,
-        contactUs: false,
-        cart: false,
-        user: false
-    })
+    const handleClickUser = () => {
+        getToken().then(res => {
+            if (res.error) {
+                console.error(res.error)
 
-    const handleClickCart = (elementName: string) => {
-        handleRedDown(elementName, setRedDown)
+                navigate('/login')
+                throw new Error(`HTTP request error`)
+            }
 
-        if (elementName === 'user') {
-            getToken().then(res => {
-                if (res.error) {
-                    console.error(res.error)
-    
-                    navigate('/login')
-                    throw new Error(`HTTP request error`)
-                }
-    
-                navigate('/profile')
-            })
-        }
+            navigate('/profile')
+        })
     }
 
     return (
-        <MenuDesktopContainer className="container">
+        <MenuDesktopContainer $addAnimateCart={addAnimateCart} className="container">
             <ul className="nav__list">
                 <li className="nav__list__item__desk">
-                    <HashLink onClick={() => handleClickCart('hero')} className={`nav__list__item__desk__link ${redDown.hero ? 'nav__list__item__desk__link--is-down' : ''}`} to="/#hero">home</HashLink>
+                    <HashLink className={`nav__list__item__desk__link`} to="/#hero">home</HashLink>
                 </li>
                 <li className="nav__list__item__desk">
-                    <HashLink onClick={() => handleClickCart('publicLb')} className={`nav__list__item__desk__link ${redDown.publicLb ? 'nav__list__item__desk__link--is-down' : ''}`} to="/#public-lb">biblioteca virtual</HashLink>
+                    <HashLink className={`nav__list__item__desk__link`} to="/#public-lb">biblioteca virtual</HashLink>
                 </li>
                 <li className="nav__list__item__desk">
-                    <HashLink onClick={() => handleClickCart('purchase')} className={`nav__list__item__desk__link ${redDown.purchase ? 'nav__list__item__desk__link--is-down' : ''}`} to="/#purchase">lojinha</HashLink>
+                    <HashLink className={`nav__list__item__desk__link`} to="/#purchase">lojinha</HashLink>
                 </li>
                 <li className="nav__list__item__desk">
-                    <HashLink onClick={() => handleClickCart('contactUs')} className={`nav__list__item__desk__link ${redDown.contactUs ? 'nav__list__item__desk__link--is-down' : ''}`} to="/#contact-us">fale conosco</HashLink>
+                    <HashLink className={`nav__list__item__desk__link`} to="/#contact-us">fale conosco</HashLink>
                 </li>
                 <li className="nav__list__item__desk cartIcon">
-                    <Link to="/cart" onClick={() => handleClickCart('cart')} className={`nav__list__item__desk__link ${redDown.cart ? 'nav__list__item__desk__link--is-down' : ''}`}><i className="fa-solid fa-cart-shopping" /></Link>
+                    <a href="/cart" className={`nav__list__item__desk__link`}>
+                        <div className={`number-of-items ${viweNumberCart && 'number-of-items--active'}`}>{dataLength}</div>
+                        <i className="fa-solid fa-cart-shopping" />
+                    </a>
 
                 </li>
                 <li className="nav__list__item__desk userIcon">
-                    <div onClick={() => handleClickCart('user')} className={`nav__list__item__desk__link ${redDown.user ? 'nav__list__item__desk__link--is-down' : ''}`}><i className="fa-solid fa-user" /></div>
+                    <div onClick={handleClickUser} className={`nav__list__item__desk__link`}>
+                        <i className="fa-solid fa-user" />
+                    </div>
 
                 </li>
             </ul>

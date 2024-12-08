@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const MenuDesktopContainer = styled.nav`
+export const MenuDesktopContainer = styled.nav<{$addAnimateCart: boolean}>`
     .nav__list {
         display: flex;
         justify-content: space-between;
@@ -49,5 +49,44 @@ export const MenuDesktopContainer = styled.nav`
         @media (max-width: 1054px) {
             display: none;
         }
+    }
+
+    .cartIcon {
+        .number-of-items {
+            display: none;
+            padding-left: 5px;
+            position: absolute;
+            color: #eee;
+            background-color: red;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            top: 0;
+            left: 20px;
+
+            &--active {
+                display: block;
+            }
+        }
+        animation: ${({$addAnimateCart}) => $addAnimateCart ? 'animateCart 1s linear' : ''};
+    }
+
+    @keyframes animateCart {
+        0%, 25%, 55%, 85%, 100% {
+        animation-timing-function: ease-out;
+        transform: scale(1);
+    }
+    41%, 44% {
+        animation-timing-function: ease-in;
+        transform: scale(1.5);
+    }
+    70% {
+        animation-timing-function: ease-in;
+        transform: scale(1.3);
+    }
+    90% { transform: scale(1.1) }
     }
 `

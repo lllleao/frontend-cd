@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { ButtonContainer } from "../ButtonPurchase/styles";
+import { CardContainer } from "../Card/styles";
 
 export const ProductsListCartContainer = styled.section`
     background-color: #000;
-    height: 100vh;
-    padding-top: 5rem;
+    padding: 5rem 0;
 
     .no-items {
         margin: auto 0;
@@ -15,10 +15,16 @@ export const ProductsListCartContainer = styled.section`
         }
     }
 
-    ul {
+    .books-list {
+        margin-top: 2rem;
+        display: flex;
+        gap: 3rem;
         li {
-            margin: 2rem auto 0 auto;
-            /* text-align: center; */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            width: 300px;
 
             .img-delete {
                 margin-bottom: 1rem;
@@ -30,20 +36,73 @@ export const ProductsListCartContainer = styled.section`
                 }
             }
 
-            div {
+            
+
+            .name-text {
                 font-weight: bold;
                 font-size: 1rem;
+                text-align: center;
+
+                @media (max-width: 767px) {
+                    width: 90%;
+                }
             }
 
             .total-price {
-                margin-top: 1rem;
-                text-align: normal;
+                .quant {
+                    margin-left: 0.5rem;
+                    background-color: transparent;
+                    font-size: 1.1rem;
+
+                    option {
+                        background-color: #000;
+                    }
+                }
             }
 
             .fa-trash {
-                margin-left: 1rem;
+                margin-left: 2rem;
+                margin-top: 2rem;
                 font-size: 1.5rem;
                 cursor: pointer;
+            }
+        }
+        @media (max-width: 790px) {
+            flex-wrap: wrap;
+            li {
+                flex: 1 1 300px;
+            }
+        }
+    }
+
+    .total {
+        display: block;
+        margin-top: 5rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .cards-store-container {
+        margin-top: 9.5rem;
+        display: flex;
+        justify-content: space-between;
+        ${CardContainer} {
+            max-width: 250px;
+            img {
+                width: 80%;
+            }
+        }
+        @media screen and (max-width: 767px) {
+            display: block;
+            ${CardContainer} {
+                margin: 0 auto 2rem;
+                text-align: center;
+
+                p {
+
+                    width: 50%;
+                    margin: 1rem auto 0;
+                }
             }
         }
     }
@@ -61,4 +120,6 @@ export const ItemsOnCart = styled.div`
 
 export const ButtonCart = styled(ButtonContainer)`
     font-size: 1rem;
+    display: inline-block;
+    text-decoration: none;
 `

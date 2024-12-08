@@ -1,4 +1,4 @@
-import { handleBlur, handleFocus, nameMask } from "../../../utils/contactFunctions"
+import { handleBlur, handleFocus, numberAndCaracterScape } from "../../../utils/contactFunctions"
 import { handleValidEmail } from "../../../utils/validationLoginSign"
 import { ButtonLoginSign } from "../styles"
 import { useFormeState } from "../useFormState"
@@ -50,7 +50,7 @@ const Sign = () => {
                             className="input name"
                             onFocus={(e) => handleFocus(e, setNameEmpty)}
                             onBlur={(e) => handleBlur(e, setNameEmpty)}
-                            onChange={(e) => nameMask(e.target.value, setName)}
+                            onChange={(e) => numberAndCaracterScape(e.target.value, setName)}
                             value={name}
                             type="text" id="name" />
                         <label className={nameEmpty ? 'active' : ''} htmlFor="name">

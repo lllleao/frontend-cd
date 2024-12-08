@@ -32,8 +32,8 @@ const Card = ({ mainLib, elementWidth, setRemoveTouchEnd, setRemoveTouchMove, cl
 
     return (
         <CardContainer
-            target="_blank"
-            to={link}
+            target={type ? '_self' : '_blank'}
+            href={link}
             title={title}
             className={`card_container__book ${type ? 'product' : 'card_lib'} ${clone ? 'cloned' : ''}`}
             rel="noreferrer"

@@ -1,11 +1,40 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { DataProp } from '../components/LoginSign/formsFetch'
 import { EmailUser } from '../store/reducers/loginSign'
 
 type User = {
     email: string
     id: string
     name: string
+}
+
+type DataProp = {
+    name?: string;
+    email: string;
+    password: string;
+}
+
+type BooksCart = {
+    items: [
+        {
+            price: number
+            quant: number
+            id?: number
+            name: string
+            photo: string
+        }
+    ]
+}
+
+type GetBooksCart = {
+    items: [
+        {
+            price: number
+            quant: number
+            id?: number
+            name: string
+            photo: string
+        }
+    ]
 }
 
 type CsrfProp = {
@@ -22,9 +51,40 @@ type EmailDataProp = {
     }
 }
 
+type UpdataPrice = {
+    quantBefore: number
+    quantCurrent: number,
+    idItem: number | undefined
+    price: number
+}
+
+type TotalPriceProps = {
+    totalPrice: number
+}
+
+type ItemsInfo = {
+    price: number;
+    quant: number;
+    id?: number;
+    name: string;
+    photo: string;
+}
+
+type PurchaseDataProps = {
+    name: string
+    cpf: string
+    cep: string
+    street: string
+    neighborhood: string
+    complement: string
+    number: string
+    itemsInfo: ItemsInfo[]
+    totalPrice: number
+}
+
 const api = createApi({
     baseQuery: fetchBaseQuery({
-        baseUrl: 'https://backend-cidadeclipse.vercel.app/',
+        baseUrl: 'http://localhost:9001/',
         credentials: 'include'
     }),
     endpoints: (builder) => ({
@@ -36,6 +96,9 @@ const api = createApi({
         }),
         getCSRFToken: builder.query<CsrfProp, void>({
             query: () => 'csrf-token'
+        }),
+        getTotalPrice: builder.query<TotalPriceProps, void>({
+            query: () => 'totalPrice'
         }),
         sendEmail: builder.mutation<void, EmailDataProp>({
             query: (emailData) => ({
@@ -57,7 +120,7 @@ const api = createApi({
         getSpecificStoreBook: builder.query<BooksPurchase, string>({
             query: (id) => `store-books/${id}`
         }),
-        getItemsCart: builder.query<BooksCart, void>({
+        getItemsCart: builder.query<GetBooksCart, void>({
             query: () => ({
                 url: 'cartItems'
             })
@@ -67,7 +130,7 @@ const api = createApi({
                 url: 'profile'
             })
         }),
-        getRemoveItem: builder.mutation<void, string>({
+        getRemoveItem: builder.mutation<void, number>({
             query: (itemId) => ({
                 url: `removeItem/${itemId}`,
                 method: 'DELETE'
@@ -108,7 +171,27 @@ const api = createApi({
                     body: data.items[0]
                 }
             )
-        })
+        }),
+        updataPrice: builder.mutation<void, UpdataPrice>({
+            query: (updataData) => ({
+                url: 'updataPrice',
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: updataData
+            })
+        }),
+        purchaseData: builder.mutation<void, PurchaseDataProps>({
+            query: (purchaseData) => ({
+                url: 'purchase',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: purchaseData
+            })
+        }),
     })
 })
 
@@ -124,6 +207,9 @@ export const {
     useAddToCartMutation,
     useGetSpecificStoreBookQuery,
     useGetCSRFTokenQuery,
-    useSendEmailMutation
+    useSendEmailMutation,
+    useUpdataPriceMutation,
+    useGetTotalPriceQuery,
+    usePurchaseDataMutation
 } = api
 export default api

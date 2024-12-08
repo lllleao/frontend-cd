@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import loginSiginReducer from './reducers/loginSign'
 import api from '../services/api'
+
 const store = configureStore({
     reducer: {
         loginSigin: loginSiginReducer,

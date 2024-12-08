@@ -3,11 +3,12 @@ import { ButtonContainer } from "./styles"
 type Props = {
     children: string
     addToCart?: () => void
+    isItemAdd?: boolean
 }
 
-const ButtonPurchase = ({children, addToCart}: Props) => {
+const ButtonPurchase = ({children, addToCart, isItemAdd}: Props) => {
     return (
-        <ButtonContainer onClick={addToCart}>{children}</ButtonContainer>
+        <ButtonContainer $isItemAdd={isItemAdd} onClick={addToCart}>{children}</ButtonContainer>
     )
 }
 

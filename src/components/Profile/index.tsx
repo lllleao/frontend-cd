@@ -18,7 +18,9 @@ const Profile = () => {
     const navigate = useNavigate()
 
     const handleLogout = () => {
+
         localStorage.removeItem('loginSuccess')
+
         navigate('/')
 
         fetch(`${apiUrl}/logout`, {
@@ -32,10 +34,9 @@ const Profile = () => {
             if (!res.ok) {
                 throw new Error
             }
-
             return res.json()
-        }).then(res => {
-            res
+        }).then(() => {
+            
         }).catch(err => console.error(err))
     }
 
@@ -56,8 +57,8 @@ const Profile = () => {
         <>
             <Header />
             <ProfileContainer>
-                <h1>{data?.name}</h1>
-                <h2>{data?.email}</h2>
+                <h2>{data?.name}</h2>
+                <h3>{data?.email}</h3>
                 <ButtonLogout onClick={handleLogout}>Sair</ButtonLogout>
             </ProfileContainer>
         </>

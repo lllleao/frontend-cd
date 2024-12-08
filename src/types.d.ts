@@ -21,14 +21,8 @@ declare interface BooksPurchase extends Omit<Books, 'link' | 'desc'> {
     credits: CreditsValues[]
 }
 
-declare interface BooksCart {
-    items: [
-        {
-            price: number
-            quant: number
-            id?: string
-            name: string
-            photo: string
-        }
-    ]
+declare interface BooksCart extends Omit<Books, 'link' | 'title' | 'desc' | 'id'> {
+    quant: number,
+    name: string,
+    id?: number
 }

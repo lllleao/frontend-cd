@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { ContactContainer } from "./styles"
 import { authentic } from "../../utils"
-import { handleBlur, handleFocus, nameMask } from "../../utils/contactFunctions"
+import { handleBlur, handleFocus, numberAndCaracterScape } from "../../utils/contactFunctions"
 import { useGetCSRFTokenQuery, useSendEmailMutation } from "../../services/api"
 
 const Contact = () => {
@@ -133,7 +133,7 @@ const Contact = () => {
                             value={name}
                             onBlur={e => handleBlur(e, setNameEmpty)}
                             onFocus={e => handleFocus(e, setNameEmpty)}
-                            onChange={e => nameMask(e.target.value, setName)}
+                            onChange={e => numberAndCaracterScape(e.target.value, setName)}
                             className={`text-field__input name input-num ${inputErrorName && 'text-field__input-is-error'}`} type="text" />
                         <label className="text-field__label">Nome</label>
                     </div>

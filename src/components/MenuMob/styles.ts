@@ -35,8 +35,29 @@ export const MenuBobContainer = styled.nav`
                 }
             }
         }
-        @media screen and (max-width: 1054px) {
+        @media (max-width: 1054px) {
             display: block;
+        }
+    }
+
+    .alert {
+        display: none;
+        position: fixed;
+        top: 15px;
+        right: 20px;
+        background-color: red;
+        width: 20px;
+        height: 20px;
+        border-radius: 50px;
+        font-size: 1.05rem;
+        font-weight: bold;
+        text-align: center;
+        z-index: 3;
+        &--visible {
+            display: block;
+            @media (min-width: 1055px) {
+                display: none;
+            }
         }
     }
     .menu-mob {
@@ -61,6 +82,26 @@ export const MenuBobContainer = styled.nav`
             display: block;
             margin-bottom: 8px;
             padding: 6px;
+        }
+
+        &__item__cart {
+            display: flex;
+            justify-content: space-between;
+            
+            .number-items-mob {
+                display: none;
+                background-color: red;
+                width: 20px;
+                height: 20px;
+                border-radius: 50px;
+                font-size: 1.05rem;
+                font-weight: bold;
+                text-align: center;
+                &--visible {
+                    display: block;
+                }
+            }
+
         }
 
         &__is-active-menu {

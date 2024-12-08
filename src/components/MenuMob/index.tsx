@@ -2,9 +2,16 @@ import { useState } from 'react'
 import { MenuBobContainer } from './styles'
 import { useNavigate } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
+import { useGetCookieMutation } from '../../services/api'
 
-const MenuMob = () => {
+type MenuProps = {
+    viweNumberCart: boolean
+    dataLength: number | undefined
+}
+
+const MenuMob = ({ viweNumberCart, dataLength }: MenuProps) => {
     const [menuClicked, setMenuClicked] = useState(false)
+    const [ getToken ] = useGetCookieMutation()
     const navigate = useNavigate()
 
     function handleClickCart(): void {
@@ -13,11 +20,22 @@ const MenuMob = () => {
 
     function handleClickUser() {
         setMenuClicked(false)
-        navigate('/user')
+
+        getToken().then(res => {
+            if (res.error) {
+                console.error(res.error)
+
+                navigate('/login')
+                throw new Error(`HTTP request error`)
+            }
+
+            navigate('/profile')
+        })
     }
 
     return (
         <MenuBobContainer>
+            <div className={`alert ${viweNumberCart ? 'alert--visible' : ''}`}>!</div>
             <div
                 className={`hamburguer-wrapper ${menuClicked ? 'hamburguer-wrapper__is-active-menu' : ''}`}
                 onClick={() => setMenuClicked(!menuClicked)}
@@ -50,11 +68,10 @@ const MenuMob = () => {
                     </HashLink>
                 </li>
                 <li>
-                    <div className="menu-mob__item cartIcon" onClick={handleClickCart}><i className="fa-solid fa-cart-shopping" /></div>
+                    <a href="/cart" className={`menu-mob__item cartIcon menu-mob__item__cart`} onClick={handleClickCart}><i className="fa-solid fa-cart-shopping" /> <div className={`number-items-mob ${viweNumberCart ? 'number-items-mob--visible' : ''}`}>{dataLength}</div></a>
                 </li>
                 <li>
                     <div onClick={handleClickUser} className="menu-mob__item userIcon"><i className="fa-solid fa-user" /></div>
-
                 </li>
             </ul>
         </MenuBobContainer>

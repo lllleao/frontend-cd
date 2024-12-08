@@ -33,7 +33,10 @@ export const useHandleLogin = (event: FormEvent<HTMLFormElement>, isEmailValid: 
 export const useHandleSign = (event: FormEvent<HTMLFormElement>, isEmailValid: boolean, password: string, data: DataProp, dispatch: Dispatch<UnknownAction>, name: string, makeSign: (arg: DataProp) => MutationActionCreatorResult<MutationDefinition<DataProp, BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>, never, EmailUser, "api">>) => {
     event.preventDefault()
 
-    if (name && isEmailValid && password) {
+    const regex = /^\s+$/
+
+    
+    if (name && !regex.test(name) && isEmailValid && !regex.test(password) && password) {
         makeSign(data).then(res => {
             if (res.error) {
                 console.error(res.error)

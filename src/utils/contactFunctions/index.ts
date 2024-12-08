@@ -27,8 +27,10 @@ export const handleBlur = (
     }
 }
 
-export const nameMask = (name: string, setName: (value: React.SetStateAction<string>) => void) => {
+export const numberAndCaracterScape = (name: string, setName: (value: React.SetStateAction<string>) => void) => {
     let value = name
-    value = value.replace(/[^a-zA-Z\s]/g, '')
-    setName(value)
+    value = value.replace(/^[\s]+/, '').replace(/[^a-zA-Z\u00C0-\u00FF\u0100-\u017F\s]/g, '')
+    if (value.length <= 40) {
+        setName(value)
+    }
 }

@@ -15,7 +15,7 @@ const initialState: EmailUser = {
 }
 
 const loginSignSlice = createSlice({
-    name: 'cart',
+    name: 'loginSign',
     initialState,
     reducers: {
         checkSignUser: (state, action: PayloadAction<EmailUser>) => {

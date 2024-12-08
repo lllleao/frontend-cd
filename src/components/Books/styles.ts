@@ -1,8 +1,9 @@
 import styled from "styled-components";
+import { CardContainer } from "../Card/styles";
 
-export const BooksPurchase = styled.section`
+export const BooksPurchase = styled.section<{$isFeching: boolean}>`
     padding: 2rem 0;
-    height: 100vh;
+    height: ${({$isFeching}) => $isFeching ? '100vh' : 'auto'};
     background-color: #000;
     .book {
         display: flex;
@@ -30,6 +31,29 @@ export const BooksPurchase = styled.section`
     }
     @media (max-width: 460px) {
         padding: 5rem 0;
+    }
+
+    .cards-store-container {
+        margin-top: 6rem;
+        display: flex;
+        justify-content: space-between;
+        ${CardContainer} {
+            max-width: 250px;
+            img {
+                width: 80%;
+            }
+        }
+        @media screen and (max-width: 767px) {
+            display: block;
+            ${CardContainer} {
+                margin: 0 auto 2rem;
+                text-align: center;
+
+                p {
+                    margin: 1rem auto 0;
+                }
+            }
+        }
     }
 `
 export const BookImg = styled.div`
@@ -68,7 +92,7 @@ export const BookImg = styled.div`
         }
     }
 `
-export const AboutBook = styled.div<{$isSeeMore: boolean}>`
+export const AboutBook = styled.div<{ $isSeeMore: boolean }>`
     h3 {
         font-size: clamp(1rem, 4vw, 1.7rem);
         font-weight: bold;
@@ -108,7 +132,7 @@ export const AboutBook = styled.div<{$isSeeMore: boolean}>`
                     .see-more {
                         text-align: center;
                         padding: 8px;
-                        display: ${({$isSeeMore}) => $isSeeMore ? 'block' : 'none'};
+                        display: ${({ $isSeeMore }) => $isSeeMore ? 'block' : 'none'};
                         cursor: pointer;
                     }
                 }
