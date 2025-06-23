@@ -81,7 +81,7 @@ export const ProductsListCartContainer = styled.section`
     }
 
     .cards-store-container {
-        margin-top: 9.5rem;
+        margin-top: 5rem;
         display: flex;
         justify-content: space-between;
         ${CardContainer} {
@@ -103,16 +103,21 @@ export const ProductsListCartContainer = styled.section`
             }
         }
     }
-`
-
-export const ItemsOnCart = styled.div`
-    margin-bottom: 2rem;
     h3 {
         font-size: 1.4rem;
     }
     .bar {
         border: 2px solid #fff;
     }
+
+    .title-books-store {
+        margin-top: 3rem;
+    }
+`
+
+export const ItemsOnCart = styled.div`
+    margin-bottom: 2rem;
+    
 `
 
 export const ButtonCart = styled(ButtonContainer)`

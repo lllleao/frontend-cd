@@ -37,7 +37,7 @@ const CardsClone = ({
 
     return (
         <>
-            {clones?.map(({ id, title, link, photo, desc }) => (
+            {clones?.map(({ id, title, link, photo, descBooks }) => (
                 <Card
                     setRemoveTouchMove={setRemoveTouchMove}
                     setRemoveTouchEnd={setRemoveTouchEnd}
@@ -57,7 +57,7 @@ const CardsClone = ({
                     title={title}
                     link={link}
                     photo={photo}
-                    desc={desc}
+                    descBooks={descBooks}
                 />
             ))}
         </>

@@ -19,16 +19,18 @@ const MenuDesktop = ({
     const navigate = useNavigate()
 
     const handleClickUser = () => {
-        getToken().then((res) => {
-            if (res.error) {
-                console.error(res.error)
+        getToken()
+            .then((res) => {
+                if (res.error) {
+                    console.error(res.error)
 
-                navigate('/login')
-                throw new Error(`HTTP request error`)
-            }
+                    navigate('/login')
+                    throw new Error(`HTTP request error`)
+                }
 
-            navigate('/profile')
-        })
+                navigate('/profile')
+            })
+            .catch((err) => console.log(err))
     }
 
     return (

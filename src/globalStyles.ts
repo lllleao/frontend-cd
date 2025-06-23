@@ -38,6 +38,7 @@ const GlobalStyle = createGlobalStyle`
         max-width: 1216px;
         width: 100%;
         margin: 0 auto;
+        padding-bottom: 5rem;
         @media screen and (min-width: 1024px) {
             width: 90%;
         }

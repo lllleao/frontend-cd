@@ -24,12 +24,13 @@ const ProductsListCart = () => {
 
     const channelName = 'cart_channel'
 
-    const handleDelete = (id: number | undefined) => {
-        id &&
-            deleteCartItem(id)
+    const handleDelete = (name: string | undefined) => {
+        console.log(name)
+        name &&
+            deleteCartItem(name)
                 .unwrap()
                 .then(() => {
-                    refetch()
+                    refetch().catch((err) => console.log(err))
                     setTimeout(refetchTotalPrice, 500)
 
                     console.log('Item removido do carrinho com sucesso')
@@ -38,7 +39,6 @@ const ProductsListCart = () => {
         const channel = new BroadcastChannel(channelName)
         channel.postMessage({ type: 'UPDATE_COUNT', value: 'opa' })
         channel.close()
-        // setTimeout(refetch, 1000)
     }
 
     const handleChangeOption = (
@@ -53,20 +53,24 @@ const ProductsListCart = () => {
             quantCurrent: Number(quant),
             idItem,
             price
-        }).then(() => {
-            refetch()
-            setTimeout(refetchTotalPrice, 500)
         })
+            .then(() => {
+                refetch().catch((err) => console.log(err))
+                setTimeout(refetchTotalPrice, 500)
+            })
+            .catch((err) => console.log(err))
     }
 
     useEffect(() => {
-        refetch().then((res) => {
-            if (res.error && 'status' in res.error) {
-                if (res.error.status === 401) {
-                    navigate('/login')
+        refetch()
+            .then((res) => {
+                if (res.error && 'status' in res.error) {
+                    if (res.error.status === 401) {
+                        navigate('/login')
+                    }
                 }
-            }
-        })
+            })
+            .catch((err) => console.log(err))
     }, [refetch, navigate])
 
     if (isLoading) {
@@ -117,7 +121,7 @@ const ProductsListCart = () => {
                                                 <i
                                                     className="fa-solid fa-trash"
                                                     onClick={() =>
-                                                        handleDelete(id)
+                                                        handleDelete(name)
                                                     }
                                                 />
                                             </div>
@@ -132,14 +136,16 @@ const ProductsListCart = () => {
                     <span className="total">
                         Preço total: R$ {totalPrice?.totalPrice}
                     </span>
+                    <h3 className="title-books-store">COMPRE TAMBÉM</h3>
+                    <div className="bar" />
                     <div className="cards-store-container">
                         {booksStore &&
                             booksStore.map(
-                                ({ desc, id, photo, title, price }) => (
+                                ({ descBooks, id, photo, title, price }) => (
                                     <Card
                                         type
                                         key={id}
-                                        desc={desc}
+                                        descBooks={descBooks}
                                         price={price}
                                         link={`/store-books/${id}`}
                                         photo={photo}

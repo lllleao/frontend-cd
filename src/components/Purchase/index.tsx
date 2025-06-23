@@ -24,7 +24,7 @@ const Purchase = () => {
 
         return () => {
             if (storeRef.current) {
-                // eslint-disable-next-line react-hooks/exhaustive-deps
+                // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
                 purchaseObserver.unobserve(storeRef.current)
             }
             purchaseObserver.disconnect()
@@ -36,6 +36,9 @@ const Purchase = () => {
             <h2 className="purchase__title">
                 Que tal aproveitar e olhar os nossos materiais físicos [e
                 pagos]?
+                <br />
+                <br />
+                [ENTREGA SOMENTE PARA FORTALEZA/CE]
             </h2>
             <span>[clique na capa para comprar]</span>
             <div
@@ -45,11 +48,11 @@ const Purchase = () => {
                     <Loader />
                 ) : (
                     data &&
-                    data.map(({ desc, id, photo, title, price }) => (
+                    data.map(({ descBooks, id, photo, title, price }) => (
                         <Card
                             type
                             key={id}
-                            desc={desc}
+                            descBooks={descBooks}
                             price={price}
                             link={`/store-books/${id}`}
                             photo={photo}

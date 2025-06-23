@@ -1,17 +1,12 @@
 import { useNavigate } from 'react-router-dom'
-import { ButtonLogout, ProfileContainer } from './styles'
+import { ButtonLogout, ProfileContainer, PurchaseCompleted } from './styles'
 import { useEffect } from 'react'
 import Header from '../../containers/Header'
 import {
     useGetCookieMutation,
     useGetProfileDataQuery
 } from '../../services/api'
-
-export type User = {
-    email: string
-    id: string
-    name: string
-}
+import OrdersCompleted from '../OrdersCompleted'
 
 const Profile = () => {
     const [getToken] = useGetCookieMutation()
@@ -42,25 +37,33 @@ const Profile = () => {
     }
 
     useEffect(() => {
-        getToken().then((res) => {
-            if (res.error) {
-                console.error(res.error)
+        getToken()
+            .then((res) => {
+                if (res.error) {
+                    console.error(res.error)
 
-                navigate('/login')
-                throw new Error(`HTTP request error`)
-            }
-
-            navigate('/profile')
-        })
-    }, [getToken, navigate])
+                    navigate('/login')
+                    throw new Error(`HTTP request error`)
+                }
+                console.log(data)
+                navigate('/profile')
+            })
+            .catch((err) => console.log(err))
+    }, [getToken, navigate, data])
 
     return (
         <>
             <Header />
             <ProfileContainer>
-                <h2>{data?.name}</h2>
-                <h3>{data?.email}</h3>
-                <ButtonLogout onClick={handleLogout}>Sair</ButtonLogout>
+                <div className="container">
+                    <h2>{data?.name}</h2>
+                    <h3>{data?.email}</h3>
+                    <ButtonLogout onClick={handleLogout}>SAIR</ButtonLogout>
+                    <PurchaseCompleted>
+                        <h4 className="title-order">COMPRAS REALIZADAS</h4>
+                        <OrdersCompleted data={data} />
+                    </PurchaseCompleted>
+                </div>
             </ProfileContainer>
         </>
     )

@@ -24,7 +24,6 @@ const Book = () => {
     const [addToCart] = useAddToCartMutation()
     const { refetch } = useGetItemsCartQuery()
     const navigate = useNavigate()
-
     const [valueQuant, setValueQuant] = useState('1')
     const [priceCalc, setPriceCalc] = useState(10)
     const [textIsHidden, setTextIsHidden] = useState(true)
@@ -63,35 +62,37 @@ const Book = () => {
             channel.postMessage({ type: 'UPDATE_COUNT', value: 'opa' })
             channel.close()
             setTimeout(refetch, 1000)
+            console.log(data.id)
             addToCart({
                 items: [
                     {
                         photo: data.photo,
                         price: priceCalc,
                         quant: Number(valueQuant),
-                        name: data.title,
-                        id: data.id
+                        name: data.title
                     }
                 ]
-            }).then((res) => {
-                // Isso aqui existe porque aqui acaba tendo uma união de tipos FetchBaseQueryError | SerializedError, por isso é preciso verificar também se existe a propriedade status em error
-                if (
-                    res.error &&
-                    'status' in res.error &&
-                    'data' in res.error &&
-                    res.error.data
-                ) {
-                    const errorData = res.error.data as PropData
-                    if (errorData.msg === 'criado') {
-                        setIsItemAdd(true)
-                        setTimeout(() => {
-                            setIsItemAdd(false)
-                        }, 3000)
-                    } else {
-                        navigate('/login')
-                    }
-                }
             })
+                .then((res) => {
+                    // Isso aqui existe porque aqui acaba tendo uma união de tipos FetchBaseQueryError | SerializedError, por isso é preciso verificar também se existe a propriedade status em error
+                    if (
+                        res.error &&
+                        'status' in res.error &&
+                        'data' in res.error &&
+                        res.error.data
+                    ) {
+                        const errorData = res.error.data as PropData
+                        if (errorData.msg === 'não criado') {
+                            setIsItemAdd(true)
+                            setTimeout(() => {
+                                setIsItemAdd(false)
+                            }, 3000)
+                        } else {
+                            navigate('/login')
+                        }
+                    }
+                })
+                .catch((err) => console.error(err))
         }
     }
 
@@ -172,7 +173,7 @@ const Book = () => {
                                     </span>{' '}
                                     {data?.pageQuant}
                                 </li>
-                                {data?.credits.map((item) => (
+                                {data?.store_books_credits.map((item) => (
                                     <li key={item.person}>
                                         <span className="sinopse-title">
                                             {item.type}:{' '}
@@ -186,7 +187,6 @@ const Book = () => {
                     </AboutBook>
                 </div>
                 <div className="buttons">
-                    <ButtonPurchase>Comprar agora</ButtonPurchase>
                     <ButtonPurchase
                         isItemAdd={isItemAdd}
                         addToCart={handleAddToCart}
@@ -198,11 +198,11 @@ const Book = () => {
                 </div>
                 <div className="cards-store-container">
                     {booksStore &&
-                        booksStore.map(({ desc, id, photo, title, price }) => (
+                        booksStore.map(({ descBooks, id, photo, title, price }) => (
                             <Card
                                 type
                                 key={id}
-                                desc={desc}
+                                descBooks={descBooks}
                                 price={price}
                                 link={`/store-books/${id}`}
                                 photo={photo}

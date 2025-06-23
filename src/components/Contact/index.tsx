@@ -57,7 +57,7 @@ const Contact = () => {
         }
     }, [emailUser, numEmail])
 
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
         const data = {
@@ -118,7 +118,7 @@ const Contact = () => {
             setTimeout(() => {
                 setIsCopied(false)
             }, 2000)
-        })
+        }).catch(err => console.log(err))
     }
 
     return (

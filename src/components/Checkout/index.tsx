@@ -87,6 +87,7 @@ const Checkout = () => {
                     setStreet(res.logradouro || '')
                     setNeighborhoodeet(res.bairro || '')
                 })
+                .catch((err) => console.log(err))
         }
     }
 
@@ -99,7 +100,7 @@ const Checkout = () => {
     const authForms = () => {
         const regex = /^\s+$/
         const cepScape = cep.replace(/\D/g, '')
-        const isNameValid = name.length !== 0 && !regex.test(name)
+        const isNameValid = name.length !== 0 && !regex.test(name) && name.length > 3 && name.includes(' ')
         const isCpfValid = cpfValidator(cpf)
         const isCepValid = cepScape.length === 8
         const isStreetValid = street.length <= 40
@@ -161,18 +162,27 @@ const Checkout = () => {
                         }
                     ),
                     totalPrice: totalPrice.totalPrice
-                })
+                }).then((res) => {
+                    if (res.error) {
+                        return new Error('Algum problema com a geração do qrcode')
+                    }
+                    localStorage.setItem('qrCode', res.data.pixData.imagemQrcode)
+                    localStorage.setItem('copPaste', res.data.pixData.qrcode)
+                    navigate('/pix')
+                }).catch((err) => console.log(err))
             }
         }
     }
 
     useEffect(() => {
-        getCookie().then((res) => {
-            if (res.error) {
-                console.log(res.error)
-                navigate('/login')
-            }
-        })
+        getCookie()
+            .then((res) => {
+                if (res.error) {
+                    console.log(res.error)
+                    navigate('/login')
+                }
+            })
+            .catch((err) => console.log(err))
     }, [getCookie, navigate])
 
     return (
@@ -181,134 +191,167 @@ const Checkout = () => {
             <CheckoutContainer $errorCPF={errorCpf} $errorCEP={errorCEP}>
                 <div className="container">
                     <div className="bar-container">
-                        <div className="bar">
-                            <div className="bar-ball">1</div>
-                            <div className="bar-ball" />
-                            <div className="bar-ball" />
-                        </div>
+                        <div className="bar" />
                     </div>
                     <div className="form-checkout">
                         <form
                             onSubmit={(e) => handleSubmit(e)}
                             className="form"
                         >
-                            <label className="form__label" htmlFor="name">
-                                Nome Completo
-                            </label>
-                            <input
-                                value={name}
-                                onChange={(e) =>
-                                    numberAndCaracterScape(
-                                        e.target.value,
-                                        setName
-                                    )
-                                }
-                                required
-                                id="name"
-                                className="form__input name"
-                                type="text"
-                            />
+                            <div className="form__credentials">
+                                <div className="text-field-name">
+                                    <label
+                                        className="form__label"
+                                        htmlFor="name"
+                                    >
+                                        Nome Completo
+                                    </label>
+                                    <input
+                                        value={name}
+                                        onChange={(e) =>
+                                            numberAndCaracterScape(
+                                                e.target.value,
+                                                setName
+                                            )
+                                        }
+                                        required
+                                        id="name"
+                                        className="form__input name"
+                                        type="text"
+                                    />
+                                </div>
 
-                            <label className="form__label" htmlFor="cpf">
-                                CPF
-                            </label>
-                            <input
-                                value={cpf}
-                                onChange={(e) => cpfMask(e.target.value)}
-                                required
-                                id="cpf"
-                                className="form__input cpf"
-                            />
+                                <div className="text-field-cpf">
+                                    <label
+                                        className="form__label"
+                                        htmlFor="cpf"
+                                    >
+                                        CPF
+                                    </label>
+                                    <input
+                                        value={cpf}
+                                        onChange={(e) =>
+                                            cpfMask(e.target.value)
+                                        }
+                                        required
+                                        id="cpf"
+                                        className="form__input cpf"
+                                    />
+                                </div>
+                            </div>
+
                             <div className="form__address-container">
-                                <label className="form__label" htmlFor="cep">
-                                    CEP
-                                </label>
-                                <input
-                                    value={cep || ''}
-                                    onChange={(e) => cepMask(e.target.value)}
-                                    required
-                                    id="cep"
-                                    className="form__input cep"
-                                    type="text"
-                                />
+                                <div className="first-field">
+                                    <div className="text-field-cep">
+                                        <label
+                                            className="form__label"
+                                            htmlFor="cep"
+                                        >
+                                            CEP
+                                        </label>
+                                        <input
+                                            value={cep || ''}
+                                            onChange={(e) =>
+                                                cepMask(e.target.value)
+                                            }
+                                            required
+                                            id="cep"
+                                            className="form__input cep"
+                                            type="text"
+                                        />
+                                    </div>
 
-                                <label className="form__label" htmlFor="street">
-                                    Rua
-                                </label>
-                                <input
-                                    value={street}
-                                    onChange={(e) =>
-                                        scapeSpecialCaracter(
-                                            e.target.value,
-                                            setStreet
-                                        )
-                                    }
-                                    required
-                                    id="street"
-                                    className="form__input street"
-                                    type="text"
-                                />
-                                <br />
+                                    <div className="text-field-street">
+                                        <label
+                                            className="form__label"
+                                            htmlFor="street"
+                                        >
+                                            Rua
+                                        </label>
+                                        <input
+                                            value={street}
+                                            onChange={(e) =>
+                                                scapeSpecialCaracter(
+                                                    e.target.value,
+                                                    setStreet
+                                                )
+                                            }
+                                            required
+                                            id="street"
+                                            className="form__input street"
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
 
-                                <label
-                                    className="form__label"
-                                    htmlFor="neighborhood"
-                                >
-                                    Bairro
-                                </label>
-                                <input
-                                    value={neighborhood}
-                                    onChange={(e) =>
-                                        numberAndCaracterScape(
-                                            e.target.value,
-                                            setNeighborhoodeet
-                                        )
-                                    }
-                                    required
-                                    id="neighborhood"
-                                    className="form__input neighborhood"
-                                    type="text"
-                                />
+                                <div className="second-field">
+                                    <div className="text-field-neighborhood">
+                                        <label
+                                            className="form__label"
+                                            htmlFor="neighborhood"
+                                        >
+                                            Bairro
+                                        </label>
+                                        <input
+                                            value={neighborhood}
+                                            onChange={(e) =>
+                                                numberAndCaracterScape(
+                                                    e.target.value,
+                                                    setNeighborhoodeet
+                                                )
+                                            }
+                                            required
+                                            id="neighborhood"
+                                            className="form__input neighborhood"
+                                            type="text"
+                                        />
+                                    </div>
+                                    <div className="text-field-complement">
+                                        <label
+                                            className="form__label"
+                                            htmlFor="complement"
+                                        >
+                                            Complemento
+                                        </label>
+                                        <input
+                                            value={complement}
+                                            onChange={(e) =>
+                                                scapeSpecialCaracter(
+                                                    e.target.value,
+                                                    setComplement
+                                                )
+                                            }
+                                            id="complement"
+                                            className="form__input complement"
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
 
-                                <label
-                                    className="form__label"
-                                    htmlFor="complement"
-                                >
-                                    Complemento
-                                </label>
-                                <input
-                                    value={complement}
-                                    onChange={(e) =>
-                                        scapeSpecialCaracter(
-                                            e.target.value,
-                                            setComplement
-                                        )
-                                    }
-                                    id="complement"
-                                    className="form__input complement"
-                                    type="text"
-                                />
-                                <br />
-
-                                <label
-                                    className="form__label number-label"
-                                    htmlFor="numberAddress"
-                                >
-                                    Número
-                                </label>
-                                <input
-                                    value={number}
-                                    onChange={(e) =>
-                                        handleNumber(e.target.value)
-                                    }
-                                    required
-                                    id="numberAddress"
-                                    className="form__input number-input"
-                                    type="number"
-                                />
+                                <div className="text-field-numberAddress">
+                                    <label
+                                        className="form__label number-label"
+                                        htmlFor="numberAddress"
+                                    >
+                                        Número
+                                    </label>
+                                    <input
+                                        value={number}
+                                        onChange={(e) =>
+                                            handleNumber(e.target.value)
+                                        }
+                                        required
+                                        id="numberAddress"
+                                        className="form__input number-input"
+                                        type="number"
+                                    />
+                                </div>
                             </div>
                             <Finish type="submit">Finalizar Compra</Finish>
                         </form>
+                        <p className="price-tot">
+                            Preço Total R$ {totalPrice?.totalPrice},00
+                        </p>
                     </div>
                     <div className="books-purchase">
                         <ul className="books-list">
@@ -327,9 +370,6 @@ const Checkout = () => {
                                     </li>
                                 ))}
                         </ul>
-                        <p className="price-tot">
-                            Preço Total R$ {totalPrice?.totalPrice},00
-                        </p>
                     </div>
                 </div>
             </CheckoutContainer>

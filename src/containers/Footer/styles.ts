@@ -1,8 +1,20 @@
 import styled from 'styled-components'
 
 export const FooterContainer = styled.footer`
+    .container {
+        padding-bottom: 0;
+    }
     padding: 16px;
-    text-align: center;
     font-size: 18px;
-    background-color: #000;
+    background-color: #141414;
+
+    .footer-list {
+        &__item {
+            margin-bottom: 1rem;
+        }
+    }
+
+    .copy-right {
+        text-align: center;
+    }
 `

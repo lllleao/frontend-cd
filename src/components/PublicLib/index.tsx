@@ -49,7 +49,7 @@ const PublicLib = () => {
 
         return () => {
             if (mainLibElement.current) {
-                // eslint-disable-next-line react-hooks/exhaustive-deps
+                // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
                 resizerObserver.unobserve(mainLibElement.current)
             }
             resizerObserver.disconnect()
@@ -95,16 +95,6 @@ const PublicLib = () => {
             className="public-lb container"
         >
             <h2 className="public-lb__title">TÁRTARO CAFETERIA</h2>
-            <p className="public-lb__desc">
-                Em uma cidade escondida de tudo há uma cafeteria exótica na
-                beira de uma fenda, uma fenda tão profunda que pode até mostrar
-                o rio Tártaro do Hades. Esta cafeteria é a Tartaru&apos;s Coffee
-                Shop, localizada na Cidade Eclipse.
-                <br />
-                <br />
-                Entre, dê uma espiada nas nossas profundezas - mas não proteja
-                os olhos, hein!
-            </p>
             <div className="cursor">
                 <span className="mask-left"></span>
                 <span className="mask-right"></span>
@@ -132,7 +122,7 @@ const PublicLib = () => {
                             data={data}
                         />
                         {data &&
-                            data.map(({ title, id, link, photo, desc }) => (
+                            data.map(({ title, id, link, photo, descBooks }) => (
                                 <Card
                                     mainLib={mainLib}
                                     elementWidth={elementWidth}
@@ -150,7 +140,7 @@ const PublicLib = () => {
                                     id={id}
                                     link={link}
                                     photo={photo}
-                                    desc={desc}
+                                    descBooks={descBooks}
                                     key={id}
                                 />
                             ))}

@@ -1,10 +1,23 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { EmailUser } from '../store/reducers/loginSign'
 
-type User = {
+export type User = {
     email: string
-    id: string
-    name: string
+    name: string,
+    dataPurchase: DataOrder[]
+}
+
+type DataOrder = {
+    totalPrice: number,
+    createdAt: Date,
+    items: itemsOrder[]
+}
+
+type itemsOrder = {
+    name: string,
+    photo: string,
+    price: number,
+    quant: number
 }
 
 type DataProp = {
@@ -18,7 +31,6 @@ type BooksCart = {
         {
             price: number
             quant: number
-            id?: number
             name: string
             photo: string
         }
@@ -82,6 +94,14 @@ type PurchaseDataProps = {
     totalPrice: number
 }
 
+type PixDatProps = {
+    pixData: {
+        qrcode: string
+        imagemQrcode: string
+        linkVisualizacao: string
+    }
+}
+
 const api = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: 'http://localhost:9001/',
@@ -130,9 +150,9 @@ const api = createApi({
                 url: 'profile'
             })
         }),
-        getRemoveItem: builder.mutation<void, number>({
-            query: (itemId) => ({
-                url: `removeItem/${itemId}`,
+        getRemoveItem: builder.mutation<void, string>({
+            query: (name) => ({
+                url: `removeItem/${name}`,
                 method: 'DELETE'
             })
         }),
@@ -176,7 +196,7 @@ const api = createApi({
                 body: updataData
             })
         }),
-        purchaseData: builder.mutation<void, PurchaseDataProps>({
+        purchaseData: builder.mutation<PixDatProps, PurchaseDataProps>({
             query: (purchaseData) => ({
                 url: 'purchase',
                 method: 'POST',

@@ -1,11 +1,10 @@
 import { CardContainer } from './styles'
-import { brFunction } from '../../utils'
 import { handleTouch, loop, onMouseMove, onMouseUp } from '../../utils/carousel'
 
 export type Props = {
     link: string
     title: string
-    desc: string
+    descBooks: string
     photo: string
     type?: boolean
     id?: number
@@ -36,7 +35,7 @@ const Card = ({
     title,
     link,
     photo,
-    desc,
+    descBooks,
     type,
     clone,
     id,
@@ -62,14 +61,14 @@ const Card = ({
                 removeTouchStart
                     ? emptyFunction
                     : handleTouch(
-                          e,
-                          carrousselItems,
-                          items,
-                          clonedMainRight,
-                          clonedMainLibLeft,
-                          setRemoveTouchMove,
-                          setRemoveTouchEnd
-                      )
+                            e,
+                            carrousselItems,
+                            items,
+                            clonedMainRight,
+                            clonedMainLibLeft,
+                            setRemoveTouchMove,
+                            setRemoveTouchEnd
+                        )
             }
             onTouchMove={(e) =>
                 removeTouchMove
@@ -80,27 +79,17 @@ const Card = ({
                 removeTouchEnd
                     ? emptyFunction
                     : onMouseUp(
-                          elementWidth,
-                          mainLib,
-                          clonedMainLibLeft,
-                          clonedMainRight,
-                          carrousselItems
-                      )
+                            elementWidth,
+                            mainLib,
+                            clonedMainLibLeft,
+                            clonedMainRight,
+                            carrousselItems
+                        )
             }
             onTransitionEnd={(e) => loop(e)}
         >
-            <img src={photo} alt={desc} />
-            <h3>
-                {type ? (
-                    title
-                ) : (
-                    <>
-                        {brFunction(title).firstPart}
-                        <br />
-                        {brFunction(title).secondPart}
-                    </>
-                )}
-            </h3>
+            <img srcSet={photo} alt={descBooks} />
+            <h3>{title}</h3>
             {type ? <p>R$ {price},00</p> : <></>}
         </CardContainer>
     )

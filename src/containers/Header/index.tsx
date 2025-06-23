@@ -10,11 +10,13 @@ const Header = () => {
     const [addAnimateCart, setAddAnimateCart] = useState(false)
 
     useEffect(() => {
-        refetch().then((res) => {
-            if (!res.isSuccess) {
-                return setViweNumberCart(false)
-            }
-        })
+        refetch()
+            .then((res) => {
+                if (!res.isSuccess) {
+                    return setViweNumberCart(false)
+                }
+            })
+            .catch((err) => console.log(err))
 
         if (!data) {
             setViweNumberCart(false)

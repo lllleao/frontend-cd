@@ -32,20 +32,6 @@ export const PublicLibContainer = styled.section`
             }
         }
 
-        &__desc {
-            text-align: justify;
-            max-width: 80%;
-            margin: 0 auto;
-            font-size: clamp(22px, 4vw, 38px);
-            font-weight: bold;
-            line-height: 48px;
-            margin-bottom: 72px;
-
-            @media (max-width: 767px) {
-                margin-top: 72px;
-            }
-        }
-
         .cursor {
             position: relative;
             .mask-left,

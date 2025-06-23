@@ -30,16 +30,18 @@ const LoginSign = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        getToken().then((res) => {
-            if (res.error) {
-                console.error(res.error)
+        getToken()
+            .then((res) => {
+                if (res.error) {
+                    console.error(res.error)
 
-                navigate('/login')
-                throw new Error(`HTTP request error`)
-            }
+                    navigate('/login')
+                    throw new Error(`HTTP request error`)
+                }
 
-            navigate('/profile')
-        })
+                navigate('/profile')
+            })
+            .catch((err) => console.log(err))
     }, [getToken, navigate])
 
     const handleChangeLogin = () => {
@@ -75,7 +77,7 @@ const LoginSign = () => {
                         <p>
                             Cadastro realizado, foi enviado um email de
                             confirmação para sua conta. Após confirmar seu
-                            e-mail, basta fazer login normalmente
+                            e-mail, basta fazer login normalmente. Verifique também a caixa de span
                         </p>
                         <button type="button" onClick={handleSign}>
                             Fazer login
