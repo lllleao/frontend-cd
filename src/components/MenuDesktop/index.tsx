@@ -1,7 +1,7 @@
 import { MenuDesktopContainer } from './styles'
-import { useNavigate } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 import { useGetCookieMutation } from '../../services/api'
+import { useEffect, useState } from 'react'
 
 type MenuProps = {
     viweNumberCart: boolean
@@ -14,24 +14,22 @@ const MenuDesktop = ({
     dataLength,
     addAnimateCart
 }: MenuProps) => {
+    const csrfToken = localStorage.getItem('csrfToken') as string
     const [getToken] = useGetCookieMutation()
+    const [isLoginOrProfile, setIsLoginOrProfile] = useState(true)
 
-    const navigate = useNavigate()
-
-    const handleClickUser = () => {
-        getToken()
+    useEffect(() => {
+        getToken(csrfToken)
             .then((res) => {
                 if (res.error) {
-                    console.error(res.error)
-
-                    navigate('/login')
-                    throw new Error(`HTTP request error`)
+                    return setIsLoginOrProfile(true)
                 }
 
-                navigate('/profile')
+                setIsLoginOrProfile(false)
+                return res.data
             })
             .catch((err) => console.log(err))
-    }
+    }, [csrfToken, getToken])
 
     return (
         <MenuDesktopContainer
@@ -82,12 +80,21 @@ const MenuDesktop = ({
                     </a>
                 </li>
                 <li className="nav__list__item__desk userIcon">
-                    <div
-                        onClick={handleClickUser}
+                    {isLoginOrProfile ? (
+                        <a
+                        href='/login'
+                        className={`nav__list__item__desk__link`}
+                    >
+                        <i className="fa-solid fa-right-to-bracket" />
+                    </a>
+                    ) : (
+                        <a
+                        href='/profile'
                         className={`nav__list__item__desk__link`}
                     >
                         <i className="fa-solid fa-user" />
-                    </div>
+                    </a>
+                    )}
                 </li>
             </ul>
         </MenuDesktopContainer>

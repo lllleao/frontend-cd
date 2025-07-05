@@ -29,6 +29,7 @@ const Purchase = () => {
             }
             purchaseObserver.disconnect()
         }
+
     }, [])
 
     return (
@@ -54,7 +55,7 @@ const Purchase = () => {
                             key={id}
                             descBooks={descBooks}
                             price={price}
-                            link={`/store-books/${id}`}
+                            link={`/store/${id}`}
                             photo={photo}
                             title={title}
                         />

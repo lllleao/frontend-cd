@@ -1,196 +1,102 @@
 import styled from 'styled-components'
-import { ButtonContainer } from '../ButtonPurchase/styles'
+import { Finish } from '../FormAddress/styles'
 
-type CheckoutProps = {
-    $errorCEP: boolean
-    $errorCPF: boolean
-}
-
-export const CheckoutContainer = styled.div<CheckoutProps>`
+export const CheckoutContainer = styled.div`
     background-color: #000;
-    .bar-container {
-        padding: 7rem 0;
-        .bar {
-            width: 100%;
-            /* border: solid 2px #db0f0f; */
-            height: 2px;
-            background-color: #db0f0f;
-            position: relative;
-            .bar-ball {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 2.5rem;
-                color: #000;
-                font-weight: bold;
-                height: 60px;
-                width: 60px;
-                border-radius: 50%;
-                &:nth-child(1) {
-                    position: absolute;
-                    top: -30px;
-                    left: 40vw;
-                    background-color: #fff;
-                }
-            }
-        }
+    .title-chose-address {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 4rem;
     }
-
-    .form-checkout {
-        .form {
-            padding: 2rem;
-            display: block;
-            margin: 0 auto;
-            max-width: 690px;
-            background-color: #222;
-            font-weight: bold;
-            border-radius: 0.6rem;
-
-            .cep {
-                border: ${({ $errorCEP }) =>
-                    $errorCEP ? '2px solid red' : ''};
-            }
-            .cpf {
-                border: ${({ $errorCPF }) =>
-                    $errorCPF ? '2px solid red' : ''};
-            }
-
-            &__label {
+    .books-list {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+        text-align: center;
+        li {
+            max-width: 200px;
+            .book-img {
+                max-width: 150px;
+                border-radius: 1rem;
+                border: 2px solid #fff;
                 margin-bottom: 0.5rem;
             }
 
-            &__input {
-                padding: 0.3rem;
-                border-radius: 8px;
-                color: #000;
-                outline: none;
-                width: 100%;
-                &[type='number']::-webkit-inner-spin-button {
-                    -webkit-appearance: none;
-                }
-            }
-
-            
-
-            &__button {
-                display: block;
-                margin-top: 2rem;
-            }
-
-            &__address-container {
-                margin-top: 2rem;
-
-                .form__label {
-                    display: block;
-                }
-
-                .first-field {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 1rem;
-                    margin-bottom: 1rem;
-
-                    .text-field-street {
-                        flex: 0 1 350px;
-
-                    }
-                    .form__input {
-                        width: 100%;
-                    }
-                }
-
-                .second-field {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 1rem;
-                    margin-bottom: 1rem;
-
-                    .text-field-neighborhood {
-                        flex: 0 1 250px;
-                    }
-                    .text-field-complement {
-                        flex: 0 1 350px;
-                    }
-                }
-
-                .text-field-numberAddress {
-                    width: 100px;
-                }
-            }
-
-            &__credentials {
-                display: flex;
-                gap: 1rem;
-                flex-wrap: wrap;
-
-                .text-field-name {
-                    flex: 0 1 350px;
-                }
-
-                .form__label {
-                    display: block;
-                }
-            }
-
-            @media (max-width: 600px) {
-                div {
+            .book-title {
+                h5 {
                     margin-bottom: 1rem;
                 }
-                &__credentials {
-                    display: block;
 
-                }
-
-                &__address-container {
-                    .first-field,
-                    .second-field {
-                        display: block;
-                    }
+                p {
+                    font-weight: bold;
                 }
             }
-        }
-
-        .price-tot {
-            margin-top: 2rem;
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-align: center;
         }
     }
+    .price-tot {
+        margin: 4rem 0;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-align: center;
+    }
 
-    .books-purchase {
-        padding: 4rem 0;
-        .books-list {
+    .button-checkout {
+        display: flex;
+        justify-content: center;
+        ${Finish} {
+            &.error {
+                background-color: #cd1212;
+            }
+        }
+    }
+`
+
+export const ChoseAddress = styled.ul<{ $isChecked?: boolean }>`
+    .address-list {
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 3rem;
+        &__input-box {
+            position: relative;
             display: flex;
-            justify-content: space-around;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 2rem;
-            text-align: center;
-            li {
-                max-width: 200px;
-                .book-img {
-                    max-width: 150px;
-                    border-radius: 1rem;
-                    border: 2px solid #fff;
-                    margin-bottom: 0.5rem;
-                }
+            background-color: #3f3f3f;
+            width: 60px;
+            height: 30px;
+            border-radius: 1rem;
+            cursor: pointer;
+            input {
+                /* display: none; */
+            }
+            &__ball {
+                position: absolute;
+                left: ${({ $isChecked }) => ($isChecked ? '34px' : '6px')};
 
-                .book-title {
-                    h5 {
-                        margin-bottom: 1rem;
-                    }
-
-                    p {
-                        font-weight: bold;
-                    }
-                }
+                background-color: ${({ $isChecked }) =>
+                    $isChecked ? 'red' : '#eee'};
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                transition:
+                    left 0.5s ease,
+                    background-color 0.5s ease;
             }
         }
     }
 `
-export const Finish = styled(ButtonContainer)`
-    font-size: 1rem;
-    display: inline-block;
-    text-decoration: none;
-`
+export const ValidAddres = styled.span`
+    display: none;
+    background-color: #a11818;
+    padding: 1rem;
+    border-radius: 1rem;
+    &.animation-visible {
+        display: block;
+        animation: textErro .5s ease-in-out;
+    }
+    /* opacity: 0; */
+    `
+
+    // display: ${({ $isWarnVisible }) => $isWarnVisible ? 'block' : 'none'};

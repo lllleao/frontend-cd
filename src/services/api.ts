@@ -1,29 +1,24 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { EmailUser } from '../store/reducers/loginSign'
+import { DataProp } from '../components/LoginSign/formsFetch'
 
 export type User = {
     email: string
-    name: string,
+    name: string
     dataPurchase: DataOrder[]
 }
 
 type DataOrder = {
-    totalPrice: number,
-    createdAt: Date,
+    totalPrice: number
+    createdAt: Date
     items: itemsOrder[]
 }
 
 type itemsOrder = {
-    name: string,
-    photo: string,
-    price: number,
+    name: string
+    photo: string
+    price: number
     quant: number
-}
-
-type DataProp = {
-    name?: string
-    email: string
-    password: string
 }
 
 type BooksCart = {
@@ -35,9 +30,10 @@ type BooksCart = {
             photo: string
         }
     ]
+    csrfToken: string
 }
 
-type GetBooksCart = {
+export type GetBooksCart = {
     items: [
         {
             price: number
@@ -64,13 +60,16 @@ type EmailDataProp = {
 }
 
 type UpdataPrice = {
-    quantBefore: number
-    quantCurrent: number
-    idItem: number | undefined
-    price: number
+    data: {
+        quantBefore: number
+        quantCurrent: number
+        idItem: number | undefined
+        price: number
+    }
+    csrfToken: string
 }
 
-type TotalPriceProps = {
+export type TotalPriceProps = {
     totalPrice: number
 }
 
@@ -82,16 +81,37 @@ type ItemsInfo = {
     photo: string
 }
 
-type PurchaseDataProps = {
+export interface PurchaseDataProps {
+    data: {
+        name: string
+        cpf: string
+        zipCode: string
+        street: string
+        neighborhood: string
+        complement: string
+        number: string
+        itemsInfo: ItemsInfo[]
+        totalPrice: number
+        isDefault: boolean
+    }
+    csrfToken: string
+}
+
+interface CreateAddressProps {
+    csrfToken: string
+    data: Omit<PurchaseDataProps['data'], 'itemsInfo' | 'totalPrice'>
+}
+
+export interface GetAddressProps {
     name: string
     cpf: string
-    cep: string
+    zipCode: string
     street: string
     neighborhood: string
     complement: string
     number: string
-    itemsInfo: ItemsInfo[]
-    totalPrice: number
+    isDefault: boolean
+    id: number
 }
 
 type PixDatProps = {
@@ -104,25 +124,33 @@ type PixDatProps = {
 
 const api = createApi({
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:9001/',
+        baseUrl: 'http://localhost:3000/',
         credentials: 'include'
     }),
     endpoints: (builder) => ({
-        getCookie: builder.mutation<string, void>({
-            query: () => ({
-                url: 'getCookie',
-                method: 'GET'
+        getCookie: builder.mutation<boolean, string>({
+            query: (data) => ({
+                url: 'auth/get-cookie',
+                method: 'GET',
+                headers: {
+                    'csrf-token': data
+                }
             })
         }),
         getCSRFToken: builder.query<CsrfProp, void>({
-            query: () => 'csrf-token'
+            query: () => 'auth/get-csrfToken'
         }),
-        getTotalPrice: builder.query<TotalPriceProps, void>({
-            query: () => 'totalPrice'
+        getTotalPrice: builder.query<TotalPriceProps, string>({
+            query: (csrfToken) => ({
+                url: 'cart/total-price',
+                headers: {
+                    'csrf-token': csrfToken
+                }
+            })
         }),
         sendEmail: builder.mutation<void, EmailDataProp>({
             query: (emailData) => ({
-                url: 'api/send',
+                url: 'email/send',
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -132,78 +160,133 @@ const api = createApi({
             })
         }),
         getPublicBooks: builder.query<Books[], void>({
-            query: () => 'public-books'
+            query: () => 'books/free'
         }),
         getStoreBooks: builder.query<Books[], void>({
-            query: () => 'store-books'
+            query: () => 'books/store'
         }),
         getSpecificStoreBook: builder.query<BooksPurchase, string>({
-            query: (id) => `store-books/${id}`
+            query: (id) => `books/store/${id}`
         }),
-        getItemsCart: builder.query<GetBooksCart, void>({
-            query: () => ({
-                url: 'cartItems'
+        getItemsCart: builder.query<GetBooksCart, string>({
+            query: (data) => ({
+                url: 'cart/items',
+                headers: {
+                    'csrf-token': data
+                }
             })
         }),
-        getProfileData: builder.query<User, void>({
-            query: () => ({
-                url: 'profile'
+        getProfileData: builder.query<User, string>({
+            query: (data) => ({
+                url: 'user/profile',
+                headers: {
+                    'csrf-token': data
+                }
             })
         }),
-        getRemoveItem: builder.mutation<void, string>({
-            query: (name) => ({
-                url: `removeItem/${name}`,
-                method: 'DELETE'
+        getRemoveItem: builder.mutation<
+            void,
+            { id: number; csrfToken: string }
+        >({
+            query: (data) => ({
+                url: `cart/delete/${data.id}`,
+                method: 'DELETE',
+                headers: {
+                    'csrf-token': data.csrfToken
+                }
             })
         }),
         loginUser: builder.mutation<EmailUser, DataProp>({
             query: (data) => ({
-                url: 'login',
+                url: 'user/login',
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'csrf-token': data.csrfToken
                 },
                 body: data
             })
         }),
-        signUser: builder.mutation<EmailUser, DataProp>({
-            query: (data) => ({
-                url: 'create',
+        createAddress: builder.mutation<void, CreateAddressProps>({
+            query: (dataCreateAddress) => ({
+                url: 'user/address',
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'csrf-token': dataCreateAddress.csrfToken
                 },
-                body: data
+                body: {
+                    data: {
+                        name: dataCreateAddress.data.name,
+                        cpf: dataCreateAddress.data.cpf,
+                        zipCode: dataCreateAddress.data.zipCode,
+                        street: dataCreateAddress.data.street,
+                        neighborhood: dataCreateAddress.data.neighborhood,
+                        complement: dataCreateAddress.data.complement,
+                        number: dataCreateAddress.data.number,
+                        isDefault: dataCreateAddress.data.isDefault
+                    }
+                }
+            })
+        }),
+        getAddress: builder.query<GetAddressProps[], CsrfProp>({
+            query: (data) => ({
+                url: 'user/get-address',
+                headers: {
+                    'csrf-token': data.csrfToken
+                }
+            })
+        }),
+        signUser: builder.mutation<EmailUser, DataProp>({
+            query: ({ email, password, name, csrfToken }) => ({
+                url: 'user/signup',
+                method: 'POST',
+                body: {
+                    name,
+                    password,
+                    email
+                },
+                headers: {
+                    'csrf-token': csrfToken
+                }
+            })
+        }),
+        logout: builder.mutation<void, string>({
+            query: (data) => ({
+                url: 'user/logout',
+                method: 'POST',
+                headers: {
+                    'csrf-token': data
+                }
             })
         }),
         addToCart: builder.mutation<void, BooksCart>({
             query: (data) => ({
-                url: 'addCart',
+                url: 'cart/add',
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'csrf-token': data.csrfToken
                 },
                 body: data.items[0]
             })
         }),
         updataPrice: builder.mutation<void, UpdataPrice>({
-            query: (updataData) => ({
-                url: 'updataPrice',
+            query: (data) => ({
+                url: 'cart/update-price',
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'csrf-token': data.csrfToken
                 },
-                body: updataData
+                body: data.data
             })
         }),
         purchaseData: builder.mutation<PixDatProps, PurchaseDataProps>({
             query: (purchaseData) => ({
-                url: 'purchase',
+                url: 'cart/create-purchase',
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'csrf-token': purchaseData.csrfToken
                 },
-                body: purchaseData
+                body: purchaseData.data
             })
         })
     })
@@ -224,6 +307,9 @@ export const {
     useSendEmailMutation,
     useUpdataPriceMutation,
     useGetTotalPriceQuery,
-    usePurchaseDataMutation
+    usePurchaseDataMutation,
+    useLogoutMutation,
+    useCreateAddressMutation,
+    useGetAddressQuery
 } = api
 export default api

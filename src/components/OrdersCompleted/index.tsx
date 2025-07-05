@@ -2,7 +2,10 @@ import { User } from "../../services/api"
 import formatDate from "../../utils/formatDate"
 import { OrderItems } from "./styles"
 
-const OrdersCompleted = (data: User | undefined) => {
+type OrdersCompletedProps = {
+    data: User | undefined
+}
+const OrdersCompleted = ({ data }: OrdersCompletedProps) => {
     return (
         <div className="ordersInfo">
             <ul className="order-list">

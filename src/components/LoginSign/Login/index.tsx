@@ -10,13 +10,14 @@ import { useLoginUserMutation } from '../../../services/api'
 import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
-    const { loginUserExist, passWordCorrect } = useSelector(
+    const { loginUserExist, msg } = useSelector(
         (state: RootReducer) => state.loginSigin
     )
     const [makeLogin] = useLoginUserMutation()
     const navigate = useNavigate()
 
     const dispatch = useDispatch()
+    const csrfToken = localStorage.getItem('csrfToken') as string
 
     const {
         emailEmpty,
@@ -35,19 +36,15 @@ const Login = () => {
 
     const data = {
         email,
-        password
+        password,
+        csrfToken
     }
 
     return (
         <>
             <EmailUserMsgContainer>
                 <p className={`emailUserMsg ${loginUserExist ? 'user' : ''}`}>
-                    Email não encontrado
-                </p>
-                <p
-                    className={`emailUserMsg ${passWordCorrect ? 'password' : ''}`}
-                >
-                    Senha incorreta
+                    {msg}
                 </p>
             </EmailUserMsgContainer>
             <div className="login login-sign">

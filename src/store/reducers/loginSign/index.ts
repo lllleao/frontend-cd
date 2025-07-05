@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export type EmailUser = {
+    success?: EmailUser | undefined
     signUserExist?: boolean
     loginUserExist?: boolean
     passWordCorrect?: boolean
@@ -8,6 +9,7 @@ export type EmailUser = {
     userId?: string
     loginSuccess?: boolean
     signSuccess?: boolean
+    missToken?: boolean
 }
 
 const initialState: EmailUser = {
@@ -23,6 +25,7 @@ const loginSignSlice = createSlice({
             state.msg = action.payload.msg
             state.userId = action.payload.userId
             state.signSuccess = action.payload.signSuccess
+            state.missToken = action.payload.missToken
         },
         checkLoginUser: (state, action: PayloadAction<EmailUser>) => {
             state.loginUserExist = action.payload.loginUserExist

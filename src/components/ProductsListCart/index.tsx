@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { ButtonCart, ItemsOnCart, ProductsListCartContainer } from './styles'
 import Header from '../../containers/Header'
 import {
@@ -8,15 +7,17 @@ import {
     useGetTotalPriceQuery,
     useUpdataPriceMutation
 } from '../../services/api'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Card from '../Card'
 import { useNavigate } from 'react-router-dom'
-import Loader from '../Loader'
+// import Loader from '../Loader'
 
 const ProductsListCart = () => {
-    const { data, refetch, isLoading } = useGetItemsCartQuery()
+    const csrfToken = localStorage.getItem('csrfToken') as string
+    const [loading, setLoading] = useState(false)
+    const { data, refetch } = useGetItemsCartQuery(csrfToken)
     const { data: totalPrice, refetch: refetchTotalPrice } =
-        useGetTotalPriceQuery()
+        useGetTotalPriceQuery(csrfToken)
     const [deleteCartItem] = useGetRemoveItemMutation()
     const [updataPrice] = useUpdataPriceMutation()
     const { data: booksStore } = useGetStoreBooksQuery()
@@ -24,10 +25,9 @@ const ProductsListCart = () => {
 
     const channelName = 'cart_channel'
 
-    const handleDelete = (name: string | undefined) => {
-        console.log(name)
-        name &&
-            deleteCartItem(name)
+    const handleDelete = (id: number | undefined, loading: boolean) => {
+        if (id && !loading) {
+            deleteCartItem({ id, csrfToken })
                 .unwrap()
                 .then(() => {
                     refetch().catch((err) => console.log(err))
@@ -36,9 +36,10 @@ const ProductsListCart = () => {
                     console.log('Item removido do carrinho com sucesso')
                 })
                 .catch((error) => console.error('Erro ao remover item:', error))
-        const channel = new BroadcastChannel(channelName)
-        channel.postMessage({ type: 'UPDATE_COUNT', value: 'opa' })
-        channel.close()
+            const channel = new BroadcastChannel(channelName)
+            channel.postMessage({ type: 'UPDATE_COUNT', value: 'opa' })
+            channel.close()
+        }
     }
 
     const handleChangeOption = (
@@ -48,15 +49,20 @@ const ProductsListCart = () => {
         quantBefore: number
     ) => {
         const quant = element.target.value
+        setLoading(true)
         updataPrice({
-            quantBefore,
-            quantCurrent: Number(quant),
-            idItem,
-            price
+            data: {
+                quantBefore,
+                quantCurrent: Number(quant),
+                idItem,
+                price
+            },
+            csrfToken
         })
             .then(() => {
                 refetch().catch((err) => console.log(err))
                 setTimeout(refetchTotalPrice, 500)
+                setLoading(false)
             })
             .catch((err) => console.log(err))
     }
@@ -64,8 +70,15 @@ const ProductsListCart = () => {
     useEffect(() => {
         refetch()
             .then((res) => {
-                if (res.error && 'status' in res.error) {
-                    if (res.error.status === 401) {
+                if (
+                    res.error &&
+                    typeof res.error === 'object' &&
+                    'data' in res.error &&
+                    res.error.data &&
+                    typeof res.error.data === 'object' &&
+                    'message' in res.error.data
+                ) {
+                    if (res.error.data.message === 'Token ausente.') {
                         navigate('/login')
                     }
                 }
@@ -73,8 +86,17 @@ const ProductsListCart = () => {
             .catch((err) => console.log(err))
     }, [refetch, navigate])
 
-    if (isLoading) {
-        return <Loader />
+    // if (isLoading) {
+    //     return <Loader />
+    // }
+
+    const handleClick = () => {
+        if (
+            totalPrice &&
+            !((totalPrice?.totalPrice as unknown as string) === '0')
+        ) {
+            navigate('/checkout')
+        }
     }
 
     return (
@@ -113,6 +135,7 @@ const ProductsListCart = () => {
                                                     className="quant"
                                                     name="quant"
                                                     value={quant}
+                                                    disabled={loading}
                                                 >
                                                     <option value="1">1</option>
                                                     <option value="2">2</option>
@@ -121,7 +144,10 @@ const ProductsListCart = () => {
                                                 <i
                                                     className="fa-solid fa-trash"
                                                     onClick={() =>
-                                                        handleDelete(name)
+                                                        handleDelete(
+                                                            id,
+                                                            loading
+                                                        )
                                                     }
                                                 />
                                             </div>
@@ -129,7 +155,7 @@ const ProductsListCart = () => {
                                     )
                                 )}
                         </ul>
-                        <ButtonCart as="a" href="/checkout">
+                        <ButtonCart onClick={handleClick}>
                             Comprar Agora
                         </ButtonCart>
                     </ItemsOnCart>
@@ -147,7 +173,7 @@ const ProductsListCart = () => {
                                         key={id}
                                         descBooks={descBooks}
                                         price={price}
-                                        link={`/store-books/${id}`}
+                                        link={`/store/${id}`}
                                         photo={photo}
                                         title={title}
                                     />

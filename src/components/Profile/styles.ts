@@ -2,6 +2,8 @@ import styled from 'styled-components'
 
 export const ProfileContainer = styled.div`
     background-color: #000;
+    /* height: calc(100vh - 386px); */
+
     h2 {
         padding-top: 1rem;
         margin-bottom: 1rem;

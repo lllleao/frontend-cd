@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { MenuBobContainer } from './styles'
-import { useNavigate } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 import { useGetCookieMutation } from '../../services/api'
 
@@ -10,30 +9,29 @@ type MenuProps = {
 }
 
 const MenuMob = ({ viweNumberCart, dataLength }: MenuProps) => {
+    const csrfToken = localStorage.getItem('csrfToken') as string
+    const [isLoginOrProfile, setIsLoginOrProfile] = useState(true)
+
     const [menuClicked, setMenuClicked] = useState(false)
     const [getToken] = useGetCookieMutation()
-    const navigate = useNavigate()
 
     function handleClickCart(): void {
         setMenuClicked(false)
     }
 
-    function handleClickUser() {
-        setMenuClicked(false)
+    useEffect(() => {
+            getToken(csrfToken)
+                .then((res) => {
+                    if (res.error) {
+                        return setIsLoginOrProfile(true)
+                    }
 
-        getToken()
-            .then((res) => {
-                if (res.error) {
-                    console.error(res.error)
-
-                    navigate('/login')
-                    throw new Error(`HTTP request error`)
-                }
-
-                navigate('/profile')
-            })
-            .catch((err) => console.log(err))
-    }
+                    // navigate('/profile')
+                    setIsLoginOrProfile(false)
+                    return res.data
+                })
+                .catch((err) => console.log(err))
+        }, [csrfToken, getToken])
 
     return (
         <MenuBobContainer>
@@ -86,12 +84,21 @@ const MenuMob = ({ viweNumberCart, dataLength }: MenuProps) => {
                     </a>
                 </li>
                 <li>
-                    <div
-                        onClick={handleClickUser}
-                        className="menu-mob__item userIcon"
+                    {isLoginOrProfile ? (
+                        <a
+                        href='/login'
+                        className='menu-mob__item userIcon'
+                    >
+                        <i className="fa-solid fa-right-to-bracket" />
+                    </a>
+                    ) : (
+                        <a
+                        href='/profile'
+                        className='menu-mob__item userIcon'
                     >
                         <i className="fa-solid fa-user" />
-                    </div>
+                    </a>
+                    )}
                 </li>
             </ul>
         </MenuBobContainer>

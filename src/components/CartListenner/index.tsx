@@ -2,7 +2,9 @@ import { useEffect } from 'react'
 import { useGetItemsCartQuery } from '../../services/api'
 
 const CartListenner = () => {
-    const { refetch } = useGetItemsCartQuery()
+    const csrfToken = localStorage.getItem('csrfToken') as string
+
+    const { refetch } = useGetItemsCartQuery(csrfToken)
 
     const channelName = 'cart_channel'
     useEffect(() => {

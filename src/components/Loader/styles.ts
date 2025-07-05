@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 
-export const Container = styled.div`
+export const Container = styled.div<{$isCircle?: boolean}>`
     display: flex;
     justify-content: center;
-    /* min-width: 650px; */
-    margin-bottom: 2rem;
+    margin-bottom: ${({ $isCircle }) => $isCircle ? '0' : '2rem'};
+    margin-top: ${({ $isCircle }) => $isCircle ? '2rem' : '0'};
 `

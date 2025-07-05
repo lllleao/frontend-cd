@@ -7,17 +7,23 @@ import { handleValidEmail } from '../../../utils/validationLoginSign'
 import { ButtonLoginSign } from '../styles'
 import { useFormeState } from '../useFormState'
 import { handleSign } from '../formsFetch'
-import { EmailUserExist } from './styles'
+import { EmailUserExist, WarnPassword } from './styles'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootReducer } from '../../../store'
 import { useSignUserMutation } from '../../../services/api'
+import { useState } from 'react'
+import Loader from '../../Loader'
 
 const Sign = () => {
-    const { signUserExist, msg } = useSelector(
+    const { signUserExist, msg, missToken } = useSelector(
         (state: RootReducer) => state.loginSigin
     )
     const [makeSign] = useSignUserMutation()
     const dispatch = useDispatch()
+    const [isDisplay, setIsDisplay] = useState(false)
+    const [isLoader, setIsLoader] = useState(false)
+
+    const csrfToken = localStorage.getItem('csrfToken') as string
 
     const {
         emailEmpty,
@@ -41,13 +47,16 @@ const Sign = () => {
     const data = {
         name,
         email,
-        password
+        password,
+        csrfToken
     }
 
     return (
         <>
-            <EmailUserExist className={signUserExist ? 'user-exist' : ''}>
-                {msg} já existe
+            <EmailUserExist
+                className={signUserExist || missToken ? 'user-exist' : ''}
+            >
+                {msg} {!missToken && 'já existe'}
             </EmailUserExist>
             <div className="sign login-sign">
                 <div className="login-sign__title">
@@ -55,17 +64,19 @@ const Sign = () => {
                 </div>
                 <form
                     className="form"
-                    onSubmit={(e) =>
+                    onSubmit={(e) => {
                         handleSign(
+                            setIsDisplay,
                             e,
                             isEmailValid,
                             password,
                             data,
                             dispatch,
                             name,
-                            makeSign
+                            makeSign,
+                            setIsLoader
                         )
-                    }
+                    }}
                 >
                     <div className="form__text-field">
                         <input
@@ -129,8 +140,14 @@ const Sign = () => {
                             <i className="fa-solid fa-lock" />
                             <span>Senha</span>
                         </label>
+                        <WarnPassword $isDisplay={isDisplay}>
+                            A senha deve ter pelo menos 8 caracteres, misturando
+                            pelo menos números e letras, e não pode ser uma
+                            sequência numérica ou alfabética.
+                        </WarnPassword>
                     </div>
                     <ButtonLoginSign type="submit">Cadastrar</ButtonLoginSign>
+                    {isLoader && <Loader isCircle />}
                 </form>
             </div>
         </>

@@ -54,17 +54,6 @@ const GlobalStyle = createGlobalStyle`
         padding-bottom: 122px;
     }
 
-    @keyframes barOne {
-        100% {
-            left: 100%;
-        }
-    }
-
-    @keyframes barTwo {
-        100% {
-            left: -100%;
-        }
-    }
 
     @keyframes textErro {
         from {

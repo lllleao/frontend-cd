@@ -9,28 +9,27 @@ import {
     useGetStoreBooksQuery
 } from '../../services/api'
 import Card from '../Card'
+import Loader from '../Loader'
 
 let isSeeMore: boolean = false
-
-type PropData = {
-    msg: string
-}
 
 type BookParams = {
     id: string
 }
 const Book = () => {
+    const csrfToken = localStorage.getItem('csrfToken') as string
     const channelName = 'cart_channel'
     const [addToCart] = useAddToCartMutation()
-    const { refetch } = useGetItemsCartQuery()
+    const { refetch } = useGetItemsCartQuery(csrfToken)
     const navigate = useNavigate()
     const [valueQuant, setValueQuant] = useState('1')
+    const [addCartLoader, setAddCartLoader] = useState(false)
     const [priceCalc, setPriceCalc] = useState(10)
     const [textIsHidden, setTextIsHidden] = useState(true)
     const [isItemAdd, setIsItemAdd] = useState(false)
     const { id } = useParams() as BookParams
     const { data, isFetching } = useGetSpecificStoreBookQuery(id)
-    const { data: booksStore } = useGetStoreBooksQuery()
+    const { data: booksStore, isLoading } = useGetStoreBooksQuery()
 
     const only212Characters = () => {
         const appear = data?.summary.slice(0, 212)
@@ -58,11 +57,11 @@ const Book = () => {
 
     const handleAddToCart = () => {
         if (data) {
+            setAddCartLoader(true)
             const channel = new BroadcastChannel(channelName)
             channel.postMessage({ type: 'UPDATE_COUNT', value: 'opa' })
             channel.close()
             setTimeout(refetch, 1000)
-            console.log(data.id)
             addToCart({
                 items: [
                     {
@@ -71,26 +70,40 @@ const Book = () => {
                         quant: Number(valueQuant),
                         name: data.title
                     }
-                ]
+                ],
+                csrfToken
             })
                 .then((res) => {
-                    // Isso aqui existe porque aqui acaba tendo uma união de tipos FetchBaseQueryError | SerializedError, por isso é preciso verificar também se existe a propriedade status em error
+
                     if (
                         res.error &&
-                        'status' in res.error &&
+                        typeof res.error === 'object' &&
                         'data' in res.error &&
-                        res.error.data
+                        res.error.data &&
+                        typeof res.error.data === 'object' &&
+                        'message' in res.error.data
                     ) {
-                        const errorData = res.error.data as PropData
-                        if (errorData.msg === 'não criado') {
+                        if (
+                            res.error.data.message === 'Token ausente.' ||
+                            res.error.data.message === 'Token expirado' ||
+                            res.error.data.message === 'Token mal formado'
+                        ) {
+                            setAddCartLoader(false)
+
+                            return navigate('/login')
+                        }
+                        if (res.error.data.message === 'Item já existe') {
+                        setAddCartLoader(false)
+
                             setIsItemAdd(true)
                             setTimeout(() => {
                                 setIsItemAdd(false)
                             }, 3000)
-                        } else {
-                            navigate('/login')
+                            return res.data
                         }
+                        return res.data
                     }
+                    setAddCartLoader(false)
                 })
                 .catch((err) => console.error(err))
         }
@@ -195,20 +208,27 @@ const Book = () => {
                             ? 'Item já adicionado'
                             : 'Adicionar ao carrinho'}
                     </ButtonPurchase>
+                    {addCartLoader ? (<Loader isCircle />) : (<></>)}
                 </div>
                 <div className="cards-store-container">
-                    {booksStore &&
-                        booksStore.map(({ descBooks, id, photo, title, price }) => (
-                            <Card
-                                type
-                                key={id}
-                                descBooks={descBooks}
-                                price={price}
-                                link={`/store-books/${id}`}
-                                photo={photo}
-                                title={title}
-                            />
-                        ))}
+                    {isLoading ? (
+                        <Loader />
+                    ) : (
+                        booksStore &&
+                        booksStore.map(
+                            ({ descBooks, id, photo, title, price }) => (
+                                <Card
+                                    type
+                                    key={id}
+                                    descBooks={descBooks}
+                                    price={price}
+                                    link={`/store/${id}`}
+                                    photo={photo}
+                                    title={title}
+                                />
+                            )
+                        )
+                    )}
                 </div>
             </div>
         </BooksPurchase>

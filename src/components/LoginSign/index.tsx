@@ -23,26 +23,24 @@ const LoginSign = () => {
     const navigate = useNavigate()
     const [getToken] = useGetCookieMutation()
 
-    const { signSuccess } = useSelector(
+    const { signSuccess, missToken } = useSelector(
         (state: RootReducer) => state.loginSigin
     )
 
     const dispatch = useDispatch()
+    const csrfToken = localStorage.getItem('csrfToken') as string
 
     useEffect(() => {
-        getToken()
+        getToken(csrfToken)
             .then((res) => {
-                if (res.error) {
-                    console.error(res.error)
-
-                    navigate('/login')
-                    throw new Error(`HTTP request error`)
+                if (res.error || !res.data) {
+                    return res.error
                 }
 
                 navigate('/profile')
             })
             .catch((err) => console.log(err))
-    }, [getToken, navigate])
+    }, [getToken, navigate, csrfToken])
 
     const handleChangeLogin = () => {
         dispatch(checkSignUser({ signUserExist: false }))
@@ -68,10 +66,9 @@ const LoginSign = () => {
         setLoginScreenState(!loginScreenState)
     }
 
-    if (signSuccess) {
+    if (signSuccess || missToken) {
         return (
             <>
-                <Header />
                 <SignSuccess>
                     <div className="container">
                         <p>

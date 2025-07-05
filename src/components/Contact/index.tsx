@@ -31,7 +31,7 @@ const Contact = () => {
     const [numEmpty, setNumEmpty] = useState(false)
 
     const [messageSuccess, setMessageSuccess] = useState(true)
-
+    localStorage.setItem('csrfToken', csrfToken?.csrfToken as string)
     function numeroMask(numero: string) {
         let value = numero
 
@@ -55,10 +55,11 @@ const Contact = () => {
         } else {
             setInputErrorNum(false)
         }
-    }, [emailUser, numEmail])
+    }, [emailUser, numEmail, csrfToken])
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
+
 
         const data = {
             emailUser,
@@ -68,14 +69,14 @@ const Contact = () => {
         }
 
         const { nameIsValid, messageIsValid, emailIsValid, numberIsValid } =
-            authentic(emailUser, numEmail, name, text)
+        authentic(emailUser, numEmail, name, text)
 
         emailIsValid ? setInputErrorEmail(false) : setInputErrorEmail(true)
 
         nameIsValid ? setInputErrorName(true) : setInputErrorName(false)
         messageIsValid
-            ? setInputErrorMessage(true)
-            : setInputErrorMessage(false)
+        ? setInputErrorMessage(true)
+        : setInputErrorMessage(false)
 
         if (
             emailIsValid &&

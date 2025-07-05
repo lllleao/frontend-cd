@@ -106,6 +106,7 @@ export const ProductsListCartContainer = styled.section`
     h3 {
         font-size: 1.4rem;
     }
+
     .bar {
         border: 2px solid #fff;
     }
@@ -117,11 +118,11 @@ export const ProductsListCartContainer = styled.section`
 
 export const ItemsOnCart = styled.div`
     margin-bottom: 2rem;
-    
+
 `
 
 export const ButtonCart = styled(ButtonContainer)`
     font-size: 1rem;
-    display: inline-block;
-    text-decoration: none;
+    /* display: inline-block;
+    text-decoration: none; */
 `
