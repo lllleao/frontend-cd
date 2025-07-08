@@ -14,6 +14,7 @@ import { RootReducer } from '../../store'
 import Header from '../../containers/Header'
 import { useGetCookieMutation } from '../../services/api'
 import { useNavigate } from 'react-router-dom'
+import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 const LoginSign = () => {
     const isLoginScreen = localStorage.getItem('isLoginScreen')
@@ -28,9 +29,10 @@ const LoginSign = () => {
     )
 
     const dispatch = useDispatch()
-    const csrfToken = localStorage.getItem('csrfToken') as string
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
 
     useEffect(() => {
+        if (!csrfToken) return
         getToken(csrfToken)
             .then((res) => {
                 if (res.error || !res.data) {
@@ -74,7 +76,8 @@ const LoginSign = () => {
                         <p>
                             Cadastro realizado, foi enviado um email de
                             confirmação para sua conta. Após confirmar seu
-                            e-mail, basta fazer login normalmente. Verifique também a caixa de span
+                            e-mail, basta fazer login normalmente. Verifique
+                            também a caixa de span
                         </p>
                         <button type="button" onClick={handleSign}>
                             Fazer login

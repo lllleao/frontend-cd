@@ -6,6 +6,7 @@ import { useGetPublicBooksQuery } from '../../services/api'
 import Loader from '../Loader'
 
 const PublicLib = () => {
+
     const { data, isLoading } = useGetPublicBooksQuery()
     const carrousselRef = useRef<HTMLDivElement>(null)
     const hasMounted = useRef(false)

@@ -1,18 +1,19 @@
 import { useEffect } from 'react'
-import { useGetItemsCartQuery } from '../../services/api'
+import { useLazyGetItemsCartQuery } from '../../services/api'
+import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 const CartListenner = () => {
-    const csrfToken = localStorage.getItem('csrfToken') as string
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
 
-    const { refetch } = useGetItemsCartQuery(csrfToken)
+    const [getDataItem] = useLazyGetItemsCartQuery()
 
     const channelName = 'cart_channel'
     useEffect(() => {
         const channel = new BroadcastChannel(channelName)
 
         channel.onmessage = (event) => {
-            if (event.data.type === 'UPDATE_COUNT') {
-                setTimeout(refetch, 1000)
+            if (event.data.type === 'UPDATE_COUNT' && csrfToken) {
+                setTimeout(() => getDataItem(csrfToken), 1000)
             }
         }
 
@@ -20,7 +21,7 @@ const CartListenner = () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             channel.close
         }
-    }, [refetch])
+    }, [csrfToken, getDataItem])
     return null
 }
 

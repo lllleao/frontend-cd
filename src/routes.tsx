@@ -9,6 +9,7 @@ import Pix from './components/Pix'
 import AddressEdit from './components/AddressEdit'
 
 const Rotas = () => {
+
     return (
         <Routes>
             <Route path="/" element={<Home />} />

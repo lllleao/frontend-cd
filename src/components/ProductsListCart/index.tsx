@@ -10,10 +10,12 @@ import {
 import { useEffect, useState } from 'react'
 import Card from '../Card'
 import { useNavigate } from 'react-router-dom'
+import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 // import Loader from '../Loader'
 
 const ProductsListCart = () => {
-    const csrfToken = localStorage.getItem('csrfToken') as string
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
+
     const [loading, setLoading] = useState(false)
     const { data, refetch } = useGetItemsCartQuery(csrfToken)
     const { data: totalPrice, refetch: refetchTotalPrice } =
@@ -68,6 +70,7 @@ const ProductsListCart = () => {
     }
 
     useEffect(() => {
+        console.log(csrfToken)
         refetch()
             .then((res) => {
                 if (
@@ -84,11 +87,7 @@ const ProductsListCart = () => {
                 }
             })
             .catch((err) => console.log(err))
-    }, [refetch, navigate])
-
-    // if (isLoading) {
-    //     return <Loader />
-    // }
+    }, [refetch, navigate, csrfToken])
 
     const handleClick = () => {
         if (

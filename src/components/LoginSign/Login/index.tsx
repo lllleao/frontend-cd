@@ -8,6 +8,7 @@ import { RootReducer } from '../../../store'
 import { EmailUserMsgContainer } from './styles'
 import { useLoginUserMutation } from '../../../services/api'
 import { useNavigate } from 'react-router-dom'
+import { useCsrfTokenStore } from '../../../hooks/useFetchCsrfToken'
 
 const Login = () => {
     const { loginUserExist, msg } = useSelector(
@@ -17,7 +18,7 @@ const Login = () => {
     const navigate = useNavigate()
 
     const dispatch = useDispatch()
-    const csrfToken = localStorage.getItem('csrfToken') as string
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
 
     const {
         emailEmpty,

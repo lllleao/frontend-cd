@@ -7,10 +7,13 @@ import {
     handleFocus,
     numberAndCaracterScape
 } from '../../utils/contactFunctions'
-import { useGetCSRFTokenQuery, useSendEmailMutation } from '../../services/api'
+import { useSendEmailMutation } from '../../services/api'
 
 const Contact = () => {
-    const { data: csrfToken } = useGetCSRFTokenQuery()
+    // const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
+
+    // const [verifyToken] = useVerifyCSRFTokenMutation()
+    // const [getCsrfToken] = useGetCSRFTokenMutation()
     const [sendEmailForm] = useSendEmailMutation()
     const [inputErrorName, setInputErrorName] = useState(false)
     const [inputErrorMessage, setInputErrorMessage] = useState(false)
@@ -31,7 +34,7 @@ const Contact = () => {
     const [numEmpty, setNumEmpty] = useState(false)
 
     const [messageSuccess, setMessageSuccess] = useState(true)
-    localStorage.setItem('csrfToken', csrfToken?.csrfToken as string)
+
     function numeroMask(numero: string) {
         let value = numero
 
@@ -55,11 +58,45 @@ const Contact = () => {
         } else {
             setInputErrorNum(false)
         }
-    }, [emailUser, numEmail, csrfToken])
+    }, [emailUser, numEmail])
+
+    // useEffect(() => {
+    //     if (!csrfTokenBefore) {
+    //         getCsrfToken()
+    //             .then((res) => {
+    //                 if (res.error) {
+    //                     return console.log(res.error)
+    //                 }
+
+    //                 const token = res.data as unknown as { token: string }
+    //                 localStorage.setItem('csrfToken', token.token)
+    //             })
+    //             .catch((err) => console.log(err, 'err'))
+    //     } else {
+    //         verifyToken(csrfTokenBefore)
+    //             .then((res) => {
+    //                 if (res.error) {
+    //                     console.log(res.error)
+    //                     getCsrfToken()
+    //                         .then((res) => {
+    //                             if (res.error) {
+    //                                 return console.log(res.error)
+    //                             }
+
+    //                             const token = res.data as unknown as {
+    //                                 token: string
+    //                             }
+    //                             localStorage.setItem('csrfToken', token.token)
+    //                         })
+    //                         .catch((err) => console.log(err))
+    //                 }
+    //             })
+    //             .catch((err) => console.log(err))
+    //     }
+    // }, [csrfTokenBefore, getCsrfToken, verifyToken])
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-
 
         const data = {
             emailUser,
@@ -69,14 +106,14 @@ const Contact = () => {
         }
 
         const { nameIsValid, messageIsValid, emailIsValid, numberIsValid } =
-        authentic(emailUser, numEmail, name, text)
+            authentic(emailUser, numEmail, name, text)
 
         emailIsValid ? setInputErrorEmail(false) : setInputErrorEmail(true)
 
         nameIsValid ? setInputErrorName(true) : setInputErrorName(false)
         messageIsValid
-        ? setInputErrorMessage(true)
-        : setInputErrorMessage(false)
+            ? setInputErrorMessage(true)
+            : setInputErrorMessage(false)
 
         if (
             emailIsValid &&
@@ -84,12 +121,12 @@ const Contact = () => {
             !messageIsValid &&
             numberIsValid &&
             !successForm &&
-            csrfToken
+            'csrfToken'
         ) {
             setSuccessForm(true)
 
             sendEmailForm({
-                csrfToken: csrfToken.csrfToken,
+                csrfToken: 'csrfToken.csrfToken',
                 data
             })
                 .then(() => {
@@ -115,11 +152,14 @@ const Contact = () => {
 
     function handleClickPix() {
         setIsCopied(true)
-        navigator.clipboard.writeText('cidadeclipse@gmail.com').then(() => {
-            setTimeout(() => {
-                setIsCopied(false)
-            }, 2000)
-        }).catch(err => console.log(err))
+        navigator.clipboard
+            .writeText('cidadeclipse@gmail.com')
+            .then(() => {
+                setTimeout(() => {
+                    setIsCopied(false)
+                }, 2000)
+            })
+            .catch((err) => console.log(err))
     }
 
     return (

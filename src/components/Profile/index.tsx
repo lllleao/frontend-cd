@@ -3,25 +3,30 @@ import { ButtonLogout, ProfileContainer, PurchaseCompleted } from './styles'
 import { useEffect, useState } from 'react'
 import {
     GetAddressProps,
-    useGetAddressQuery,
     useGetCookieMutation,
-    useGetProfileDataQuery,
+    useLazyGetAddressQuery,
+    useLazyGetProfileDataQuery,
     useLogoutMutation
 } from '../../services/api'
 import OrdersCompleted from '../OrdersCompleted'
 import Header from '../../containers/Header'
 import ProfileAddress from '../ProfileAddress'
 import { defaultAddress } from '../../utils'
+import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 const Profile = () => {
-    const csrfToken = localStorage.getItem('csrfToken') as string
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
 
     const [getToken] = useGetCookieMutation()
-    const { data } = useGetProfileDataQuery(csrfToken)
+    const [getDataProfile, { data }] = useLazyGetProfileDataQuery()
     const [logout] = useLogoutMutation()
-    const { data: dataAddress } = useGetAddressQuery({ csrfToken })
-    const [dataAddresDefault, setDataAddresDefault] = useState<GetAddressProps | undefined>()
-    const [dataAddresSecondary, setDataAddresSecondary] = useState<GetAddressProps | undefined>()
+    const [getDataAddress, { data: dataAddress }] = useLazyGetAddressQuery()
+    const [dataAddresDefault, setDataAddresDefault] = useState<
+        GetAddressProps | undefined
+    >()
+    const [dataAddresSecondary, setDataAddresSecondary] = useState<
+        GetAddressProps | undefined
+    >()
 
     const navigate = useNavigate()
 
@@ -37,6 +42,10 @@ const Profile = () => {
     }
 
     useEffect(() => {
+        if (!csrfToken) return
+        console.log(csrfToken, 'entrou')
+        getDataProfile(csrfToken)
+        getDataAddress({ csrfToken })
         getToken(csrfToken)
             .then((res) => {
                 if (res.error || !res.data) {
@@ -50,7 +59,6 @@ const Profile = () => {
         }
 
         if (dataAddress && dataAddress[1] && dataAddress[1].isDefault) {
-
             setDataAddresDefault(dataAddress[1])
         }
 
@@ -61,8 +69,7 @@ const Profile = () => {
         if (dataAddress && dataAddress[1] && !dataAddress[1].isDefault) {
             setDataAddresSecondary(dataAddress[1])
         }
-
-    }, [getToken, navigate, data, csrfToken, dataAddress])
+    }, [getToken, navigate, csrfToken, dataAddress, getDataProfile, getDataAddress])
 
     return (
         <>
@@ -73,24 +80,72 @@ const Profile = () => {
                     <h3>{data?.email}</h3>
 
                     <ProfileAddress
-                        cpf={dataAddresDefault ? dataAddresDefault.cpf : defaultAddress[0].data.cpf}
-                        cep={dataAddresDefault ? dataAddresDefault.zipCode : defaultAddress[0].data.zipCode}
-                        complement={dataAddresDefault ? dataAddresDefault.complement : defaultAddress[0].data.complement}
-                        neighborhood={dataAddresDefault ? dataAddresDefault.neighborhood : defaultAddress[0].data.neighborhood}
-                        number={dataAddresDefault ? dataAddresDefault.number : defaultAddress[0].data.number}
-                        street={dataAddresDefault ? dataAddresDefault.street : defaultAddress[0].data.street}
+                        cpf={
+                            dataAddresDefault
+                                ? dataAddresDefault.cpf
+                                : defaultAddress[0].data.cpf
+                        }
+                        cep={
+                            dataAddresDefault
+                                ? dataAddresDefault.zipCode
+                                : defaultAddress[0].data.zipCode
+                        }
+                        complement={
+                            dataAddresDefault
+                                ? dataAddresDefault.complement
+                                : defaultAddress[0].data.complement
+                        }
+                        neighborhood={
+                            dataAddresDefault
+                                ? dataAddresDefault.neighborhood
+                                : defaultAddress[0].data.neighborhood
+                        }
+                        number={
+                            dataAddresDefault
+                                ? dataAddresDefault.number
+                                : defaultAddress[0].data.number
+                        }
+                        street={
+                            dataAddresDefault
+                                ? dataAddresDefault.street
+                                : defaultAddress[0].data.street
+                        }
                         title="Endereço padrão"
                         isDefault={true}
                         isSelect={false}
                     />
 
                     <ProfileAddress
-                        cpf={dataAddresSecondary ? dataAddresSecondary.cpf : defaultAddress[0].data.cpf}
-                        cep={dataAddresSecondary ? dataAddresSecondary.zipCode : defaultAddress[0].data.zipCode}
-                        complement={dataAddresSecondary ? dataAddresSecondary.complement : defaultAddress[0].data.complement}
-                        neighborhood={dataAddresSecondary ? dataAddresSecondary.neighborhood : defaultAddress[0].data.neighborhood}
-                        number={dataAddresSecondary ? dataAddresSecondary.number : defaultAddress[0].data.number}
-                        street={dataAddresSecondary ? dataAddresSecondary.street : defaultAddress[0].data.street}
+                        cpf={
+                            dataAddresSecondary
+                                ? dataAddresSecondary.cpf
+                                : defaultAddress[0].data.cpf
+                        }
+                        cep={
+                            dataAddresSecondary
+                                ? dataAddresSecondary.zipCode
+                                : defaultAddress[0].data.zipCode
+                        }
+                        complement={
+                            dataAddresSecondary
+                                ? dataAddresSecondary.complement
+                                : defaultAddress[0].data.complement
+                        }
+                        neighborhood={
+                            dataAddresSecondary
+                                ? dataAddresSecondary.neighborhood
+                                : defaultAddress[0].data.neighborhood
+                        }
+                        number={
+                            dataAddresSecondary
+                                ? dataAddresSecondary.number
+                                : defaultAddress[0].data.number
+                        }
+                        street={
+                            dataAddresSecondary
+                                ? dataAddresSecondary.street
+                                : defaultAddress[0].data.street
+                        }
                         title="Endereço secundário"
                         isDefault={false}
                         isSelect={false}

@@ -1,4 +1,29 @@
 import styled from 'styled-components'
+import { ButtonContainer } from '../ButtonPurchase/styles'
+
+export const Documentario = styled.div`
+    text-align: center;
+    /* width: 350px; */
+    margin-bottom: 3rem;
+    img {
+        width: 35%;
+        @media screen and (max-width: 767px) {
+            width: 70%;
+        }
+    }
+
+    .documentario-title {
+        margin-top: 2rem;
+        font-size: clamp(1rem, 5vw, 2.3rem);
+        margin-bottom: 3rem;
+    }
+`
+
+export const Watch = styled(ButtonContainer)`
+    font-size: clamp(1rem, 5vw, 1.5rem);
+    display: inline-block;
+    text-decoration: none;
+`
 
 export const HeroContainer = styled.section`
     display: flex;
@@ -14,7 +39,7 @@ export const HeroContainer = styled.section`
         min-height: 100svh;
     }
 
-    img {
+    .logo3 {
         max-width: 45%;
         @media screen and (max-width: 767px) {
             margin: 0 auto;

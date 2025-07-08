@@ -13,6 +13,7 @@ import { RootReducer } from '../../../store'
 import { useSignUserMutation } from '../../../services/api'
 import { useState } from 'react'
 import Loader from '../../Loader'
+import { useCsrfTokenStore } from '../../../hooks/useFetchCsrfToken'
 
 const Sign = () => {
     const { signUserExist, msg, missToken } = useSelector(
@@ -23,7 +24,7 @@ const Sign = () => {
     const [isDisplay, setIsDisplay] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
 
-    const csrfToken = localStorage.getItem('csrfToken') as string
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
 
     const {
         emailEmpty,

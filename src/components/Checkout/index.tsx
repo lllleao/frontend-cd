@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { CheckoutContainer, ChoseAddress, ValidAddres } from './styles'
 import {
     GetAddressProps,
-    useGetAddressQuery,
     useGetCookieMutation,
     useGetItemsCartQuery,
     useGetTotalPriceQuery,
+    useLazyGetAddressQuery,
     usePurchaseDataMutation
 } from '../../services/api'
 import { useNavigate } from 'react-router-dom'
@@ -13,11 +13,13 @@ import Header from '../../containers/Header'
 import ProfileAddress from '../ProfileAddress'
 import { Finish } from '../FormAddress/styles'
 import { defaultAddress } from '../../utils'
+import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 const Checkout = () => {
-    const csrfToken = localStorage.getItem('csrfToken') as string
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
+
     const { data } = useGetItemsCartQuery(csrfToken)
-    const { data: dataAddress } = useGetAddressQuery({ csrfToken })
+    const [getDataAddress, { data: dataAddress }] = useLazyGetAddressQuery()
     const [isWarnDefaultVisible, setIsWarnDefaultVisible] = useState(false)
     const [isWarnSecondaryVisible, setIsWarnSecondaryVisible] = useState(false)
     const [doPurchase] = usePurchaseDataMutation()
@@ -35,6 +37,9 @@ const Checkout = () => {
     >()
 
     useEffect(() => {
+        console.log(csrfToken, 'checkout')
+        if (!csrfToken) return
+        getDataAddress({ csrfToken })
         getCookie(csrfToken)
             .then((res) => {
                 if (res.error) {
@@ -59,7 +64,7 @@ const Checkout = () => {
         if (dataAddress && dataAddress[1] && !dataAddress[1].isDefault) {
             setDataAddresSecondary(dataAddress[1])
         }
-    }, [getCookie, navigate, csrfToken, dataAddress])
+    }, [getCookie, navigate, csrfToken, dataAddress, getDataAddress])
 
     const handleClick = (isDefault: boolean) => {
         setIsDefaultAddress(isDefault)
@@ -198,7 +203,8 @@ const Checkout = () => {
                                     neighborhood={
                                         dataAddresDefault
                                             ? dataAddresDefault.neighborhood
-                                            : defaultAddress[0].data.neighborhood
+                                            : defaultAddress[0].data
+                                                  .neighborhood
                                     }
                                     number={
                                         dataAddresDefault
@@ -252,7 +258,8 @@ const Checkout = () => {
                                     neighborhood={
                                         dataAddresSecondary
                                             ? dataAddresSecondary.neighborhood
-                                            : defaultAddress[0].data.neighborhood
+                                            : defaultAddress[0].data
+                                                  .neighborhood
                                     }
                                     number={
                                         dataAddresSecondary

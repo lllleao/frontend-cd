@@ -5,7 +5,20 @@ import Rotas from './routes'
 import { Provider } from 'react-redux'
 import store from './store'
 import CartListenner from './components/CartListenner'
+import { useCsrfTokenStore } from './hooks/useFetchCsrfToken'
+import { useEffect } from 'react'
+
 function App() {
+    const fetchCsrfToken = useCsrfTokenStore((state) => state.fetchCsrfToken)
+
+    useEffect(() => {
+        console.log('opa')
+        fetchCsrfToken()
+        const interval = setInterval(fetchCsrfToken, 30 * 60 * 1000) // A cada 30 min
+        return () => clearInterval(interval)
+    // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [])
+
     return (
         <Provider store={store}>
             <BrowserRouter

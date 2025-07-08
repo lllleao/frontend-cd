@@ -1,7 +1,9 @@
 import { MenuDesktopContainer } from './styles'
 import { HashLink } from 'react-router-hash-link'
 import { useGetCookieMutation } from '../../services/api'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
+import { Link } from 'react-router-dom'
 
 type MenuProps = {
     viweNumberCart: boolean
@@ -14,22 +16,25 @@ const MenuDesktop = ({
     dataLength,
     addAnimateCart
 }: MenuProps) => {
-    const csrfToken = localStorage.getItem('csrfToken') as string
     const [getToken] = useGetCookieMutation()
-    const [isLoginOrProfile, setIsLoginOrProfile] = useState(true)
+    const logado = localStorage.getItem('logado')
+    const iconLoginProfileRef = useRef<HTMLLIElement>(null)
+    const { csrfToken } = useCsrfTokenStore((state) => state)
 
     useEffect(() => {
+        if (!csrfToken) return
+
         getToken(csrfToken)
             .then((res) => {
-                if (res.error) {
-                    return setIsLoginOrProfile(true)
+                if (res.error || !res.data) {
+                    return localStorage.removeItem('logado')
                 }
+                localStorage.setItem('logado', 'true')
 
-                setIsLoginOrProfile(false)
                 return res.data
             })
             .catch((err) => console.log(err))
-    }, [csrfToken, getToken])
+    }, [logado, csrfToken, getToken])
 
     return (
         <MenuDesktopContainer
@@ -70,30 +75,61 @@ const MenuDesktop = ({
                     </HashLink>
                 </li>
                 <li className="nav__list__item__desk cartIcon">
-                    <a href="/cart" className={`nav__list__item__desk__link`}>
+                    <Link
+                        to="/cart"
+                        className={`nav__list__item__desk__link`}
+                    >
                         <div
                             className={`number-of-items ${viweNumberCart && 'number-of-items--active'}`}
                         >
                             {dataLength}
                         </div>
                         <i className="fa-solid fa-cart-shopping" />
-                    </a>
+                    </Link>
+                    {/* <a href="/cart" className={`nav__list__item__desk__link`}>
+                        <div
+                            className={`number-of-items ${viweNumberCart && 'number-of-items--active'}`}
+                        >
+                            {dataLength}
+                        </div>
+                        <i className="fa-solid fa-cart-shopping" />
+                    </a> */}
                 </li>
-                <li className="nav__list__item__desk userIcon">
-                    {isLoginOrProfile ? (
-                        <a
-                        href='/login'
-                        className={`nav__list__item__desk__link`}
-                    >
-                        <i className="fa-solid fa-right-to-bracket" />
-                    </a>
+                <li
+                    className="nav__list__item__desk userIcon"
+                    ref={iconLoginProfileRef}
+                >
+                    {!logado ? (
+                        <>
+                            <Link
+                                to="/login"
+                                className={`nav__list__item__desk__link`}
+                            >
+                                <i className="fa-solid fa-right-to-bracket" />
+                            </Link>
+                            {/* <a
+                                href="/login"
+                                className={`nav__list__item__desk__link`}
+                            >
+                                <i className="fa-solid fa-right-to-bracket" />
+                            </a> */}
+                        </>
                     ) : (
-                        <a
-                        href='/profile'
-                        className={`nav__list__item__desk__link`}
-                    >
-                        <i className="fa-solid fa-user" />
-                    </a>
+                        <>
+                            <Link
+                                to="/profile"
+                                className={`nav__list__item__desk__link`}
+
+                            >
+                                <i className="fa-solid fa-user" />
+                            </Link>
+                            {/* <a
+                                href="/profile"
+                                className={`nav__list__item__desk__link`}
+                            >
+                                <i className="fa-solid fa-user" />
+                            </a> */}
+                        </>
                     )}
                 </li>
             </ul>

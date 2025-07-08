@@ -4,12 +4,13 @@ import { useState } from 'react'
 import ButtonPurchase from '../ButtonPurchase'
 import {
     useAddToCartMutation,
-    useGetItemsCartQuery,
     useGetSpecificStoreBookQuery,
-    useGetStoreBooksQuery
+    useGetStoreBooksQuery,
+    useLazyGetItemsCartQuery
 } from '../../services/api'
 import Card from '../Card'
 import Loader from '../Loader'
+import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 let isSeeMore: boolean = false
 
@@ -17,10 +18,11 @@ type BookParams = {
     id: string
 }
 const Book = () => {
-    const csrfToken = localStorage.getItem('csrfToken') as string
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
+
     const channelName = 'cart_channel'
     const [addToCart] = useAddToCartMutation()
-    const { refetch } = useGetItemsCartQuery(csrfToken)
+    const [getDataItem] = useLazyGetItemsCartQuery()
     const navigate = useNavigate()
     const [valueQuant, setValueQuant] = useState('1')
     const [addCartLoader, setAddCartLoader] = useState(false)
@@ -61,7 +63,9 @@ const Book = () => {
             const channel = new BroadcastChannel(channelName)
             channel.postMessage({ type: 'UPDATE_COUNT', value: 'opa' })
             channel.close()
-            setTimeout(refetch, 1000)
+            if (csrfToken) {
+                setTimeout(() => getDataItem(csrfToken), 1000)
+            }
             addToCart({
                 items: [
                     {
@@ -74,7 +78,6 @@ const Book = () => {
                 csrfToken
             })
                 .then((res) => {
-
                     if (
                         res.error &&
                         typeof res.error === 'object' &&
@@ -93,7 +96,7 @@ const Book = () => {
                             return navigate('/login')
                         }
                         if (res.error.data.message === 'Item já existe') {
-                        setAddCartLoader(false)
+                            setAddCartLoader(false)
 
                             setIsItemAdd(true)
                             setTimeout(() => {
@@ -208,7 +211,7 @@ const Book = () => {
                             ? 'Item já adicionado'
                             : 'Adicionar ao carrinho'}
                     </ButtonPurchase>
-                    {addCartLoader ? (<Loader isCircle />) : (<></>)}
+                    {addCartLoader ? <Loader isCircle /> : <></>}
                 </div>
                 <div className="cards-store-container">
                     {isLoading ? (

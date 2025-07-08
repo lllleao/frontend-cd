@@ -103,6 +103,7 @@ export const handleLogin = (
                 }
                 dispatch(checkLoginUser({ loginUserExist: false }))
                 if (res.data && res.data.success) {
+                    localStorage.setItem('logado', 'true')
                     navigate('/')
                 }
                 return res.data

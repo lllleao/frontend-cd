@@ -10,9 +10,11 @@ import {
 } from './styles'
 import { useCreateAddressMutation } from '../../services/api'
 import Loader from '../Loader'
+import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 const FormAddress = () => {
-    const csrfToken = localStorage.getItem('csrfToken') as string
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
+
     const isDefaulStoraget = localStorage.getItem('isDefault') as string
     const [isDefault, setIsDefault] = useState(true)
     const [isLoader, setIsLoader] = useState(false)
@@ -146,7 +148,8 @@ const FormAddress = () => {
             isNameValid &&
             isNeighborhoodValid &&
             isNumberValid &&
-            isStreetValid
+            isStreetValid &&
+            csrfToken
         ) {
             setIsLoader(true)
             createAddress({

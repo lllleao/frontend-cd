@@ -137,8 +137,20 @@ const api = createApi({
                 }
             })
         }),
-        getCSRFToken: builder.query<CsrfProp, void>({
-            query: () => 'auth/get-csrfToken'
+        getCSRFToken: builder.mutation<string, void>({
+            query: () => ({
+                url: 'auth/get-csrfToken',
+                method: 'POST'
+            })
+        }),
+        verifyCSRFToken: builder.mutation<object, string>({
+            query: (data) => ({
+                url: 'auth/verify-csrfToken',
+                method: 'POST',
+                headers: {
+                    'csrf-token': data
+                }
+            })
         }),
         getTotalPrice: builder.query<TotalPriceProps, string>({
             query: (csrfToken) => ({
@@ -294,22 +306,24 @@ const api = createApi({
 
 export const {
     useGetPublicBooksQuery,
+    useVerifyCSRFTokenMutation,
     useGetStoreBooksQuery,
     useGetItemsCartQuery,
     useGetRemoveItemMutation,
     useGetCookieMutation,
-    useGetProfileDataQuery,
+    useLazyGetProfileDataQuery,
     useLoginUserMutation,
     useSignUserMutation,
     useAddToCartMutation,
     useGetSpecificStoreBookQuery,
-    useGetCSRFTokenQuery,
+    useGetCSRFTokenMutation,
     useSendEmailMutation,
     useUpdataPriceMutation,
     useGetTotalPriceQuery,
     usePurchaseDataMutation,
     useLogoutMutation,
     useCreateAddressMutation,
-    useGetAddressQuery
+    useLazyGetAddressQuery,
+    useLazyGetItemsCartQuery
 } = api
 export default api
