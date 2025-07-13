@@ -46,9 +46,11 @@ const Sign = () => {
     } = useFormeState()
 
     const data = {
-        name,
-        email,
-        password,
+        data: {
+            name,
+            email,
+            password
+        },
         csrfToken
     }
 

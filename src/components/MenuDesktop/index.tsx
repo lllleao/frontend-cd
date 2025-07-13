@@ -76,7 +76,7 @@ const MenuDesktop = ({
                 </li>
                 <li className="nav__list__item__desk cartIcon">
                     <Link
-                        to="/cart"
+                        to={logado ? '/cart' : '/login' }
                         className={`nav__list__item__desk__link`}
                     >
                         <div

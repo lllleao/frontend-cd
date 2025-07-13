@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { MenuBobContainer } from './styles'
 import { HashLink } from 'react-router-hash-link'
 import { useGetCookieMutation } from '../../services/api'
-import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 type MenuProps = {
     viweNumberCart: boolean
@@ -10,8 +9,7 @@ type MenuProps = {
 }
 
 const MenuMob = ({ viweNumberCart, dataLength }: MenuProps) => {
-    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
-
+    const csrfToken = localStorage.getItem('csrfToken') as string
     const [isLoginOrProfile, setIsLoginOrProfile] = useState(true)
 
     const [menuClicked, setMenuClicked] = useState(false)
@@ -22,19 +20,18 @@ const MenuMob = ({ viweNumberCart, dataLength }: MenuProps) => {
     }
 
     useEffect(() => {
-        if (!csrfToken) return
-        getToken(csrfToken)
-            .then((res) => {
-                if (res.error) {
-                    return setIsLoginOrProfile(true)
-                }
+            getToken(csrfToken)
+                .then((res) => {
+                    if (res.error) {
+                        return setIsLoginOrProfile(true)
+                    }
 
-                // navigate('/profile')
-                setIsLoginOrProfile(false)
-                return res.data
-            })
-            .catch((err) => console.log(err))
-    }, [csrfToken, getToken])
+                    // navigate('/profile')
+                    setIsLoginOrProfile(false)
+                    return res.data
+                })
+                .catch((err) => console.log(err))
+        }, [csrfToken, getToken])
 
     return (
         <MenuBobContainer>
@@ -88,13 +85,19 @@ const MenuMob = ({ viweNumberCart, dataLength }: MenuProps) => {
                 </li>
                 <li>
                     {isLoginOrProfile ? (
-                        <a href="/login" className="menu-mob__item userIcon">
-                            <i className="fa-solid fa-right-to-bracket" />
-                        </a>
+                        <a
+                        href='/login'
+                        className='menu-mob__item userIcon'
+                    >
+                        <i className="fa-solid fa-right-to-bracket" />
+                    </a>
                     ) : (
-                        <a href="/profile" className="menu-mob__item userIcon">
-                            <i className="fa-solid fa-user" />
-                        </a>
+                        <a
+                        href='/profile'
+                        className='menu-mob__item userIcon'
+                    >
+                        <i className="fa-solid fa-user" />
+                    </a>
                     )}
                 </li>
             </ul>

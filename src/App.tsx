@@ -12,12 +12,10 @@ function App() {
     const fetchCsrfToken = useCsrfTokenStore((state) => state.fetchCsrfToken)
 
     useEffect(() => {
-        console.log('opa')
         fetchCsrfToken()
         const interval = setInterval(fetchCsrfToken, 30 * 60 * 1000) // A cada 30 min
         return () => clearInterval(interval)
-    // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
-    }, [])
+    }, [fetchCsrfToken])
 
     return (
         <Provider store={store}>

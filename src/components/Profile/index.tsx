@@ -6,7 +6,8 @@ import {
     useGetCookieMutation,
     useLazyGetAddressQuery,
     useLazyGetProfileDataQuery,
-    useLogoutMutation
+    useLogoutMutation,
+    useRefreshTokenMutation
 } from '../../services/api'
 import OrdersCompleted from '../OrdersCompleted'
 import Header from '../../containers/Header'
@@ -16,7 +17,7 @@ import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 const Profile = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
-
+    const [getRefresh] = useRefreshTokenMutation()
     const [getToken] = useGetCookieMutation()
     const [getDataProfile, { data }] = useLazyGetProfileDataQuery()
     const [logout] = useLogoutMutation()
@@ -48,9 +49,36 @@ const Profile = () => {
         getDataAddress({ csrfToken })
         getToken(csrfToken)
             .then((res) => {
+                console.log(res)
+                if (
+                    res.error &&
+                    typeof res.error === 'object' &&
+                    'data' in res.error &&
+                    res.error.data &&
+                    typeof res.error.data === 'object' &&
+                    'message' in res.error.data
+                ) {
+                    if (res.error.data.message === 'Token expirado') {
+                        getRefresh(csrfToken)
+                            .then((response) => {
+                                console.log(response, 'aqui')
+                                if (response.error) {
+                                    return navigate('/login')
+                                }
+                                localStorage.setItem('logado', 'true')
+                                getDataProfile(csrfToken)
+                                getDataAddress({ csrfToken })
+                            })
+                            .catch((error) => {
+                                console.log(error, 'err')
+                            })
+                        return undefined
+                    }
+                }
                 if (res.error || !res.data) {
                     return navigate('/login')
                 }
+
                 return res.data
             })
             .catch((err) => console.log(err))
@@ -69,7 +97,15 @@ const Profile = () => {
         if (dataAddress && dataAddress[1] && !dataAddress[1].isDefault) {
             setDataAddresSecondary(dataAddress[1])
         }
-    }, [getToken, navigate, csrfToken, dataAddress, getDataProfile, getDataAddress])
+    }, [
+        getToken,
+        navigate,
+        csrfToken,
+        dataAddress,
+        getDataProfile,
+        getDataAddress,
+        getRefresh
+    ])
 
     return (
         <>

@@ -17,9 +17,11 @@ import { NavigateFunction } from 'react-router-dom'
 import { validatePassword } from '../../utils/validationLoginSign'
 
 export type DataProp = {
-    name?: string
-    email: string
-    password: string
+    data: {
+        name?: string
+        email: string
+        password: string
+    }
     csrfToken: string
 }
 
@@ -46,7 +48,8 @@ export const handleLogin = (
             'api'
         >
     >,
-    navigate: NavigateFunction
+    navigate: NavigateFunction,
+    fetchCsrfToken: () => Promise<void>
 ) => {
     event.preventDefault()
 
@@ -61,12 +64,15 @@ export const handleLogin = (
                     typeof res.error.data === 'object' &&
                     'message' in res.error.data
                 ) {
-                    const errorData = res.error.data as {message?: string, error?: string}
+                    const errorData = res.error.data as {
+                        message?: string
+                        error?: string
+                    }
                     if (errorData.message === 'Usuário já logado') {
                         console.log(res.error.data.message)
                         return dispatch(
                             checkLoginUser({
-                                msg: 'Login realizado',
+                                msg: 'Usuário já logado',
                                 loginUserExist: true,
                                 loginSuccess: false
                             })
@@ -79,9 +85,7 @@ export const handleLogin = (
                                 loginSuccess: false
                             })
                         )
-                    } else if (
-                        errorData.message === 'Email não verificado.'
-                    ) {
+                    } else if (errorData.message === 'Email não verificado.') {
                         return dispatch(
                             checkLoginUser({
                                 msg: 'Email não verificado',
@@ -89,9 +93,7 @@ export const handleLogin = (
                                 loginSuccess: false
                             })
                         )
-                    } else if (
-                        errorData.message === 'Usuário não existe.'
-                    ) {
+                    } else if (errorData.message === 'Usuário não existe.') {
                         return dispatch(
                             checkLoginUser({
                                 msg: 'Email não existe.',
@@ -103,6 +105,7 @@ export const handleLogin = (
                 }
                 dispatch(checkLoginUser({ loginUserExist: false }))
                 if (res.data && res.data.success) {
+                    fetchCsrfToken()
                     localStorage.setItem('logado', 'true')
                     navigate('/')
                 }
@@ -160,7 +163,10 @@ export const handleSign = (
                     typeof res.error.data === 'object' &&
                     'message' in res.error.data
                 ) {
-                    const errorData = res.error.data as {message?: string, error?: string}
+                    const errorData = res.error.data as {
+                        message?: string
+                        error?: string
+                    }
                     if (
                         errorData.message ===
                         'CSRF token ausente no cabeçalho da requisição.'
@@ -177,7 +183,6 @@ export const handleSign = (
                     } else if (
                         errorData.error === 'Este email já está em uso.'
                     ) {
-
                         setIsLoader(false)
                         return dispatch(
                             checkSignUser({

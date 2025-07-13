@@ -1,39 +1,46 @@
 import { ButtonCart, ItemsOnCart, ProductsListCartContainer } from './styles'
 import Header from '../../containers/Header'
 import {
-    useGetItemsCartQuery,
     useGetRemoveItemMutation,
     useGetStoreBooksQuery,
-    useGetTotalPriceQuery,
+    useLazyGetItemsCartQuery,
+    useLazyGetTotalPriceQuery,
+    useRefreshTokenMutation,
     useUpdataPriceMutation
 } from '../../services/api'
 import { useEffect, useState } from 'react'
 import Card from '../Card'
 import { useNavigate } from 'react-router-dom'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
-// import Loader from '../Loader'
 
 const ProductsListCart = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
 
+    const [badToken, setBadToken] = useState(false)
     const [loading, setLoading] = useState(false)
-    const { data, refetch } = useGetItemsCartQuery(csrfToken)
-    const { data: totalPrice, refetch: refetchTotalPrice } =
-        useGetTotalPriceQuery(csrfToken)
+    const [getDataItems, { data }] = useLazyGetItemsCartQuery()
+    const [getTotalPrice, { data: totalPrice }] = useLazyGetTotalPriceQuery()
     const [deleteCartItem] = useGetRemoveItemMutation()
     const [updataPrice] = useUpdataPriceMutation()
     const { data: booksStore } = useGetStoreBooksQuery()
     const navigate = useNavigate()
+    const [getRefresh] = useRefreshTokenMutation()
 
     const channelName = 'cart_channel'
 
     const handleDelete = (id: number | undefined, loading: boolean) => {
-        if (id && !loading) {
+        if (id && !loading && csrfToken) {
             deleteCartItem({ id, csrfToken })
                 .unwrap()
                 .then(() => {
-                    refetch().catch((err) => console.log(err))
-                    setTimeout(refetchTotalPrice, 500)
+                    getDataItems(csrfToken).catch((err) => console.log(err))
+                    setTimeout(
+                        () =>
+                            getTotalPrice(csrfToken).catch((err) =>
+                                console.log(err)
+                            ),
+                        500
+                    )
 
                     console.log('Item removido do carrinho com sucesso')
                 })
@@ -62,16 +69,25 @@ const ProductsListCart = () => {
             csrfToken
         })
             .then(() => {
-                refetch().catch((err) => console.log(err))
-                setTimeout(refetchTotalPrice, 500)
-                setLoading(false)
+                if (csrfToken) {
+                    getDataItems(csrfToken).catch((err) => console.log(err))
+                    setTimeout(
+                        () =>
+                            getTotalPrice(csrfToken).catch((err) =>
+                                console.log(err)
+                            ),
+                        500
+                    )
+                    setLoading(false)
+                }
             })
             .catch((err) => console.log(err))
     }
 
     useEffect(() => {
-        console.log(csrfToken)
-        refetch()
+        if (!csrfToken) return
+        getTotalPrice(csrfToken).catch((err) => console.log(err))
+        getDataItems(csrfToken)
             .then((res) => {
                 if (
                     res.error &&
@@ -81,18 +97,33 @@ const ProductsListCart = () => {
                     typeof res.error.data === 'object' &&
                     'message' in res.error.data
                 ) {
-                    if (res.error.data.message === 'Token ausente.') {
-                        navigate('/login')
+                    if (res.error.data.message === 'Token expirado') {
+                        getRefresh(csrfToken)
+                            .then((response) => {
+                                console.log(response, 'aqui')
+                                if (response.error) {
+                                    setBadToken(true)
+                                    return navigate('/login')
+                                }
+                                localStorage.setItem('logado', 'true')
+                                getDataItems(csrfToken)
+                            })
+                            .catch((error) => {
+                                console.log(error, 'err')
+                            })
+                        return undefined
                     }
                 }
             })
             .catch((err) => console.log(err))
-    }, [refetch, navigate, csrfToken])
+    }, [csrfToken, getDataItems, getRefresh, getTotalPrice, navigate])
 
     const handleClick = () => {
+        console.log(totalPrice?.totalPrice)
         if (
             totalPrice &&
-            !((totalPrice?.totalPrice as unknown as string) === '0')
+            !((totalPrice?.totalPrice as unknown as string) === '0') &&
+            !badToken
         ) {
             navigate('/checkout')
         }

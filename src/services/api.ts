@@ -152,6 +152,15 @@ const api = createApi({
                 }
             })
         }),
+        refreshToken: builder.mutation<object, string>({
+            query: (data) => ({
+                url: 'auth/refresh',
+                method: 'POST',
+                headers: {
+                    'csrf-token': data
+                }
+            })
+        }),
         getTotalPrice: builder.query<TotalPriceProps, string>({
             query: (csrfToken) => ({
                 url: 'cart/total-price',
@@ -213,10 +222,9 @@ const api = createApi({
                 url: 'user/login',
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'csrf-token': data.csrfToken
                 },
-                body: data
+                body: data.data
             })
         }),
         createAddress: builder.mutation<void, CreateAddressProps>({
@@ -249,7 +257,7 @@ const api = createApi({
             })
         }),
         signUser: builder.mutation<EmailUser, DataProp>({
-            query: ({ email, password, name, csrfToken }) => ({
+            query: ({ data: { email, password, name }, csrfToken }) => ({
                 url: 'user/signup',
                 method: 'POST',
                 body: {
@@ -320,10 +328,12 @@ export const {
     useSendEmailMutation,
     useUpdataPriceMutation,
     useGetTotalPriceQuery,
+    useLazyGetTotalPriceQuery,
     usePurchaseDataMutation,
     useLogoutMutation,
     useCreateAddressMutation,
     useLazyGetAddressQuery,
-    useLazyGetItemsCartQuery
+    useLazyGetItemsCartQuery,
+    useRefreshTokenMutation
 } = api
 export default api
