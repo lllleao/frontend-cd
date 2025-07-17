@@ -6,6 +6,11 @@
 Em uma cidade escondida de tudo há uma cafeteria exótica na beira de uma fenda — uma fenda tão profunda que pode até mostrar o rio Tártaro do Hades. Esta cafeteria é a <strong>Tartaru's Coffee Shop</strong>, localizada na <strong>Cidade Eclipse</strong>. Entre, dê uma espiada nas nossas profundezas — mas não proteja os olhos, hein!
 </p>
 
+<p align="justify">
+Este projeto está sendo desenvolvido como uma vitrine digital e, em breve, se tornará um <strong>e-commerce artístico</strong>, onde será possível adquirir obras e produtos criados por artistas cooperados da editora Cidadeclipse.
+</p>
+
+
 ---
 
 ## 🧰 Tecnologias e Dependências
