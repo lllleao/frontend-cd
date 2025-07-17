@@ -10,62 +10,72 @@ Em uma cidade escondida de tudo há uma cafeteria exótica na beira de uma fenda
 Este projeto está sendo desenvolvido como uma vitrine digital e, em breve, se tornará um <strong>e-commerce artístico</strong>, onde será possível adquirir obras e produtos criados por artistas cooperados da editora Cidadeclipse.
 </p>
 
-
 ---
 
-## 🧰 Tecnologias e Dependências
-
-Este projeto está sendo desenvolvido com um conjunto moderno de tecnologias voltado para desempenho, organização de código e experiência do usuário.
+## 🧰 Tecnologias Frontend
 
 ### ⚛️ React 18
-A biblioteca principal para a construção da interface. Utiliza renderização baseada em componentes e gerenciamento eficiente do DOM para criar experiências interativas e fluidas.
+Biblioteca principal para construção da interface interativa baseada em componentes.
 
 ### ⚡ Vite
-Utilizado como *bundler* e *dev server*, o Vite oferece tempos de build extremamente rápidos e recarregamento instantâneo, o que melhora a produtividade no desenvolvimento.
+Utilizado para bundling e desenvolvimento rápido com HMR (Hot Module Replacement).
 
 ### 🛠️ TypeScript
-Fornece tipagem estática para o JavaScript, facilitando a manutenção, evitando bugs em tempo de desenvolvimento e melhorando a escalabilidade do projeto.
+Oferece segurança com tipagem estática e melhora a manutenção do código.
 
 ### 🎨 Styled-components
-Permite o uso de CSS-in-JS com escopo local de estilos, promovendo maior modularidade e legibilidade nos componentes estilizados.
+Permite o uso de CSS-in-JS, com escopo local e sem conflitos de estilo.
 
 ### 🧠 Zustand
-Uma biblioteca leve e intuitiva para gerenciamento de estado global. Ideal para manter o controle de estados compartilhados entre componentes com baixo acoplamento.
+Gerenciador de estado leve, moderno e intuitivo, ideal para aplicações com compartilhamento de estado simples e direto.
 
 ### 🧭 React Router DOM + Hash Link
-Utilizado para roteamento de páginas dentro da aplicação e navegação com âncoras suaves. Garante uma experiência fluida mesmo em sites com múltiplas seções.
+Gerencia o roteamento de páginas e âncoras dentro do app de forma fluida.
 
 ### 🧼 ESLint + Prettier
-Ferramentas de linting e formatação que garantem um padrão consistente de código e evitam erros comuns de sintaxe e estilo.
+Mantêm a consistência e qualidade do código com linting e formatação automáticos.
 
-### 📦 Redux Toolkit + React-Redux
-Apesar do uso de Zustand, o Redux Toolkit também está disponível para possíveis fluxos de estado mais complexos ou integração com middlewares como `redux-thunk`.
+### 🧱 Redux Toolkit (disponível)
+Para casos onde o gerenciamento de estado precisar escalar ou incluir middlewares assíncronos.
 
 ### 🎭 React Input Mask
-Permite aplicar máscaras de entrada em campos de formulário, melhorando a usabilidade e evitando erros de digitação do usuário.
-
-### 🎚 React Intersection Observer
-Detecta quando elementos entram ou saem da viewport, ideal para implementar animações ou carregamento condicional de conteúdo.
+Aplica máscaras de entrada em formulários, como CPF, telefone, etc.
 
 ### ⏳ React Spinners
-Utilizado para feedback visual durante carregamentos assíncronos, reforçando a boa experiência de navegação.
+Indicadores visuais de carregamento assíncrono.
 
 ---
 
-## 📁 Estrutura e Padrões
+## 🧪 Backend — NestJS + Prisma + MySQL
 
-O projeto segue uma organização modular baseada em componentes reutilizáveis e clara separação de responsabilidades. O uso de tipagem forte, boas práticas de linting e controle de estilo garantem que o código seja limpo, escalável e de fácil manutenção.
+O backend do projeto está sendo desenvolvido com [NestJS](https://nestjs.com/) e gerenciado com [Prisma ORM](https://www.prisma.io/) usando banco de dados MySQL. Está dividido entre funcionalidades já disponíveis em produção e funcionalidades em desenvolvimento.
+
+### ✅ Em produção:
+- API pública para entrega de livros gratuitos diretamente no site.
+
+### 🚧 Em desenvolvimento:
+- Sistema de autenticação com JWT e proteção CSRF.
+- Registro e login de usuários com senha criptografada (bcrypt).
+- Carrinho de compras: adicionar, remover e listar itens.
+- Finalização de pedidos com integração de pagamento via **PIX**.
+- Middleware de segurança com **Helmet**, **rate limiting**, e **cookie-parser**.
+- Validação de dados com `class-validator` e `class-transformer`.
+
+### 🛠️ Tecnologias backend:
+- **NestJS**: framework escalável e modular para aplicações Node.js.
+- **Prisma ORM**: abstração moderna e tipada para MySQL.
+- **JWT + CSRF**: autenticação segura com tokens e proteção contra ataques cross-site.
+- **Nodemailer**: (instalado) para futuros recursos de notificação por e-mail.
+- **Express-rate-limit + Helmet**: hardening básico de segurança HTTP.
 
 ---
 
-## 🚧 Status
+## 🛒 Futuro do Projeto
 
-**Em desenvolvimento ativo.** A proposta principal é criar uma experiência imersiva e sensível, com uma estética única e um propósito artístico-cultural por trás da interface e das funcionalidades. O projeto serve como vitrine digital para artistas emergentes vinculados à editora cooperativa.
+A plataforma será expandida para um **e-commerce completo**, permitindo a venda direta de livros, zines, prints, ilustrações e outros produtos artísticos dos membros cooperados da Cidadeclipse. Essa estrutura oferecerá uma alternativa independente e autossustentável para artistas emergentes.
 
 ---
 
 ## 📜 Licença
 
 Este projeto é de uso interno e artístico. Direitos reservados aos autores da Cidadeclipse.
-
----
