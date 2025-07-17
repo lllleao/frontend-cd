@@ -38,6 +38,10 @@ export const AddressContainer = styled.div<{$isSelect?: boolean}>`
     }
 
     .address {
+        .name {
+            display: block;
+            margin-bottom: 1rem;
+        }
         .rua-num {
             display: flex;
             gap: 2rem;

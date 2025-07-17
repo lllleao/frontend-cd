@@ -3,31 +3,36 @@ import { CheckoutContainer, ChoseAddress, ValidAddres } from './styles'
 import {
     GetAddressProps,
     useGetCookieMutation,
-    useGetItemsCartQuery,
-    useGetTotalPriceQuery,
     useLazyGetAddressQuery,
-    usePurchaseDataMutation
+    useLazyGetItemsCartQuery,
+    useLazyGetTotalPriceQuery,
+    usePurchaseDataMutation,
+    useRefreshTokenMutation
 } from '../../services/api'
 import { useNavigate } from 'react-router-dom'
 import Header from '../../containers/Header'
-import ProfileAddress from '../ProfileAddress'
+import ProfileAddress from '../AddressCard'
 import { Finish } from '../FormAddress/styles'
-import { defaultAddress } from '../../utils'
+import { defaultAddress, isErrorMessageExist } from '../../utils'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 const Checkout = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
 
-    const { data } = useGetItemsCartQuery(csrfToken)
+    const [getDataItems, { data }] = useLazyGetItemsCartQuery()
     const [getDataAddress, { data: dataAddress }] = useLazyGetAddressQuery()
     const [isWarnDefaultVisible, setIsWarnDefaultVisible] = useState(false)
     const [isWarnSecondaryVisible, setIsWarnSecondaryVisible] = useState(false)
     const [doPurchase] = usePurchaseDataMutation()
 
     const [isDefaultAddress, setIsDefaultAddress] = useState(true)
+    const [getRefresh] = useRefreshTokenMutation()
+
     const [isSecondaryAddress, setIsSecondaryAddress] = useState(false)
-    const { data: totalPrice } = useGetTotalPriceQuery(csrfToken)
-    const [getCookie] = useGetCookieMutation()
+    const [getTotalPrice, { data: totalPrice }] = useLazyGetTotalPriceQuery()
+
+    // const { data: totalPrice } = useGetTotalPriceQuery(csrfToken)
+    const [getToken] = useGetCookieMutation()
     const navigate = useNavigate()
     const [dataAddresDefault, setDataAddresDefault] = useState<
         GetAddressProps | undefined
@@ -37,15 +42,36 @@ const Checkout = () => {
     >()
 
     useEffect(() => {
-        console.log(csrfToken, 'checkout')
         if (!csrfToken) return
+        getTotalPrice(csrfToken)
+        getDataItems(csrfToken)
         getDataAddress({ csrfToken })
-        getCookie(csrfToken)
+        getToken(csrfToken)
             .then((res) => {
-                if (res.error) {
-                    console.log(res.error)
-                    navigate('/login')
+                if (isErrorMessageExist(res)) {
+                    if (res.error.data.message === 'Token expirado') {
+                        getRefresh(csrfToken)
+                            .then((response) => {
+                                console.log(response, 'aqui')
+                                if (response.error) {
+                                    return navigate('/login')
+                                }
+                                localStorage.setItem('logado', 'true')
+                                getDataAddress({ csrfToken })
+                                getDataItems(csrfToken)
+                                getTotalPrice(csrfToken)
+                            })
+                            .catch((error) => {
+                                console.log(error, 'err')
+                            })
+                        return undefined
+                    }
                 }
+                if (res.error || !res.data) {
+                    return navigate('/login')
+                }
+
+                return res.data
             })
             .catch((err) => console.log(err))
 
@@ -64,7 +90,16 @@ const Checkout = () => {
         if (dataAddress && dataAddress[1] && !dataAddress[1].isDefault) {
             setDataAddresSecondary(dataAddress[1])
         }
-    }, [getCookie, navigate, csrfToken, dataAddress, getDataAddress])
+    }, [
+        getToken,
+        navigate,
+        csrfToken,
+        dataAddress,
+        getDataAddress,
+        getRefresh,
+        getDataItems,
+        getTotalPrice
+    ])
 
     const handleClick = (isDefault: boolean) => {
         setIsDefaultAddress(isDefault)
@@ -141,7 +176,7 @@ const Checkout = () => {
         }
 
         if (isSecondaryAddress && dataAddresSecondary) {
-            return acceptPurchase(dataAddresDefault)
+            return acceptPurchase(dataAddresSecondary)
         }
     }
 
@@ -185,6 +220,11 @@ const Checkout = () => {
                                     </div>
                                 </label>
                                 <ProfileAddress
+                                    name={
+                                        dataAddresDefault
+                                            ? dataAddresDefault.name
+                                            : defaultAddress[0].data.name
+                                    }
                                     cpf={
                                         dataAddresDefault
                                             ? dataAddresDefault.cpf
@@ -240,6 +280,11 @@ const Checkout = () => {
                                     </div>
                                 </label>
                                 <ProfileAddress
+                                    name={
+                                        dataAddresSecondary
+                                            ? dataAddresSecondary.name
+                                            : defaultAddress[0].data.name
+                                    }
                                     cpf={
                                         dataAddresSecondary
                                             ? dataAddresSecondary.cpf

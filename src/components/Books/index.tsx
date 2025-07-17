@@ -11,6 +11,7 @@ import {
 import Card from '../Card'
 import Loader from '../Loader'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
+import { isErrorMessageExist } from '../../utils'
 
 let isSeeMore: boolean = false
 
@@ -20,12 +21,14 @@ type BookParams = {
 const Book = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
 
+    const setViweNumberCart = useCsrfTokenStore((state) => state.setViweNumberCart)
     const channelName = 'cart_channel'
     const [addToCart] = useAddToCartMutation()
     const [getDataItem] = useLazyGetItemsCartQuery()
     const navigate = useNavigate()
     const [valueQuant, setValueQuant] = useState('1')
     const [addCartLoader, setAddCartLoader] = useState(false)
+    const [buttonMessage, setButtonMessage] = useState('Adicionar ao carrinho')
     const [priceCalc, setPriceCalc] = useState(10)
     const [textIsHidden, setTextIsHidden] = useState(true)
     const [isItemAdd, setIsItemAdd] = useState(false)
@@ -78,21 +81,11 @@ const Book = () => {
                 csrfToken
             })
                 .then((res) => {
-                    if (
-                        res.error &&
-                        typeof res.error === 'object' &&
-                        'data' in res.error &&
-                        res.error.data &&
-                        typeof res.error.data === 'object' &&
-                        'message' in res.error.data
-                    ) {
-                        if (
-                            res.error.data.message === 'Token ausente.' ||
-                            res.error.data.message === 'Token expirado' ||
-                            res.error.data.message === 'Token mal formado'
-                        ) {
+                    if (isErrorMessageExist(res)) {
+                        const message = res.error.data.message as string
+                        if (message.toLowerCase().includes('token')) {
                             setAddCartLoader(false)
-
+                            
                             return navigate('/login')
                         }
                         if (res.error.data.message === 'Item já existe') {
@@ -104,8 +97,14 @@ const Book = () => {
                             }, 3000)
                             return res.data
                         }
-                        return res.data
+                        console.log(res.error)
                     }
+                    setViweNumberCart(true)
+                    setButtonMessage('Item adicionado')
+                    setTimeout(
+                        () => setButtonMessage('Adicionar ao carrinho'),
+                        3000
+                    )
                     setAddCartLoader(false)
                 })
                 .catch((err) => console.error(err))
@@ -207,9 +206,7 @@ const Book = () => {
                         isItemAdd={isItemAdd}
                         addToCart={handleAddToCart}
                     >
-                        {isItemAdd
-                            ? 'Item já adicionado'
-                            : 'Adicionar ao carrinho'}
+                        {isItemAdd ? 'Item já adicionado' : buttonMessage}
                     </ButtonPurchase>
                     {addCartLoader ? <Loader isCircle /> : <></>}
                 </div>

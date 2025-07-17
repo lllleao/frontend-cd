@@ -12,10 +12,15 @@ import { useEffect, useState } from 'react'
 import Card from '../Card'
 import { useNavigate } from 'react-router-dom'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
+import { isErrorMessageExist, isLoginAndCsrf } from '../../utils'
 
 const ProductsListCart = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
+    const logado = localStorage.getItem('logado')
 
+    const refreshTokenWarn = useCsrfTokenStore(
+        (state) => state.refreshTokenWarn
+    )
     const [badToken, setBadToken] = useState(false)
     const [loading, setLoading] = useState(false)
     const [getDataItems, { data }] = useLazyGetItemsCartQuery()
@@ -23,16 +28,34 @@ const ProductsListCart = () => {
     const [deleteCartItem] = useGetRemoveItemMutation()
     const [updataPrice] = useUpdataPriceMutation()
     const { data: booksStore } = useGetStoreBooksQuery()
-    const navigate = useNavigate()
     const [getRefresh] = useRefreshTokenMutation()
+
+    const navigate = useNavigate()
 
     const channelName = 'cart_channel'
 
     const handleDelete = (id: number | undefined, loading: boolean) => {
         if (id && !loading && csrfToken) {
             deleteCartItem({ id, csrfToken })
-                .unwrap()
-                .then(() => {
+                .then((res) => {
+                    if (isErrorMessageExist(res)) {
+                        const message = res.error.data.message as string
+                        if (message === 'Token expirado') {
+                            return getRefresh(csrfToken)
+                                .then((response) => {
+                                    if (response.error) {
+                                        localStorage.removeItem('logado')
+                                        return navigate('/login')
+                                    }
+                                    console.log('refresh t')
+                                    localStorage.setItem('logado', 'true')
+                                    deleteCartItem({ id, csrfToken })
+                                })
+                                .catch((error) => {
+                                    console.log(error, 'err')
+                                })
+                        }
+                    }
                     getDataItems(csrfToken).catch((err) => console.log(err))
                     setTimeout(
                         () =>
@@ -68,7 +91,13 @@ const ProductsListCart = () => {
             },
             csrfToken
         })
-            .then(() => {
+            .then((res) => {
+                if (isErrorMessageExist(res)) {
+                    const message = res.error.data.message as string
+                    if (message.toLowerCase().includes('token')) {
+                        navigate('/login')
+                    }
+                }
                 if (csrfToken) {
                     getDataItems(csrfToken).catch((err) => console.log(err))
                     setTimeout(
@@ -85,41 +114,16 @@ const ProductsListCart = () => {
     }
 
     useEffect(() => {
-        if (!csrfToken) return
-        getTotalPrice(csrfToken).catch((err) => console.log(err))
+        if (!isLoginAndCsrf(logado, csrfToken)) return
+
+        getTotalPrice(csrfToken).catch((err) => {
+            setBadToken(true)
+            console.log(err)
+        })
         getDataItems(csrfToken)
-            .then((res) => {
-                if (
-                    res.error &&
-                    typeof res.error === 'object' &&
-                    'data' in res.error &&
-                    res.error.data &&
-                    typeof res.error.data === 'object' &&
-                    'message' in res.error.data
-                ) {
-                    if (res.error.data.message === 'Token expirado') {
-                        getRefresh(csrfToken)
-                            .then((response) => {
-                                console.log(response, 'aqui')
-                                if (response.error) {
-                                    setBadToken(true)
-                                    return navigate('/login')
-                                }
-                                localStorage.setItem('logado', 'true')
-                                getDataItems(csrfToken)
-                            })
-                            .catch((error) => {
-                                console.log(error, 'err')
-                            })
-                        return undefined
-                    }
-                }
-            })
-            .catch((err) => console.log(err))
-    }, [csrfToken, getDataItems, getRefresh, getTotalPrice, navigate])
+    }, [csrfToken, getDataItems, getTotalPrice, logado, refreshTokenWarn])
 
     const handleClick = () => {
-        console.log(totalPrice?.totalPrice)
         if (
             totalPrice &&
             !((totalPrice?.totalPrice as unknown as string) === '0') &&
@@ -172,7 +176,7 @@ const ProductsListCart = () => {
                                                     <option value="3">3</option>
                                                 </select>
                                                 <i
-                                                    className="fa-solid fa-trash"
+                                                    className={`fa-solid fa-trash ${loading ? 'disabled' : ''}`}
                                                     onClick={() =>
                                                         handleDelete(
                                                             id,

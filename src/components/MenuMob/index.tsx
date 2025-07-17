@@ -1,37 +1,33 @@
 import { useEffect, useState } from 'react'
 import { MenuBobContainer } from './styles'
 import { HashLink } from 'react-router-hash-link'
-import { useGetCookieMutation } from '../../services/api'
+import { Link } from 'react-router-dom'
+import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 type MenuProps = {
-    viweNumberCart: boolean
     dataLength: number | undefined
 }
 
-const MenuMob = ({ viweNumberCart, dataLength }: MenuProps) => {
-    const csrfToken = localStorage.getItem('csrfToken') as string
-    const [isLoginOrProfile, setIsLoginOrProfile] = useState(true)
-
+const MenuMob = ({ dataLength }: MenuProps) => {
+    const viweNumberCart = useCsrfTokenStore((state) => state.viweNumberCart)
+    const setViweNumberCar = useCsrfTokenStore(
+        (state) => state.setViweNumberCart
+    )
+    const logado = localStorage.getItem('logado')
     const [menuClicked, setMenuClicked] = useState(false)
-    const [getToken] = useGetCookieMutation()
 
     function handleClickCart(): void {
         setMenuClicked(false)
     }
 
     useEffect(() => {
-            getToken(csrfToken)
-                .then((res) => {
-                    if (res.error) {
-                        return setIsLoginOrProfile(true)
-                    }
-
-                    // navigate('/profile')
-                    setIsLoginOrProfile(false)
-                    return res.data
-                })
-                .catch((err) => console.log(err))
-        }, [csrfToken, getToken])
+        if (!dataLength && !(dataLength === 0)) return
+        if (dataLength === 0) {
+            setViweNumberCar(false)
+        } else {
+            setViweNumberCar(true)
+        }
+    }, [dataLength, setViweNumberCar])
 
     return (
         <MenuBobContainer>
@@ -70,34 +66,42 @@ const MenuMob = ({ viweNumberCart, dataLength }: MenuProps) => {
                     </HashLink>
                 </li>
                 <li>
-                    <a
-                        href="/cart"
-                        className={`menu-mob__item cartIcon menu-mob__item__cart`}
-                        onClick={handleClickCart}
-                    >
-                        <i className="fa-solid fa-cart-shopping" />{' '}
-                        <div
-                            className={`number-items-mob ${viweNumberCart ? 'number-items-mob--visible' : ''}`}
+                    {logado ? (
+                        <Link
+                            to={logado ? '/cart' : '/login'}
+                            className="menu-mob__item cartIcon menu-mob__item__cart"
+                            onClick={handleClickCart}
                         >
-                            {dataLength}
-                        </div>
-                    </a>
+                            <i className="fa-solid fa-cart-shopping" />{' '}
+                            <div
+                                className={`number-items-mob ${viweNumberCart ? 'number-items-mob--visible' : ''}`}
+                            >
+                                {dataLength}
+                            </div>
+                        </Link>
+                    ) : (
+                        <></>
+                    )}
                 </li>
                 <li>
-                    {isLoginOrProfile ? (
-                        <a
-                        href='/login'
-                        className='menu-mob__item userIcon'
-                    >
-                        <i className="fa-solid fa-right-to-bracket" />
-                    </a>
+                    {!logado ? (
+                        <>
+                            <Link
+                                to="/login"
+                                className="menu-mob__item userIcon"
+                            >
+                                <i className="fa-solid fa-right-to-bracket" />
+                            </Link>
+                        </>
                     ) : (
-                        <a
-                        href='/profile'
-                        className='menu-mob__item userIcon'
-                    >
-                        <i className="fa-solid fa-user" />
-                    </a>
+                        <>
+                            <Link
+                                to="/profile"
+                                className="menu-mob__item userIcon"
+                            >
+                                <i className="fa-solid fa-user" />
+                            </Link>
+                        </>
                     )}
                 </li>
             </ul>

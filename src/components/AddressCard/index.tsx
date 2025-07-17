@@ -1,6 +1,6 @@
+import { Link } from 'react-router-dom'
 import { AddressContainer } from './styles'
-
-type ProfileAddressProps = {
+type AddressCardProps = {
     isDefault: boolean
     title: string
     street: string
@@ -10,9 +10,10 @@ type ProfileAddressProps = {
     cep: string
     isSelect: boolean
     cpf: string
+    name: string
 }
 
-const ProfileAddress = ({
+const AddressCard = ({
     isDefault,
     title,
     cep,
@@ -21,23 +22,25 @@ const ProfileAddress = ({
     number,
     street,
     isSelect,
-    cpf
-}: ProfileAddressProps) => {
+    cpf,
+    name
+}: AddressCardProps) => {
     const handleIsAddressDefault = () => {
         localStorage.setItem('isDefault', `${isDefault}`)
     }
+
     return (
         <>
             <AddressContainer $isSelect={isSelect}>
                 <header className="header-address">
                     <h3 className="address-card">{title}</h3>
-                    <a
-                        href="/address"
+                    <Link
+                        to="/address"
                         className="edit-address"
                         onClick={handleIsAddressDefault}
                     >
                         <i className="fa-solid fa-pen-to-square" />
-                    </a>
+                    </Link>
                 </header>
                 <div className="card-address">
                     {isDefault ? (
@@ -46,6 +49,9 @@ const ProfileAddress = ({
                         <i className="fa-solid fa-building" />
                     )}
                     <div className="address">
+                        <span className="name">
+                            <label className="tag">Nome:</label> {name}
+                        </span>
                         <div className="rua-num">
                             <span>
                                 <label className="tag">Rua:</label> {street}
@@ -75,4 +81,4 @@ const ProfileAddress = ({
     )
 }
 
-export default ProfileAddress
+export default AddressCard

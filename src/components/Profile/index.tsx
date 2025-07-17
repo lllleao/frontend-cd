@@ -6,18 +6,21 @@ import {
     useGetCookieMutation,
     useLazyGetAddressQuery,
     useLazyGetProfileDataQuery,
-    useLogoutMutation,
-    useRefreshTokenMutation
+    useLogoutMutation
 } from '../../services/api'
 import OrdersCompleted from '../OrdersCompleted'
 import Header from '../../containers/Header'
-import ProfileAddress from '../ProfileAddress'
-import { defaultAddress } from '../../utils'
+import ProfileAddress from '../AddressCard'
+import { defaultAddress, isLoginAndCsrf } from '../../utils'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 const Profile = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
-    const [getRefresh] = useRefreshTokenMutation()
+    const logado = localStorage.getItem('logado')
+
+    const refreshTokenWarn = useCsrfTokenStore(
+        (state) => state.refreshTokenWarn
+    )
     const [getToken] = useGetCookieMutation()
     const [getDataProfile, { data }] = useLazyGetProfileDataQuery()
     const [logout] = useLogoutMutation()
@@ -43,68 +46,45 @@ const Profile = () => {
     }
 
     useEffect(() => {
-        if (!csrfToken) return
-        console.log(csrfToken, 'entrou')
+        if (!isLoginAndCsrf(logado, csrfToken)) return
         getDataProfile(csrfToken)
         getDataAddress({ csrfToken })
         getToken(csrfToken)
             .then((res) => {
-                console.log(res)
-                if (
-                    res.error &&
-                    typeof res.error === 'object' &&
-                    'data' in res.error &&
-                    res.error.data &&
-                    typeof res.error.data === 'object' &&
-                    'message' in res.error.data
-                ) {
-                    if (res.error.data.message === 'Token expirado') {
-                        getRefresh(csrfToken)
-                            .then((response) => {
-                                console.log(response, 'aqui')
-                                if (response.error) {
-                                    return navigate('/login')
-                                }
-                                localStorage.setItem('logado', 'true')
-                                getDataProfile(csrfToken)
-                                getDataAddress({ csrfToken })
-                            })
-                            .catch((error) => {
-                                console.log(error, 'err')
-                            })
-                        return undefined
-                    }
-                }
-                if (res.error || !res.data) {
-                    return navigate('/login')
+                if (dataAddress && dataAddress[0] && dataAddress[0].isDefault) {
+                    setDataAddresDefault(dataAddress[0])
                 }
 
+                if (dataAddress && dataAddress[1] && dataAddress[1].isDefault) {
+                    setDataAddresDefault(dataAddress[1])
+                }
+
+                if (
+                    dataAddress &&
+                    dataAddress[0] &&
+                    !dataAddress[0].isDefault
+                ) {
+                    setDataAddresSecondary(dataAddress[0])
+                }
+
+                if (
+                    dataAddress &&
+                    dataAddress[1] &&
+                    !dataAddress[1].isDefault
+                ) {
+                    setDataAddresSecondary(dataAddress[1])
+                }
                 return res.data
             })
             .catch((err) => console.log(err))
-        if (dataAddress && dataAddress[0] && dataAddress[0].isDefault) {
-            setDataAddresDefault(dataAddress[0])
-        }
-
-        if (dataAddress && dataAddress[1] && dataAddress[1].isDefault) {
-            setDataAddresDefault(dataAddress[1])
-        }
-
-        if (dataAddress && dataAddress[0] && !dataAddress[0].isDefault) {
-            setDataAddresSecondary(dataAddress[0])
-        }
-
-        if (dataAddress && dataAddress[1] && !dataAddress[1].isDefault) {
-            setDataAddresSecondary(dataAddress[1])
-        }
     }, [
         getToken,
-        navigate,
         csrfToken,
         dataAddress,
         getDataProfile,
         getDataAddress,
-        getRefresh
+        logado,
+        refreshTokenWarn
     ])
 
     return (
@@ -116,6 +96,11 @@ const Profile = () => {
                     <h3>{data?.email}</h3>
 
                     <ProfileAddress
+                        name={
+                            dataAddresDefault
+                                ? dataAddresDefault.name
+                                : defaultAddress[0].data.name
+                        }
                         cpf={
                             dataAddresDefault
                                 ? dataAddresDefault.cpf
@@ -152,6 +137,11 @@ const Profile = () => {
                     />
 
                     <ProfileAddress
+                        name={
+                            dataAddresSecondary
+                                ? dataAddresSecondary.name
+                                : defaultAddress[0].data.name
+                        }
                         cpf={
                             dataAddresSecondary
                                 ? dataAddresSecondary.cpf

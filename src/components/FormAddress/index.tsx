@@ -8,12 +8,17 @@ import {
     FormAddressContainer,
     TitleForms
 } from './styles'
-import { useCreateAddressMutation } from '../../services/api'
+import {
+    useCreateAddressMutation,
+    useRefreshTokenMutation
+} from '../../services/api'
 import Loader from '../Loader'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
+import { isErrorMessageExist } from '../../utils'
 
 const FormAddress = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
+    const logado = localStorage.getItem('logado')
 
     const isDefaulStoraget = localStorage.getItem('isDefault') as string
     const [isDefault, setIsDefault] = useState(true)
@@ -28,6 +33,7 @@ const FormAddress = () => {
     const [number, setNumber] = useState('')
     const navigate = useNavigate()
     const [createAddress] = useCreateAddressMutation()
+    const [getRefresh] = useRefreshTokenMutation()
 
     const [errorCEP, setErrorCEP] = useState(false)
     const [errorCpf, setErrorCpf] = useState(false)
@@ -165,61 +171,57 @@ const FormAddress = () => {
                     street: street.trim()
                 }
             })
-                .then(() => {
+                .then((res) => {
+                    if (isErrorMessageExist(res)) {
+                        const message = res.error.data.message as string
+                        if (message === 'Token expirado') {
+                            return getRefresh(csrfToken)
+                                .then((response) => {
+                                    if (response.error) {
+                                        localStorage.removeItem('logado')
+                                        return navigate('/login')
+                                    }
+                                    localStorage.setItem('logado', 'true')
+                                    createAddress({
+                                        csrfToken,
+                                        data: {
+                                            zipCode: cep
+                                                .trim()
+                                                .replace(/\D/g, ''),
+                                            complement: complement.trim(),
+                                            cpf: cpf.trim().replace(/\D/g, ''),
+                                            name: name.trim(),
+                                            neighborhood: neighborhood.trim(),
+                                            number: number.trim(),
+                                            isDefault,
+                                            street: street.trim()
+                                        }
+                                    }).then(() => {
+                                        setIsLoader(false)
+                                        navigate('/profile')
+                                    })
+                                })
+                                .catch((error) => {
+                                    console.log(error, 'err')
+                                })
+                        }
+                    }
                     setIsLoader(false)
                     navigate('/profile')
                 })
                 .catch((err) => {
                     console.log(err)
                 })
-            // navigate('/profile')
-            // if (data && totalPrice) {
-            //     doPurchase({
-            //         cep: cep.trim().replace(/\D/g, ''),
-            //         complement: complement.trim(),
-            //         cpf: cpf.trim().replace(/\D/g, ''),
-            //         name: name.trim(),
-            //         neighborhood: neighborhood.trim(),
-            //         number: number.trim(),
-            //         street: street.trim(),
-            //         itemsInfo: data.items.map(
-            //             ({ name, photo, price, quant, id }) => {
-            //                 return {
-            //                     name,
-            //                     photo,
-            //                     price,
-            //                     quant,
-            //                     id
-            //                 }
-            //             }
-            //         ),
-            //         totalPrice: totalPrice.totalPrice
-            //     })
-            //         .then((res) => {
-            //             if (res.error) {
-            //                 return new Error(
-            //                     'Algum problema com a geração do qrcode'
-            //                 )
-            //             }
-            //             localStorage.setItem(
-            //                 'qrCode',
-            //                 res.data.pixData.imagemQrcode
-            //             )
-            //             localStorage.setItem(
-            //                 'copPaste',
-            //                 res.data.pixData.qrcode
-            //             )
-            //             navigate('/pix')
-            //         })
-            //         .catch((err) => console.log(err))
-            // }
         }
     }
 
     useEffect(() => {
+        if (!logado) {
+            return navigate('/login')
+        }
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         isDefaulStoraget === 'true' ? setIsDefault(true) : setIsDefault(false)
-    }, [isDefaulStoraget])
+    }, [isDefaulStoraget, logado, navigate])
     return (
         <>
             <BarFormAddress>

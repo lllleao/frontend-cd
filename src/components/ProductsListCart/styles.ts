@@ -118,7 +118,9 @@ export const ProductsListCartContainer = styled.section`
 
 export const ItemsOnCart = styled.div`
     margin-bottom: 2rem;
-
+    .disabled {
+        color: #6f6f6f;
+    }
 `
 
 export const ButtonCart = styled(ButtonContainer)`

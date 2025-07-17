@@ -15,6 +15,7 @@ import {
 } from '../../store/reducers/loginSign'
 import { NavigateFunction } from 'react-router-dom'
 import { validatePassword } from '../../utils/validationLoginSign'
+import { isErrorMessageExist } from '../../utils'
 
 export type DataProp = {
     data: {
@@ -57,12 +58,7 @@ export const handleLogin = (
         makeLogin(data)
             .then((res) => {
                 if (
-                    res.error &&
-                    typeof res.error === 'object' &&
-                    'data' in res.error &&
-                    res.error.data &&
-                    typeof res.error.data === 'object' &&
-                    'message' in res.error.data
+                    isErrorMessageExist(res)
                 ) {
                     const errorData = res.error.data as {
                         message?: string
@@ -156,12 +152,7 @@ export const handleSign = (
         makeSign(data)
             .then((res) => {
                 if (
-                    res.error &&
-                    typeof res.error === 'object' &&
-                    'data' in res.error &&
-                    res.error.data &&
-                    typeof res.error.data === 'object' &&
-                    'message' in res.error.data
+                    isErrorMessageExist(res)
                 ) {
                     const errorData = res.error.data as {
                         message?: string

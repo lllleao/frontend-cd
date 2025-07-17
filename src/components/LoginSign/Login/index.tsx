@@ -9,7 +9,6 @@ import { EmailUserMsgContainer } from './styles'
 import { useLoginUserMutation } from '../../../services/api'
 import { useNavigate } from 'react-router-dom'
 import { useCsrfTokenStore } from '../../../hooks/useFetchCsrfToken'
-import { useEffect } from 'react'
 
 const Login = () => {
     const { loginUserExist, msg } = useSelector(
@@ -45,10 +44,6 @@ const Login = () => {
         },
         csrfToken
     }
-
-    useEffect(() => {
-        console.log(csrfToken)
-    }, [csrfToken])
 
     return (
         <>

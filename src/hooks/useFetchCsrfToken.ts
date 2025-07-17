@@ -3,20 +3,37 @@ import { create } from 'zustand'
 type CsrfStore = {
     csrfToken: string | undefined
     setCsrfToken: (token: string) => void
+    setViweNumberCart: (viweNumberCart: boolean) => void
     fetchCsrfToken: () => Promise<void>
+    viweNumberCart: boolean
+    refreshTokenWarn: boolean
+    setRefreshTokenWarn: (value: boolean) => Promise<unknown>
 }
 
 export const useCsrfTokenStore = create<CsrfStore>((set) => ({
     csrfToken: undefined,
+    viweNumberCart: false,
+    refreshTokenWarn: false,
 
     setCsrfToken: (token: string) => set({ csrfToken: token }),
 
+    setViweNumberCart: (viweNumberCart: boolean) => set({viweNumberCart}),
+
+    setRefreshTokenWarn: (value: boolean) => {
+        return new Promise((resolve) => {
+            resolve(set({refreshTokenWarn: value}))
+        })
+    },
+
     fetchCsrfToken: async () => {
         try {
-            const res = await fetch('http://localhost:3000/auth/get-csrfToken', {
-                credentials: 'include',
-                method: 'POST'
-            })
+            const res = await fetch(
+                'http://localhost:3000/auth/get-csrfToken',
+                {
+                    credentials: 'include',
+                    method: 'POST'
+                }
+            )
 
             const token = await res.json()
             // const token = res as unknown as { token: string }
