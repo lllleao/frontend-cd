@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { ButtonContainer } from '../ButtonPurchase/styles'
-import { CardContainer } from '../Card/styles'
+import { CardContainerStore } from '../Card/styles'
 
 export const ProductsListCartContainer = styled.section`
     background-color: #000;
@@ -84,7 +84,7 @@ export const ProductsListCartContainer = styled.section`
         margin-top: 5rem;
         display: flex;
         justify-content: space-between;
-        ${CardContainer} {
+        ${CardContainerStore} {
             max-width: 250px;
             img {
                 width: 80%;
@@ -92,7 +92,7 @@ export const ProductsListCartContainer = styled.section`
         }
         @media screen and (max-width: 767px) {
             display: block;
-            ${CardContainer} {
+            ${CardContainerStore} {
                 margin: 0 auto 2rem;
                 text-align: center;
 

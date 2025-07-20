@@ -6,7 +6,8 @@ import {
     useAddToCartMutation,
     useGetSpecificStoreBookQuery,
     useGetStoreBooksQuery,
-    useLazyGetItemsCartQuery
+    useLazyGetItemsCartQuery,
+    useRefreshTokenMutation
 } from '../../services/api'
 import Card from '../Card'
 import Loader from '../Loader'
@@ -21,7 +22,9 @@ type BookParams = {
 const Book = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
 
-    const setViweNumberCart = useCsrfTokenStore((state) => state.setViweNumberCart)
+    const setViweNumberCart = useCsrfTokenStore(
+        (state) => state.setViweNumberCart
+    )
     const channelName = 'cart_channel'
     const [addToCart] = useAddToCartMutation()
     const [getDataItem] = useLazyGetItemsCartQuery()
@@ -35,6 +38,7 @@ const Book = () => {
     const { id } = useParams() as BookParams
     const { data, isFetching } = useGetSpecificStoreBookQuery(id)
     const { data: booksStore, isLoading } = useGetStoreBooksQuery()
+    const [getRefresh] = useRefreshTokenMutation()
 
     const only212Characters = () => {
         const appear = data?.summary.slice(0, 212)
@@ -83,21 +87,69 @@ const Book = () => {
                 .then((res) => {
                     if (isErrorMessageExist(res)) {
                         const message = res.error.data.message as string
-                        if (message.toLowerCase().includes('token')) {
-                            setAddCartLoader(false)
-                            
-                            return navigate('/login')
-                        }
-                        if (res.error.data.message === 'Item já existe') {
-                            setAddCartLoader(false)
 
-                            setIsItemAdd(true)
-                            setTimeout(() => {
-                                setIsItemAdd(false)
-                            }, 3000)
-                            return res.data
+                        switch (message) {
+                            case 'Token expirado':
+                                return getRefresh(csrfToken).then(
+                                    (response) => {
+                                        if (response.error) {
+                                            setAddCartLoader(false)
+
+                                            return navigate('/login')
+                                        }
+
+                                        addToCart({
+                                            items: [
+                                                {
+                                                    photo: data.photo,
+                                                    price: priceCalc,
+                                                    quant: Number(valueQuant),
+                                                    name: data.title
+                                                }
+                                            ],
+                                            csrfToken
+                                        }).then((resAddTo) => {
+                                            if (isErrorMessageExist(resAddTo)) {
+                                                if (
+                                                    resAddTo.error.data
+                                                        .message ===
+                                                    'Item já existe'
+                                                ) {
+                                                    setAddCartLoader(false)
+
+                                                    setIsItemAdd(true)
+                                                    setTimeout(() => {
+                                                        setIsItemAdd(false)
+                                                    }, 3000)
+                                                    return res.data
+                                                }
+                                            }
+                                            setViweNumberCart(true)
+                                            setButtonMessage('Item adicionado')
+                                            setTimeout(
+                                                () =>
+                                                    setButtonMessage(
+                                                        'Adicionar ao carrinho'
+                                                    ),
+                                                3000
+                                            )
+                                            setAddCartLoader(false)
+                                        })
+                                    }
+                                )
+                            case 'Item já existe':
+                                setAddCartLoader(false)
+
+                                setIsItemAdd(true)
+                                setTimeout(() => {
+                                    setIsItemAdd(false)
+                                }, 3000)
+                                return res.data
+                            default:
+                                setAddCartLoader(false)
+
+                                return navigate('/login')
                         }
-                        console.log(res.error)
                     }
                     setViweNumberCart(true)
                     setButtonMessage('Item adicionado')

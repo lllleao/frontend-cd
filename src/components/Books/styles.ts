@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { CardContainer } from '../Card/styles'
+import { CardContainerStore } from '../Card/styles'
 
 export const BooksPurchase = styled.section<{ $isFeching: boolean }>`
     padding: 2rem 0;
@@ -37,7 +37,7 @@ export const BooksPurchase = styled.section<{ $isFeching: boolean }>`
         margin-top: 6rem;
         display: flex;
         justify-content: space-between;
-        ${CardContainer} {
+        ${CardContainerStore} {
             max-width: 250px;
             img {
                 width: 80%;
@@ -45,7 +45,7 @@ export const BooksPurchase = styled.section<{ $isFeching: boolean }>`
         }
         @media screen and (max-width: 767px) {
             display: block;
-            ${CardContainer} {
+            ${CardContainerStore} {
                 margin: 0 auto 2rem;
                 text-align: center;
 

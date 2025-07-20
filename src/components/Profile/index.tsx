@@ -48,8 +48,8 @@ const Profile = () => {
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
         getDataProfile(csrfToken)
-        getDataAddress({ csrfToken })
-        getToken(csrfToken)
+        getDataAddress({ csrfToken }).then(() => console.log('opa'))
+        getToken(csrfToken) // TIRAR ISSO AQUI  
             .then((res) => {
                 if (dataAddress && dataAddress[0] && dataAddress[0].isDefault) {
                     setDataAddresDefault(dataAddress[0])

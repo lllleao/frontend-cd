@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { CardContainer } from '../Card/styles'
+import { CardContainerStore } from '../Card/styles'
 
 export const PurchaseContainer = styled.section`
     /* display: none; */
@@ -83,7 +83,7 @@ export const PurchaseContainer = styled.section`
         }
     }
 
-    ${CardContainer} {
+    ${CardContainerStore} {
         text-align: center;
         img {
             width: 70%;

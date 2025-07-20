@@ -13,17 +13,25 @@ import { useNavigate } from 'react-router-dom'
 import Header from '../../containers/Header'
 import ProfileAddress from '../AddressCard'
 import { Finish } from '../FormAddress/styles'
-import { defaultAddress, isErrorMessageExist } from '../../utils'
+import {
+    defaultAddress,
+    isErrorMessageExist,
+    isLoginAndCsrf
+} from '../../utils'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 const Checkout = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
+    const logado = localStorage.getItem('logado')
 
     const [getDataItems, { data }] = useLazyGetItemsCartQuery()
     const [getDataAddress, { data: dataAddress }] = useLazyGetAddressQuery()
     const [isWarnDefaultVisible, setIsWarnDefaultVisible] = useState(false)
     const [isWarnSecondaryVisible, setIsWarnSecondaryVisible] = useState(false)
     const [doPurchase] = usePurchaseDataMutation()
+    const refreshTokenWarn = useCsrfTokenStore(
+        (state) => state.refreshTokenWarn
+    )
 
     const [isDefaultAddress, setIsDefaultAddress] = useState(true)
     const [getRefresh] = useRefreshTokenMutation()
@@ -42,38 +50,19 @@ const Checkout = () => {
     >()
 
     useEffect(() => {
-        if (!csrfToken) return
+        if (!isLoginAndCsrf(logado, csrfToken)) return
         getTotalPrice(csrfToken)
         getDataItems(csrfToken)
-        getDataAddress({ csrfToken })
-        getToken(csrfToken)
-            .then((res) => {
-                if (isErrorMessageExist(res)) {
-                    if (res.error.data.message === 'Token expirado') {
-                        getRefresh(csrfToken)
-                            .then((response) => {
-                                console.log(response, 'aqui')
-                                if (response.error) {
-                                    return navigate('/login')
-                                }
-                                localStorage.setItem('logado', 'true')
-                                getDataAddress({ csrfToken })
-                                getDataItems(csrfToken)
-                                getTotalPrice(csrfToken)
-                            })
-                            .catch((error) => {
-                                console.log(error, 'err')
-                            })
-                        return undefined
-                    }
-                }
-                if (res.error || !res.data) {
-                    return navigate('/login')
-                }
+    }, [csrfToken, getDataItems, getTotalPrice, logado])
 
-                return res.data
-            })
-            .catch((err) => console.log(err))
+    useEffect(() => {
+        if (!isLoginAndCsrf(logado, csrfToken)) return
+
+        getDataAddress({ csrfToken })
+    }, [csrfToken, getDataAddress, logado, refreshTokenWarn])
+
+    useEffect(() => {
+        if (!isLoginAndCsrf(logado, csrfToken)) return
 
         if (dataAddress && dataAddress[0] && dataAddress[0].isDefault) {
             setDataAddresDefault(dataAddress[0])
@@ -90,16 +79,7 @@ const Checkout = () => {
         if (dataAddress && dataAddress[1] && !dataAddress[1].isDefault) {
             setDataAddresSecondary(dataAddress[1])
         }
-    }, [
-        getToken,
-        navigate,
-        csrfToken,
-        dataAddress,
-        getDataAddress,
-        getRefresh,
-        getDataItems,
-        getTotalPrice
-    ])
+    }, [csrfToken, dataAddress, logado, refreshTokenWarn])
 
     const handleClick = (isDefault: boolean) => {
         setIsDefaultAddress(isDefault)

@@ -3,6 +3,7 @@ import documentario from '../../assets/documentario/documentario.jpg'
 import { AnimationHero, Documentario, HeroContainer, Watch } from './styles'
 
 const Hero = () => {
+    
     return (
         <>
             <HeroContainer id="hero" className="container">

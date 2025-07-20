@@ -205,6 +205,8 @@ const FormAddress = () => {
                                     console.log(error, 'err')
                                 })
                         }
+                        localStorage.removeItem('logado')
+                        return navigate('/login')
                     }
                     setIsLoader(false)
                     navigate('/profile')

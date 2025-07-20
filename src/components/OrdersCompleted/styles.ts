@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { CardContainer } from "../Card/styles";
+import { CardContainerStore } from "../Card/styles";
 
-export const OrderItems = styled(CardContainer)`
+export const OrderItems = styled(CardContainerStore)`
     width: 250px;
     @media screen and (max-width: 767px) {
         display: block;

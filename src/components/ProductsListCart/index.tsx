@@ -47,14 +47,30 @@ const ProductsListCart = () => {
                                         localStorage.removeItem('logado')
                                         return navigate('/login')
                                     }
-                                    console.log('refresh t')
                                     localStorage.setItem('logado', 'true')
-                                    deleteCartItem({ id, csrfToken })
+                                    deleteCartItem({ id, csrfToken }).then(
+                                        () => {
+                                            getDataItems(csrfToken).catch(
+                                                (err) => console.log(err)
+                                            )
+                                            setTimeout(
+                                                () =>
+                                                    getTotalPrice(
+                                                        csrfToken
+                                                    ).catch((err) =>
+                                                        console.log(err)
+                                                    ),
+                                                500
+                                            )
+                                        }
+                                    )
                                 })
                                 .catch((error) => {
                                     console.log(error, 'err')
                                 })
                         }
+                        localStorage.removeItem('logado')
+                        return navigate('/login')
                     }
                     getDataItems(csrfToken).catch((err) => console.log(err))
                     setTimeout(
@@ -64,8 +80,6 @@ const ProductsListCart = () => {
                             ),
                         500
                     )
-
-                    console.log('Item removido do carrinho com sucesso')
                 })
                 .catch((error) => console.error('Erro ao remover item:', error))
             const channel = new BroadcastChannel(channelName)
@@ -94,9 +108,36 @@ const ProductsListCart = () => {
             .then((res) => {
                 if (isErrorMessageExist(res)) {
                     const message = res.error.data.message as string
-                    if (message.toLowerCase().includes('token')) {
-                        navigate('/login')
+                    if (message === 'Token expirado') {
+                        return getRefresh(csrfToken).then((res) => {
+                            if (res.error) {
+                                return navigate('/login')
+                            }
+
+                            updataPrice({
+                                data: {
+                                    quantBefore,
+                                    quantCurrent: Number(quant),
+                                    idItem,
+                                    price
+                                },
+                                csrfToken
+                            }).then(() => {
+                                getDataItems(csrfToken).catch((err) =>
+                                    console.log(err)
+                                )
+                                setTimeout(
+                                    () =>
+                                        getTotalPrice(csrfToken).catch((err) =>
+                                            console.log(err)
+                                        ),
+                                    500
+                                )
+                                setLoading(false)
+                            })
+                        })
                     }
+                    return navigate('/login')
                 }
                 if (csrfToken) {
                     getDataItems(csrfToken).catch((err) => console.log(err))
@@ -120,7 +161,9 @@ const ProductsListCart = () => {
             setBadToken(true)
             console.log(err)
         })
-        getDataItems(csrfToken)
+        getDataItems(csrfToken).then(() => {
+            console.log('é dentro')
+        })
     }, [csrfToken, getDataItems, getTotalPrice, logado, refreshTokenWarn])
 
     const handleClick = () => {

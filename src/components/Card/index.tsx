@@ -1,4 +1,4 @@
-import { CardContainer } from './styles'
+import { CardContainer, CardContainerStore } from './styles'
 import { handleTouch, loop, onMouseMove, onMouseUp } from '../../utils/carousel'
 
 export type Props = {
@@ -49,12 +49,26 @@ const Card = ({
         //
     }
 
+    if (type) {
+        return (
+            <CardContainerStore
+                className="card_container__book product"
+                to={link}
+                title={title}
+            >
+                <img srcSet={photo} alt={descBooks} />
+                <h3>{title}</h3>
+                <p>R$ {price},00</p>
+            </CardContainerStore>
+        )
+    }
+
     return (
         <CardContainer
-            target={type ? '_self' : '_blank'}
+            target="_blank"
             href={link}
             title={title}
-            className={`card_container__book ${type ? 'product' : 'card_lib'} ${clone ? 'cloned' : ''}`}
+            className={`card_container__book card_lib ${clone ? 'cloned' : ''}`}
             rel="noreferrer"
             id={id == 2 ? idName : ''}
             onTouchStart={(e) =>
