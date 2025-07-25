@@ -6,13 +6,12 @@ export type EmailUser = {
     loginUserExist?: boolean
     passWordCorrect?: boolean
     msg?: string
-    userId?: string
     loginSuccess?: boolean
     signSuccess?: boolean
     missToken?: boolean
 }
 
-const initialState: EmailUser = {
+const initialState: Omit<EmailUser, 'success'> = {
     loginSuccess: false
 }
 
@@ -23,7 +22,6 @@ const loginSignSlice = createSlice({
         checkSignUser: (state, action: PayloadAction<EmailUser>) => {
             state.signUserExist = action.payload.signUserExist
             state.msg = action.payload.msg
-            state.userId = action.payload.userId
             state.signSuccess = action.payload.signSuccess
             state.missToken = action.payload.missToken
         },

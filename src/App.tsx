@@ -9,14 +9,20 @@ import { useCsrfTokenStore } from './hooks/useFetchCsrfToken'
 import { useEffect } from 'react'
 
 function App() {
-
     const fetchCsrfToken = useCsrfTokenStore((state) => state.fetchCsrfToken)
 
     useEffect(() => {
-        fetchCsrfToken()
-        const interval = setInterval(() => {
-            fetchCsrfToken()
-        }, 30 * 60 * 1000) // A cada 30 min
+        fetchCsrfToken().catch(() => {
+            localStorage.removeItem('logado')
+        })
+        const interval = setInterval(
+            () => {
+                fetchCsrfToken().catch(() => {
+                    localStorage.removeItem('logado')
+                })
+            },
+            30 * 60 * 1000
+        ) // A cada 30 min
         return () => clearInterval(interval)
     }, [fetchCsrfToken])
 

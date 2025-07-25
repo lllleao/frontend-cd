@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { PurchaseContainer } from './styles'
 import Card from '../Card'
-import { useGetStoreBooksQuery } from '../../services/api'
+import { useLazyGetStoreBooksQuery } from '../../services/api'
 import Loader from '../Loader'
+import {
+    addItemToCache,
+    getItemFromCache
+} from '../../utils/localSrorageConfig'
 
 const Purchase = () => {
-    const { data, isLoading } = useGetStoreBooksQuery()
+    const [getStoreBooks] = useLazyGetStoreBooksQuery()
+    const booksFromLocal = getItemFromCache<Books[]>('booksStore')
+    const [data, setData] = useState<Books[]>()
     const [inView, setInView] = useState(false)
     const storeRef = useRef<HTMLElement>(null)
 
@@ -29,8 +35,21 @@ const Purchase = () => {
             }
             purchaseObserver.disconnect()
         }
-
     }, [])
+
+    useEffect(() => {
+        if (booksFromLocal) {
+            return setData(booksFromLocal)
+        }
+        getStoreBooks().then((res) => {
+            if (res.data) {
+                console.log('fez a aq')
+                addItemToCache('booksStore', res.data)
+                setData(res.data)
+            }
+        })
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [getStoreBooks])
 
     return (
         <PurchaseContainer ref={storeRef} id="purchase" className="container">
@@ -45,7 +64,7 @@ const Purchase = () => {
             <div
                 className={`store card_container ${inView ? 'store--is-active' : ''}`}
             >
-                {isLoading ? (
+                {!data ? (
                     <Loader />
                 ) : (
                     data &&

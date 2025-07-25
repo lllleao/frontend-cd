@@ -1,11 +1,11 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { AboutBook, BookImg, BooksPurchase } from './styles'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ButtonPurchase from '../ButtonPurchase'
 import {
     useAddToCartMutation,
     useGetSpecificStoreBookQuery,
-    useGetStoreBooksQuery,
+    useLazyGetStoreBooksQuery,
     useLazyGetItemsCartQuery,
     useRefreshTokenMutation
 } from '../../services/api'
@@ -13,6 +13,7 @@ import Card from '../Card'
 import Loader from '../Loader'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 import { isErrorMessageExist } from '../../utils'
+import { getItemFromCache } from '../../utils/localSrorageConfig'
 
 let isSeeMore: boolean = false
 
@@ -36,8 +37,15 @@ const Book = () => {
     const [textIsHidden, setTextIsHidden] = useState(true)
     const [isItemAdd, setIsItemAdd] = useState(false)
     const { id } = useParams() as BookParams
-    const { data, isFetching } = useGetSpecificStoreBookQuery(id)
-    const { data: booksStore, isLoading } = useGetStoreBooksQuery()
+
+    const booksFromLocal = getItemFromCache<Books[]>('booksStore')
+    const specificBook = getItemFromCache<Books[]>('booksStore')
+
+    const [booksStore, setBooksStore] = useState<Books[]>()
+    const [data, setData] = useState<BooksPurchase>()
+    // const { data, isFetching } = useGetSpecificStoreBookQuery(id)
+    const [ getStoreBooks ] = useLazyGetStoreBooksQuery()
+
     const [getRefresh] = useRefreshTokenMutation()
 
     const only212Characters = () => {
@@ -163,8 +171,23 @@ const Book = () => {
         }
     }
 
+    useEffect(() => {
+        if (booksFromLocal) {
+            return setBooksStore(booksFromLocal)
+        }
+        getStoreBooks()
+    // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [getStoreBooks])
+
+    useEffect(() => {
+        if (booksFromLocal) {
+            const bookToThisPage = booksFromLocal.find((bookArray) => bookArray.id === Number(id))
+            console.log(bookToThisPage)
+        }
+    }, [booksFromLocal, id])
+
     return (
-        <BooksPurchase $isFeching={isFetching}>
+        <BooksPurchase $isFeching={false}>
             <div className="container">
                 <div className="book">
                     <BookImg>
@@ -263,7 +286,7 @@ const Book = () => {
                     {addCartLoader ? <Loader isCircle /> : <></>}
                 </div>
                 <div className="cards-store-container">
-                    {isLoading ? (
+                    {!booksStore ? (
                         <Loader />
                     ) : (
                         booksStore &&

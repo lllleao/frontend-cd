@@ -313,8 +313,9 @@ const api = createApi({
 })
 
 export const {
-    useGetPublicBooksQuery,
+    useLazyGetPublicBooksQuery,
     useVerifyCSRFTokenMutation,
+    useLazyGetStoreBooksQuery,
     useGetStoreBooksQuery,
     useGetItemsCartQuery,
     useGetRemoveItemMutation,
@@ -334,6 +335,7 @@ export const {
     useCreateAddressMutation,
     useLazyGetAddressQuery,
     useLazyGetItemsCartQuery,
-    useRefreshTokenMutation
+    useRefreshTokenMutation,
+    useGetProfileDataQuery
 } = api
 export default api

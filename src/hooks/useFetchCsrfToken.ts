@@ -4,7 +4,7 @@ type CsrfStore = {
     csrfToken: string | undefined
     setCsrfToken: (token: string) => void
     setViweNumberCart: (viweNumberCart: boolean) => void
-    fetchCsrfToken: () => Promise<void>
+    fetchCsrfToken: () => Promise<unknown>
     viweNumberCart: boolean
     refreshTokenWarn: boolean
     setRefreshTokenWarn: (value: boolean) => Promise<unknown>
@@ -41,6 +41,7 @@ export const useCsrfTokenStore = create<CsrfStore>((set) => ({
             set({ csrfToken: token.token })
         } catch (err) {
             console.error('Erro ao buscar CSRF token:', err)
+            throw new Error('Erro ao buscar CSRF token')
         }
     }
 }))

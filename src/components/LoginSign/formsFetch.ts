@@ -50,7 +50,7 @@ export const handleLogin = (
         >
     >,
     navigate: NavigateFunction,
-    fetchCsrfToken: () => Promise<void>
+    fetchCsrfToken: () => Promise<unknown>
 ) => {
     event.preventDefault()
 

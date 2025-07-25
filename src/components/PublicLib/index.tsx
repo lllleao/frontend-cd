@@ -2,12 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import Card from '../Card'
 import { Carrossel, PublicLibContainer } from './styles'
 import CardsClone from '../CardsClone'
-import { useGetPublicBooksQuery } from '../../services/api'
+import { useLazyGetPublicBooksQuery } from '../../services/api'
 import Loader from '../Loader'
+import {
+    addItemToCache,
+    getItemFromCache
+} from '../../utils/localSrorageConfig'
 
 const PublicLib = () => {
-
-    const { data, isLoading } = useGetPublicBooksQuery()
+    const [getPublicBooks] = useLazyGetPublicBooksQuery()
+    const [data, setData] = useState<Books[]>()
+    const localPublicBooks = getItemFromCache<Books[]>('publicBooks')
     const carrousselRef = useRef<HTMLDivElement>(null)
     const hasMounted = useRef(false)
 
@@ -58,6 +63,19 @@ const PublicLib = () => {
     }, [carrousselItems])
 
     useEffect(() => {
+        if (localPublicBooks) {
+            return setData(localPublicBooks)
+        }
+        getPublicBooks().then((res) => {
+            if (res.data) {
+                setData(res.data)
+                addItemToCache('publicBooks', res.data)
+            }
+        })
+    // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [getPublicBooks])
+
+    useEffect(() => {
         if (carrousselRef.current && data && !hasMounted.current) {
             hasMounted.current = true
             const carrousselInner =
@@ -87,7 +105,7 @@ const PublicLib = () => {
                 )
             )
         }
-    }, [data, elementWidth])
+    }, [data])
 
     return (
         <PublicLibContainer
@@ -99,7 +117,7 @@ const PublicLib = () => {
             <div className="cursor">
                 <span className="mask-left"></span>
                 <span className="mask-right"></span>
-                {isLoading ? (
+                {!data ? (
                     <Loader />
                 ) : (
                     <Carrossel
@@ -123,28 +141,30 @@ const PublicLib = () => {
                             data={data}
                         />
                         {data &&
-                            data.map(({ title, id, link, photo, descBooks }) => (
-                                <Card
-                                    mainLib={mainLib}
-                                    elementWidth={elementWidth}
-                                    setRemoveTouchMove={setRemoveTouchMove}
-                                    setRemoveTouchEnd={setRemoveTouchEnd}
-                                    items={items}
-                                    clonedMainRight={clonedMainRight}
-                                    clonedMainLibLeft={clonedMainLibLeft}
-                                    carrousselItems={carrousselItems}
-                                    removeTouchEnd={removeTouchEnd}
-                                    removeTouchMove={removeTouchMove}
-                                    removeTouchStart={removeTouchStart}
-                                    idName="main"
-                                    title={title}
-                                    id={id}
-                                    link={link}
-                                    photo={photo}
-                                    descBooks={descBooks}
-                                    key={id}
-                                />
-                            ))}
+                            data.map(
+                                ({ title, id, link, photo, descBooks }) => (
+                                    <Card
+                                        mainLib={mainLib}
+                                        elementWidth={elementWidth}
+                                        setRemoveTouchMove={setRemoveTouchMove}
+                                        setRemoveTouchEnd={setRemoveTouchEnd}
+                                        items={items}
+                                        clonedMainRight={clonedMainRight}
+                                        clonedMainLibLeft={clonedMainLibLeft}
+                                        carrousselItems={carrousselItems}
+                                        removeTouchEnd={removeTouchEnd}
+                                        removeTouchMove={removeTouchMove}
+                                        removeTouchStart={removeTouchStart}
+                                        idName="main"
+                                        title={title}
+                                        id={id}
+                                        link={link}
+                                        photo={photo}
+                                        descBooks={descBooks}
+                                        key={id}
+                                    />
+                                )
+                            )}
                         <CardsClone
                             setRemoveTouchMove={setRemoveTouchMove}
                             setRemoveTouchEnd={setRemoveTouchEnd}
