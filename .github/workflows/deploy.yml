@@ -28,5 +28,6 @@ jobs:
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
                 port: ${{ secrets.PORT }}
                 source: "dist/*"
-                target: "public_html/"
+                target: ${{ secrets.HOSTINGER_TARGET_PATH }}
+                debug: true
 
