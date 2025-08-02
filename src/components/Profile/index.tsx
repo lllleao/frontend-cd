@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { ButtonLogout, ProfileContainer, PurchaseCompleted } from './styles'
 import { useEffect, useState } from 'react'
-import api, {
+import {
     GetAddressProps,
-    useGetCookieMutation,
     useLazyGetAddressQuery,
     useLazyGetProfileDataQuery,
     useLogoutMutation
@@ -13,21 +12,15 @@ import Header from '../../containers/Header'
 import ProfileAddress from '../AddressCard'
 import { defaultAddress, isLoginAndCsrf } from '../../utils'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
-import { useSelector } from 'react-redux'
-import { RootReducer } from '../../store'
+import { removeAllCache } from '../../utils/cacheConfig'
 
 const Profile = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
     const logado = localStorage.getItem('logado')
-    const profileData = useSelector(
-        (state: RootReducer) =>
-            api.endpoints.getProfileData.select(csrfToken)(state)?.data
-    )
 
     const refreshTokenWarn = useCsrfTokenStore(
         (state) => state.refreshTokenWarn
     )
-    const [getToken] = useGetCookieMutation()
 
     const [getDataProfile, { data }] = useLazyGetProfileDataQuery()
     const [logout] = useLogoutMutation()
@@ -45,6 +38,7 @@ const Profile = () => {
         localStorage.removeItem('loginSuccess')
         logout(csrfToken)
             .then(() => {
+                removeAllCache()
                 navigate('/')
             })
             .catch((err) => {
@@ -54,53 +48,20 @@ const Profile = () => {
 
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
-        console.log(profileData, 'lasqueira')
-        if (profileData) {
-            if (dataAddress && dataAddress[0] && dataAddress[0].isDefault) {
-                setDataAddresDefault(dataAddress[0])
-            }
-
-            if (dataAddress && dataAddress[1] && dataAddress[1].isDefault) {
-                setDataAddresDefault(dataAddress[1])
-            }
-
-            if (dataAddress && dataAddress[0] && !dataAddress[0].isDefault) {
-                setDataAddresSecondary(dataAddress[0])
-            }
-
-            if (dataAddress && dataAddress[1] && !dataAddress[1].isDefault) {
-                setDataAddresSecondary(dataAddress[1])
-            }
-            return undefined
-        }
         getDataProfile(csrfToken)
-        getDataAddress({ csrfToken }).then(() => console.log('opa'))
+        getDataAddress({ csrfToken })
 
-        if (dataAddress && dataAddress[0] && dataAddress[0].isDefault) {
-            setDataAddresDefault(dataAddress[0])
-        }
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [csrfToken, refreshTokenWarn])
 
-        if (dataAddress && dataAddress[1] && dataAddress[1].isDefault) {
-            setDataAddresDefault(dataAddress[1])
-        }
+    useEffect(() => {
+        if (!dataAddress) return
+        const dataAddresDefault = dataAddress.find((addr) => addr.isDefault)
+        const dataAddresSecondary = dataAddress.find((addr) => !addr.isDefault)
 
-        if (dataAddress && dataAddress[0] && !dataAddress[0].isDefault) {
-            setDataAddresSecondary(dataAddress[0])
-        }
-
-        if (dataAddress && dataAddress[1] && !dataAddress[1].isDefault) {
-            setDataAddresSecondary(dataAddress[1])
-        }
-    }, [
-        getToken,
-        csrfToken,
-        dataAddress,
-        getDataProfile,
-        getDataAddress,
-        logado,
-        refreshTokenWarn,
-        profileData
-    ])
+        if (dataAddresDefault) setDataAddresDefault(dataAddresDefault)
+        if (dataAddresSecondary) setDataAddresSecondary(dataAddresSecondary)
+    }, [dataAddress])
 
     return (
         <>

@@ -16,27 +16,19 @@ import {
 import { NavigateFunction } from 'react-router-dom'
 import { validatePassword } from '../../utils/validationLoginSign'
 import { isErrorMessageExist } from '../../utils'
-
-export type DataProp = {
-    data: {
-        name?: string
-        email: string
-        password: string
-    }
-    csrfToken: string
-}
+import { DataLoginProp, DataSignupProp } from '../../services/api'
 
 export const handleLogin = (
     event: FormEvent<HTMLFormElement>,
     isEmailValid: boolean,
     password: string,
-    data: DataProp,
+    data: DataLoginProp,
     dispatch: Dispatch<UnknownAction>,
     makeLogin: (
-        arg: DataProp
+        arg: DataLoginProp
     ) => MutationActionCreatorResult<
         MutationDefinition<
-            DataProp,
+            DataLoginProp,
             BaseQueryFn<
                 string | FetchArgs,
                 unknown,
@@ -50,29 +42,36 @@ export const handleLogin = (
         >
     >,
     navigate: NavigateFunction,
-    fetchCsrfToken: () => Promise<unknown>
+    fetchCsrfToken: () => Promise<unknown>,
+    logout: () => void
 ) => {
     event.preventDefault()
 
     if (isEmailValid && password) {
         makeLogin(data)
             .then((res) => {
-                if (
-                    isErrorMessageExist(res)
-                ) {
+                if (isErrorMessageExist(res)) {
                     const errorData = res.error.data as {
                         message?: string
                         error?: string
                     }
                     if (errorData.message === 'Usuário já logado') {
                         console.log(res.error.data.message)
-                        return dispatch(
+                        dispatch(
                             checkLoginUser({
                                 msg: 'Usuário já logado',
                                 loginUserExist: true,
                                 loginSuccess: false
                             })
                         )
+                        return setTimeout(() => {
+                            dispatch(
+                                checkLoginUser({
+                                    loginUserExist: false
+                                })
+                            )
+                            logout()
+                        }, 1000)
                     } else if (errorData.message === 'Senha incorreta.') {
                         return dispatch(
                             checkLoginUser({
@@ -100,11 +99,9 @@ export const handleLogin = (
                     }
                 }
                 dispatch(checkLoginUser({ loginUserExist: false }))
-                if (res.data && res.data.success) {
-                    fetchCsrfToken()
-                    localStorage.setItem('logado', 'true')
-                    navigate('/')
-                }
+                fetchCsrfToken()
+                localStorage.setItem('logado', 'true')
+                navigate('/')
                 return res.data
             })
             .catch((err) => {
@@ -118,14 +115,14 @@ export const handleSign = (
     event: FormEvent<HTMLFormElement>,
     isEmailValid: boolean,
     password: string,
-    data: DataProp,
+    data: DataSignupProp,
     dispatch: Dispatch<UnknownAction>,
     name: string,
     makeSign: (
-        arg: DataProp
+        arg: DataSignupProp
     ) => MutationActionCreatorResult<
         MutationDefinition<
-            DataProp,
+            DataSignupProp,
             BaseQueryFn<
                 string | FetchArgs,
                 unknown,
@@ -151,9 +148,7 @@ export const handleSign = (
 
         makeSign(data)
             .then((res) => {
-                if (
-                    isErrorMessageExist(res)
-                ) {
+                if (isErrorMessageExist(res)) {
                     const errorData = res.error.data as {
                         message?: string
                         error?: string

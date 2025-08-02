@@ -53,7 +53,7 @@ export const isErrorMessageExist = (obj: unknown): obj is ErrorMessage => {
     )
 }
 
-export const isLoginAndCsrf = (logado: string | null, csrfToken: string) => {
+export const isLoginAndCsrf = (logado: string | null, csrfToken: string | undefined) => {
     if (!csrfToken) {
         return false
     }
@@ -61,6 +61,6 @@ export const isLoginAndCsrf = (logado: string | null, csrfToken: string) => {
     if (!logado) {
         return false
     }
-    
+
     return true
 }

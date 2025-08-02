@@ -6,11 +6,13 @@ import { ButtonLoginSign } from '../styles'
 import { useFormeState } from '../useFormState'
 import { RootReducer } from '../../../store'
 import { EmailUserMsgContainer } from './styles'
-import { useLoginUserMutation } from '../../../services/api'
+import { DataLoginProp, useLoginUserMutation } from '../../../services/api'
 import { useNavigate } from 'react-router-dom'
 import { useCsrfTokenStore } from '../../../hooks/useFetchCsrfToken'
+import useLogout from '../../../hooks/useLogout'
 
 const Login = () => {
+    const logout = useLogout()
     const { loginUserExist, msg } = useSelector(
         (state: RootReducer) => state.loginSigin
     )
@@ -37,7 +39,7 @@ const Login = () => {
         setEmailBorderError
     } = useFormeState()
 
-    const data = {
+    const data: DataLoginProp = {
         data: {
             email,
             password
@@ -67,7 +69,8 @@ const Login = () => {
                             dispatch,
                             makeLogin,
                             navigate,
-                            fetchCsrfToken
+                            fetchCsrfToken,
+                            logout
                         )
                     }
                 >

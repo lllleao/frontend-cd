@@ -104,7 +104,6 @@ const Card = ({
         >
             <img srcSet={photo} alt={descBooks} />
             <h3>{title}</h3>
-            {type ? <p>R$ {price},00</p> : <></>}
         </CardContainer>
     )
 }

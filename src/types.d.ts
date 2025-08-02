@@ -4,7 +4,6 @@ declare interface Books {
     descBooks: string
     photo: string
     id?: number
-    price: number
 }
 
 type CreditsValues = {
@@ -14,7 +13,11 @@ type CreditsValues = {
     person: string
 }
 
-declare interface BooksPurchase extends Omit<Books, 'link' | 'descBooks'> {
+declare interface BooksFromStore extends Omit<Books, 'link'> {
+    price: number
+}
+
+declare interface BooksPurchase extends Omit<BooksFromStore, 'descBooks'> {
     summary: string
     isbn: string
     pageQuant: string

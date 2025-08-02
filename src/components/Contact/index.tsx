@@ -10,7 +10,7 @@ import {
 import { useSendEmailMutation } from '../../services/api'
 
 const Contact = () => {
-    // const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
+    // const csrfToken = useCsrfTokenStore().getState().csrfToken as string
 
     // const [verifyToken] = useVerifyCSRFTokenMutation()
     // const [getCsrfToken] = useGetCSRFTokenMutation()
@@ -59,41 +59,6 @@ const Contact = () => {
             setInputErrorNum(false)
         }
     }, [emailUser, numEmail])
-
-    // useEffect(() => {
-    //     if (!csrfTokenBefore) {
-    //         getCsrfToken()
-    //             .then((res) => {
-    //                 if (res.error) {
-    //                     return console.log(res.error)
-    //                 }
-
-    //                 const token = res.data as unknown as { token: string }
-    //                 localStorage.setItem('csrfToken', token.token)
-    //             })
-    //             .catch((err) => console.log(err, 'err'))
-    //     } else {
-    //         verifyToken(csrfTokenBefore)
-    //             .then((res) => {
-    //                 if (res.error) {
-    //                     console.log(res.error)
-    //                     getCsrfToken()
-    //                         .then((res) => {
-    //                             if (res.error) {
-    //                                 return console.log(res.error)
-    //                             }
-
-    //                             const token = res.data as unknown as {
-    //                                 token: string
-    //                             }
-    //                             localStorage.setItem('csrfToken', token.token)
-    //                         })
-    //                         .catch((err) => console.log(err))
-    //                 }
-    //             })
-    //             .catch((err) => console.log(err))
-    //     }
-    // }, [csrfTokenBefore, getCsrfToken, verifyToken])
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()

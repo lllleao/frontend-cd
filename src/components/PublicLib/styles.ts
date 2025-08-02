@@ -4,13 +4,22 @@ export const PublicLibContainer = styled.section`
     padding-top: 32px;
     padding-bottom: 122px;
 
-    .container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding-left: auto;
+    .container-skeleton-public {
+        margin: 0 auto;
+        .skeletons-public {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 colunas iguais */
+            gap: 3rem;
+            place-items: center;
+            @media (max-width: 767px) {
+                display: flex;
+                justify-content: center;
+                .display-none-mobile {
+                    display: none;
+                }
+            }
+        }
     }
-
     & .public-lb {
         &__title {
             text-align: center;

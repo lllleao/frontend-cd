@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
     ButtonLoginSign,
     FormContainer,
@@ -12,37 +12,18 @@ import { useDispatch, useSelector } from 'react-redux'
 import { checkLoginUser, checkSignUser } from '../../store/reducers/loginSign'
 import { RootReducer } from '../../store'
 import Header from '../../containers/Header'
-import { useGetCookieMutation } from '../../services/api'
-import { useNavigate } from 'react-router-dom'
-import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 const LoginSign = () => {
     const isLoginScreen = localStorage.getItem('isLoginScreen')
     const [loginScreenState, setLoginScreenState] = useState(
         Boolean(isLoginScreen)
     )
-    const navigate = useNavigate()
-    const [getToken] = useGetCookieMutation()
 
     const { signSuccess, missToken } = useSelector(
         (state: RootReducer) => state.loginSigin
     )
 
     const dispatch = useDispatch()
-    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
-
-    useEffect(() => {
-        if (!csrfToken) return
-        getToken(csrfToken)
-            .then((res) => {
-                if (res.error || !res.data) {
-                    return res.error
-                }
-
-                navigate('/profile')
-            })
-            .catch((err) => console.log(err))
-    }, [getToken, navigate, csrfToken])
 
     const handleChangeLogin = () => {
         dispatch(checkSignUser({ signUserExist: false }))

@@ -3,11 +3,8 @@ import Card from '../Card'
 import { Carrossel, PublicLibContainer } from './styles'
 import CardsClone from '../CardsClone'
 import { useLazyGetPublicBooksQuery } from '../../services/api'
-import Loader from '../Loader'
-import {
-    addItemToCache,
-    getItemFromCache
-} from '../../utils/localSrorageConfig'
+import { addItemToCache, getItemFromCache } from '../../utils/cacheConfig'
+import SkeletonCard from '../SkeletonCard'
 
 const PublicLib = () => {
     const [getPublicBooks] = useLazyGetPublicBooksQuery()
@@ -30,6 +27,7 @@ const PublicLib = () => {
     const [elementWidth, setElementWidth] = useState<number>()
 
     useEffect(() => {
+        if (!carrousselItems) return
         const handleResizer = (entries: ResizeObserverEntry[]) => {
             const currentWidth = entries[0].borderBoxSize[0].inlineSize
             if (currentWidth > 706 && carrousselItems) {
@@ -72,10 +70,12 @@ const PublicLib = () => {
                 addItemToCache('publicBooks', res.data)
             }
         })
-    // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [getPublicBooks])
 
     useEffect(() => {
+        if (!data) return
+
         if (carrousselRef.current && data && !hasMounted.current) {
             hasMounted.current = true
             const carrousselInner =
@@ -117,9 +117,7 @@ const PublicLib = () => {
             <div className="cursor">
                 <span className="mask-left"></span>
                 <span className="mask-right"></span>
-                {!data ? (
-                    <Loader />
-                ) : (
+                {data ? (
                     <Carrossel
                         ref={carrousselRef}
                         className="card_container carroussel"
@@ -182,6 +180,15 @@ const PublicLib = () => {
                             data={data}
                         />
                     </Carrossel>
+                ) : (
+                    <div className="container-skeleton-public">
+                        <div className="skeletons-public">
+                            <SkeletonCard />
+                            <SkeletonCard isDisplayNoneMobile />
+                            <SkeletonCard isDisplayNoneMobile />
+                            <SkeletonCard isDisplayNoneMobile />
+                        </div>
+                    </div>
                 )}
             </div>
         </PublicLibContainer>

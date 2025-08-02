@@ -2,22 +2,15 @@ import { useEffect, useState } from 'react'
 import { CheckoutContainer, ChoseAddress, ValidAddres } from './styles'
 import {
     GetAddressProps,
-    useGetCookieMutation,
     useLazyGetAddressQuery,
     useLazyGetItemsCartQuery,
     useLazyGetTotalPriceQuery,
-    usePurchaseDataMutation,
-    useRefreshTokenMutation
+    usePurchaseDataMutation
 } from '../../services/api'
-import { useNavigate } from 'react-router-dom'
 import Header from '../../containers/Header'
 import ProfileAddress from '../AddressCard'
 import { Finish } from '../FormAddress/styles'
-import {
-    defaultAddress,
-    isErrorMessageExist,
-    isLoginAndCsrf
-} from '../../utils'
+import { defaultAddress, isLoginAndCsrf } from '../../utils'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 
 const Checkout = () => {
@@ -34,14 +27,10 @@ const Checkout = () => {
     )
 
     const [isDefaultAddress, setIsDefaultAddress] = useState(true)
-    const [getRefresh] = useRefreshTokenMutation()
 
     const [isSecondaryAddress, setIsSecondaryAddress] = useState(false)
     const [getTotalPrice, { data: totalPrice }] = useLazyGetTotalPriceQuery()
 
-    // const { data: totalPrice } = useGetTotalPriceQuery(csrfToken)
-    const [getToken] = useGetCookieMutation()
-    const navigate = useNavigate()
     const [dataAddresDefault, setDataAddresDefault] = useState<
         GetAddressProps | undefined
     >()
@@ -53,13 +42,15 @@ const Checkout = () => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
         getTotalPrice(csrfToken)
         getDataItems(csrfToken)
-    }, [csrfToken, getDataItems, getTotalPrice, logado])
+    // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [csrfToken, refreshTokenWarn])
 
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
-
+        console.log('vezes')
         getDataAddress({ csrfToken })
-    }, [csrfToken, getDataAddress, logado, refreshTokenWarn])
+    // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [csrfToken, refreshTokenWarn, totalPrice])
 
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
@@ -142,13 +133,15 @@ const Checkout = () => {
     const handlePurchase = () => {
         if (isDefaultAddress && !dataAddresDefault) {
             return (
-                setIsWarnDefaultVisible(true), setIsWarnSecondaryVisible(false)
+                setIsWarnDefaultVisible(true),
+                setIsWarnSecondaryVisible(false)
             )
         }
 
         if (isSecondaryAddress && !dataAddresSecondary)
             return (
-                setIsWarnSecondaryVisible(true), setIsWarnDefaultVisible(false)
+                setIsWarnSecondaryVisible(true),
+                setIsWarnDefaultVisible(false)
             )
 
         if (isDefaultAddress && dataAddresDefault) {
@@ -175,7 +168,7 @@ const Checkout = () => {
                                 <li key={id}>
                                     <img
                                         className="book-img"
-                                        src={photo}
+                                        srcSet={photo}
                                         alt=""
                                     />
                                     <div className="book-title">

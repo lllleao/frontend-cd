@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { CardContainerStore } from '../Card/styles'
 
 export const PurchaseContainer = styled.section`
-    /* display: none; */
+    display: none;
     padding-top: 32px;
     .purchase__title,
     span {
@@ -27,6 +27,15 @@ export const PurchaseContainer = styled.section`
     .store {
         column-gap: 62px;
         justify-content: center;
+        .container-skeleton-store {
+            width: 90%;
+            .skeletons-store {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 2rem;
+            }
+        }
         .card_container__book {
             -webkit-transform: translateY(20%);
             -webkit-filter: blur(15px);
