@@ -26,6 +26,7 @@ jobs:
                 host: ${{ secrets.HOSTINGER_HOST }}
                 username: ${{ secrets.HOSTINGER_USER }}
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
+                port: ${{ secrets.PORT }}
                 source: "dist/*"
                 target: "public_html/"
 
