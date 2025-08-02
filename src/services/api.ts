@@ -137,7 +137,7 @@ type PixDatProps = {
 
 const api = createApi({
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:3000/',
+        baseUrl: 'https://backend-cidadeclipse.vercel.app/',
         credentials: 'include'
     }),
     endpoints: (builder) => ({
