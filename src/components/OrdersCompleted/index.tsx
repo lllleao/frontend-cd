@@ -1,6 +1,6 @@
 import { User } from "../../services/api"
 import formatDate from "../../utils/formatDate"
-import { OrderItems } from "./styles"
+// import { OrderItems } from "./styles"
 
 type OrdersCompletedProps = {
     data: User | undefined
@@ -21,11 +21,11 @@ const OrdersCompleted = ({ data }: OrdersCompletedProps) => {
                                     className="list-items-purchase__item"
                                     key={orderItems.name}
                                 >
-                                    <OrderItems>
+                                    {/* <OrderItems>
                                         <img srcSet={orderItems.photo} />
                                         <h3>{orderItems.name}</h3>
                                         <p>{orderItems.quant} unidade(s)</p>
-                                    </OrderItems>
+                                    </OrderItems> */}
                                 </li>
                             ))}
                         </ul>
