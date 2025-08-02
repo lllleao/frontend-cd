@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { PurchaseContainer } from './styles'
 import Card from '../Card'
 import { useLazyGetStoreBooksQuery } from '../../services/api'
-import { addItemToCache, getItemFromCache } from '../../utils/cacheConfig'
+// import { addItemToCache, getItemFromCache } from '../../utils/cacheConfig'
 import SkeletonCard from '../SkeletonCard'
 
 const Purchase = () => {
     const [getStoreBooks] = useLazyGetStoreBooksQuery()
-    const booksFromLocal = getItemFromCache<BooksFromStore[]>('booksStore')
-    const [data, setData] = useState<BooksFromStore[]>()
+    // const booksFromLocal = getItemFromCache<BooksFromStore[]>('booksStore')
+    const [data] = useState<BooksFromStore[]>()
     const [inView, setInView] = useState(false)
     const storeRef = useRef<HTMLElement>(null)
 
@@ -44,7 +44,6 @@ const Purchase = () => {
         //         setData(res.data)
         //     }
         // })
-        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [getStoreBooks])
 
     return (
