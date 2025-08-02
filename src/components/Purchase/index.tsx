@@ -35,15 +35,15 @@ const Purchase = () => {
     }, [])
 
     useEffect(() => {
-        if (booksFromLocal) {
-            return setData(booksFromLocal)
-        }
-        getStoreBooks().then((res) => {
-            if (res.data) {
-                addItemToCache('booksStore', res.data)
-                setData(res.data)
-            }
-        })
+        // if (booksFromLocal) {
+        //     return setData(booksFromLocal)
+        // }
+        // getStoreBooks().then((res) => {
+        //     if (res.data) {
+        //         addItemToCache('booksStore', res.data)
+        //         setData(res.data)
+        //     }
+        // })
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [getStoreBooks])
 

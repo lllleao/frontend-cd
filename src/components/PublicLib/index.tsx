@@ -61,13 +61,13 @@ const PublicLib = () => {
     }, [carrousselItems])
 
     useEffect(() => {
-        if (localPublicBooks) {
-            return setData(localPublicBooks)
-        }
+        // if (localPublicBooks) {
+        //     return setData(localPublicBooks)
+        // }
         getPublicBooks().then((res) => {
             if (res.data) {
                 setData(res.data)
-                addItemToCache('publicBooks', res.data)
+                // addItemToCache('publicBooks', res.data)
             }
         })
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
