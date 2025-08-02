@@ -1,0 +1,31 @@
+name: Deploy frontend para Hostinger
+
+on:
+    push:
+        branches:
+            - main
+        tags:
+            - 'deploy-*'
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Clonar repo
+              uses: actions/checkout@v4
+
+            - name: Instalar dependências
+              run: npm install
+
+            - name: Build project
+              run: npm run build
+
+            - name: Enviar arquivos via SCP (SSH)
+              uses: appleboy/scp-action@v1
+              with:
+                host: ${{ secrets.HOSTINGER_HOST }}
+                username: ${{ secrets.HOSTINGER_USER }}
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                source: "dist/*"
+                target: "public_html/"
+
