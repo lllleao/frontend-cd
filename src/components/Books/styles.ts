@@ -1,5 +1,50 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { CardContainerStore } from '../Card/styles'
+
+const shimmer = keyframes`
+    0% {
+        background-position: -450px 0;
+    }
+    100% {
+        background-position: 450px 0;
+    }
+`
+
+export const SkeletonText = styled.div`
+    width: 100%;
+
+    .skeleton-title,
+    .skeleton-text {
+        border-radius: 8px;
+        background: #e0e0e0;
+        background-image: linear-gradient(
+            90deg,
+            #9f9f9f 0px,
+            #b3b3b3 40px,
+            #919090 80px
+        );
+        background-size: 600px 100%;
+        animation: ${shimmer} 1.2s infinite linear;
+    }
+    .skeleton-text {
+        width: 90%;
+        height: 16px;
+        margin: 2rem 0;
+    }
+
+    .skeleton-title {
+        width: 90%;
+        height: 40px;
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 1029px) {
+        .skeleton-title,
+        .skeleton-text {
+            width: 100%;
+        }
+    }
+`
 
 export const BooksPurchase = styled.section<{ $isFeching: boolean }>`
     padding: 2rem 0;
@@ -8,6 +53,15 @@ export const BooksPurchase = styled.section<{ $isFeching: boolean }>`
     .book {
         display: flex;
         gap: 5rem;
+    }
+
+    .container-skeleton-books {
+        display: flex;
+        gap: 5rem;
+        @media (max-width: 1029px) {
+            flex-direction: column;
+            align-items: center;
+        }
     }
 
     .buttons {
@@ -34,6 +88,17 @@ export const BooksPurchase = styled.section<{ $isFeching: boolean }>`
     }
 
     .cards-store-container {
+        .container-skeleton-foot-books {
+            width: 90%;
+            display: block;
+            margin: 0 auto;
+            div {
+                display: flex;
+                gap: 2rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
         margin-top: 6rem;
         display: flex;
         justify-content: space-between;

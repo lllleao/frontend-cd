@@ -1,11 +1,24 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { EmailUser } from '../store/reducers/loginSign'
-import { DataProp } from '../components/LoginSign/formsFetch'
 
 export type User = {
     email: string
     name: string
     dataPurchase: DataOrder[]
+}
+
+export type DataSignupProp = {
+    data: {
+        name: string
+        email: string
+        password: string
+    }
+    csrfToken: string
+}
+
+export interface DataLoginProp {
+    data: Omit<DataSignupProp['data'], 'name'>
+    csrfToken: string
 }
 
 type DataOrder = {
@@ -59,7 +72,7 @@ type EmailDataProp = {
     }
 }
 
-type UpdataPrice = {
+type UpdatePrice = {
     data: {
         quantBefore: number
         quantCurrent: number
@@ -183,7 +196,7 @@ const api = createApi({
         getPublicBooks: builder.query<Books[], void>({
             query: () => 'books/free'
         }),
-        getStoreBooks: builder.query<Books[], void>({
+        getStoreBooks: builder.query<BooksFromStore[], void>({
             query: () => 'books/store'
         }),
         getSpecificStoreBook: builder.query<BooksPurchase, string>({
@@ -217,7 +230,7 @@ const api = createApi({
                 }
             })
         }),
-        loginUser: builder.mutation<EmailUser, DataProp>({
+        loginUser: builder.mutation<EmailUser, DataLoginProp>({
             query: (data) => ({
                 url: 'user/login',
                 method: 'POST',
@@ -229,7 +242,7 @@ const api = createApi({
         }),
         createAddress: builder.mutation<void, CreateAddressProps>({
             query: (dataCreateAddress) => ({
-                url: 'user/address',
+                url: 'user/create-address',
                 method: 'POST',
                 headers: {
                     'csrf-token': dataCreateAddress.csrfToken
@@ -256,7 +269,7 @@ const api = createApi({
                 }
             })
         }),
-        signUser: builder.mutation<EmailUser, DataProp>({
+        signUser: builder.mutation<EmailUser, DataSignupProp>({
             query: ({ data: { email, password, name }, csrfToken }) => ({
                 url: 'user/signup',
                 method: 'POST',
@@ -289,7 +302,7 @@ const api = createApi({
                 body: data.items[0]
             })
         }),
-        updataPrice: builder.mutation<void, UpdataPrice>({
+        updatePrice: builder.mutation<void, UpdatePrice>({
             query: (data) => ({
                 url: 'cart/update-price',
                 method: 'PATCH',
@@ -324,10 +337,10 @@ export const {
     useLoginUserMutation,
     useSignUserMutation,
     useAddToCartMutation,
-    useGetSpecificStoreBookQuery,
+    useLazyGetSpecificStoreBookQuery,
     useGetCSRFTokenMutation,
     useSendEmailMutation,
-    useUpdataPriceMutation,
+    useUpdatePriceMutation,
     useGetTotalPriceQuery,
     useLazyGetTotalPriceQuery,
     usePurchaseDataMutation,

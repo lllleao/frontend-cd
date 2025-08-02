@@ -1,10 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { AboutBook, BookImg, BooksPurchase } from './styles'
+import { AboutBook, BookImg, BooksPurchase, SkeletonText } from './styles'
 import { useEffect, useState } from 'react'
 import ButtonPurchase from '../ButtonPurchase'
 import {
     useAddToCartMutation,
-    useGetSpecificStoreBookQuery,
+    useLazyGetSpecificStoreBookQuery,
     useLazyGetStoreBooksQuery,
     useLazyGetItemsCartQuery,
     useRefreshTokenMutation
@@ -13,7 +13,9 @@ import Card from '../Card'
 import Loader from '../Loader'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 import { isErrorMessageExist } from '../../utils'
-import { getItemFromCache } from '../../utils/localSrorageConfig'
+import { addItemToCache, getItemFromCache } from '../../utils/cacheConfig'
+import Header from '../../containers/Header'
+import SkeletonCard from '../SkeletonCard'
 
 let isSeeMore: boolean = false
 
@@ -26,6 +28,7 @@ const Book = () => {
     const setViweNumberCart = useCsrfTokenStore(
         (state) => state.setViweNumberCart
     )
+
     const channelName = 'cart_channel'
     const [addToCart] = useAddToCartMutation()
     const [getDataItem] = useLazyGetItemsCartQuery()
@@ -38,13 +41,13 @@ const Book = () => {
     const [isItemAdd, setIsItemAdd] = useState(false)
     const { id } = useParams() as BookParams
 
-    const booksFromLocal = getItemFromCache<Books[]>('booksStore')
-    const specificBook = getItemFromCache<Books[]>('booksStore')
+    const booksFromLocal = getItemFromCache<BooksFromStore[]>('booksStore')
 
-    const [booksStore, setBooksStore] = useState<Books[]>()
+    const [booksStore, setBooksStore] = useState<BooksFromStore[]>()
+    const [getSpecificBook] = useLazyGetSpecificStoreBookQuery()
     const [data, setData] = useState<BooksPurchase>()
-    // const { data, isFetching } = useGetSpecificStoreBookQuery(id)
-    const [ getStoreBooks ] = useLazyGetStoreBooksQuery()
+    const specificBook = getItemFromCache<BooksPurchase>(`specific${id}`)
+    const [getStoreBooks] = useLazyGetStoreBooksQuery()
 
     const [getRefresh] = useRefreshTokenMutation()
 
@@ -73,7 +76,7 @@ const Book = () => {
     }
 
     const handleAddToCart = () => {
-        if (data) {
+        if (data && csrfToken) {
             setAddCartLoader(true)
             const channel = new BroadcastChannel(channelName)
             channel.postMessage({ type: 'UPDATE_COUNT', value: 'opa' })
@@ -175,138 +178,176 @@ const Book = () => {
         if (booksFromLocal) {
             return setBooksStore(booksFromLocal)
         }
-        getStoreBooks()
-    // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+        getStoreBooks().then((res) => {
+            if (res.data) {
+                addItemToCache('booksStore', res.data)
+                setBooksStore(res.data)
+            }
+        })
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [getStoreBooks])
 
     useEffect(() => {
-        if (booksFromLocal) {
-            const bookToThisPage = booksFromLocal.find((bookArray) => bookArray.id === Number(id))
-            console.log(bookToThisPage)
+        if (!id) return
+        if (specificBook) {
+            return setData(specificBook)
         }
-    }, [booksFromLocal, id])
+        getSpecificBook(id).then((res) => {
+            if (res.data) {
+                addItemToCache(`specific${id}`, res.data)
+                setData(res.data)
+            }
+        })
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [getSpecificBook, id])
 
     return (
-        <BooksPurchase $isFeching={false}>
-            <div className="container">
-                <div className="book">
-                    <BookImg>
-                        <img src={data?.photo} alt="" />
-                        <p className="price-container">
-                            <span className="price">[ R$ {priceCalc},00 ]</span>
-                            <select
-                                onChange={(e) => handleChangeOption(e)}
-                                className="quant"
-                                name="quant"
-                                value={valueQuant}
-                            >
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                            </select>
-                        </p>
-                    </BookImg>
-                    <AboutBook $isSeeMore={isSeeMore}>
-                        <h3>{data?.title}</h3>
-                        <p className="sinopse">
-                            <span className="sinopse-title">Sinopse: </span>
-                            <span className="sinopse__view">
-                                <span className="sinopse__view__all">
-                                    {data?.summary}
-                                </span>
-                                <span className="sinopse__view__part">
-                                    <span className="sinopse__view__first">
-                                        {only212Characters()}
+        <>
+            <Header />
+            <BooksPurchase $isFeching={false}>
+                <div className="container">
+                    {data ? (
+                        <div className="book">
+                            <BookImg>
+                                <img srcSet={data?.photo} alt="" />
+                                <p className="price-container">
+                                    <span className="price">
+                                        [ R$ {priceCalc},00 ]
                                     </span>
-                                    <span className="sinopse__view__second"></span>
-                                    {textIsHidden ? (
-                                        <span
-                                            onClick={() =>
-                                                setTextIsHidden(false)
-                                            }
-                                            className="see-more"
-                                        >
-                                            [Ver mais]
-                                        </span>
-                                    ) : (
-                                        <span
-                                            onClick={() =>
-                                                setTextIsHidden(true)
-                                            }
-                                            className="see-more"
-                                        >
-                                            [Ver menos]
-                                        </span>
-                                    )}
-                                </span>
-                            </span>
-                        </p>
-                        <div className="others-informations">
-                            <ul>
-                                {data?.isbn && (
-                                    <li>
-                                        <span className="sinopse-title">
-                                            ISBN:{' '}
-                                        </span>
-                                        {data.isbn}
-                                    </li>
-                                )}
-                                <li>
+                                    <select
+                                        onChange={(e) => handleChangeOption(e)}
+                                        className="quant"
+                                        name="quant"
+                                        value={valueQuant}
+                                    >
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </p>
+                            </BookImg>
+                            <AboutBook $isSeeMore={isSeeMore}>
+                                <h3>{data?.title}</h3>
+                                <p className="sinopse">
                                     <span className="sinopse-title">
-                                        Tamanho:{' '}
-                                    </span>{' '}
-                                    {data?.width}
-                                </li>
-                                <li>
-                                    <span className="sinopse-title">
-                                        Número de Páginas:{' '}
-                                    </span>{' '}
-                                    {data?.pageQuant}
-                                </li>
-                                {data?.store_books_credits.map((item) => (
-                                    <li key={item.person}>
-                                        <span className="sinopse-title">
-                                            {item.type}:{' '}
+                                        Sinopse:{' '}
+                                    </span>
+                                    <span className="sinopse__view">
+                                        <span className="sinopse__view__all">
+                                            {data?.summary}
                                         </span>
-                                        {item.person}
-                                    </li>
-                                ))}
-                            </ul>
+                                        <span className="sinopse__view__part">
+                                            <span className="sinopse__view__first">
+                                                {only212Characters()}
+                                            </span>
+                                            <span className="sinopse__view__second"></span>
+                                            {textIsHidden ? (
+                                                <span
+                                                    onClick={() =>
+                                                        setTextIsHidden(false)
+                                                    }
+                                                    className="see-more"
+                                                >
+                                                    [Ver mais]
+                                                </span>
+                                            ) : (
+                                                <span
+                                                    onClick={() =>
+                                                        setTextIsHidden(true)
+                                                    }
+                                                    className="see-more"
+                                                >
+                                                    [Ver menos]
+                                                </span>
+                                            )}
+                                        </span>
+                                    </span>
+                                </p>
+                                <div className="others-informations">
+                                    <ul>
+                                        {data?.isbn && (
+                                            <li>
+                                                <span className="sinopse-title">
+                                                    ISBN:{' '}
+                                                </span>
+                                                {data.isbn}
+                                            </li>
+                                        )}
+                                        <li>
+                                            <span className="sinopse-title">
+                                                Tamanho:{' '}
+                                            </span>{' '}
+                                            {data?.width}
+                                        </li>
+                                        <li>
+                                            <span className="sinopse-title">
+                                                Número de Páginas:{' '}
+                                            </span>{' '}
+                                            {data?.pageQuant}
+                                        </li>
+                                        {data?.store_books_credits.map(
+                                            (item) => (
+                                                <li key={item.person}>
+                                                    <span className="sinopse-title">
+                                                        {item.type}:{' '}
+                                                    </span>
+                                                    {item.person}
+                                                </li>
+                                            )
+                                        )}
+                                    </ul>
+                                </div>
+                                <div className="tags">{data?.tags}</div>
+                            </AboutBook>
                         </div>
-                        <div className="tags">{data?.tags}</div>
-                    </AboutBook>
-                </div>
-                <div className="buttons">
-                    <ButtonPurchase
-                        isItemAdd={isItemAdd}
-                        addToCart={handleAddToCart}
-                    >
-                        {isItemAdd ? 'Item já adicionado' : buttonMessage}
-                    </ButtonPurchase>
-                    {addCartLoader ? <Loader isCircle /> : <></>}
-                </div>
-                <div className="cards-store-container">
-                    {!booksStore ? (
-                        <Loader />
                     ) : (
-                        booksStore &&
-                        booksStore.map(
-                            ({ descBooks, id, photo, title, price }) => (
-                                <Card
-                                    type
-                                    key={id}
-                                    descBooks={descBooks}
-                                    price={price}
-                                    link={`/store/${id}`}
-                                    photo={photo}
-                                    title={title}
-                                />
-                            )
-                        )
+                        <div className="container-skeleton-books">
+                            <SkeletonCard />
+                            <SkeletonText>
+                                <div className="skeleton-title" />
+                                <div className="skeleton-text" />
+                                <div className="skeleton-text" />
+                                <div className="skeleton-text" />
+                            </SkeletonText>
+                        </div>
                     )}
+                    <div className="buttons">
+                        <ButtonPurchase
+                            isItemAdd={isItemAdd}
+                            addToCart={handleAddToCart}
+                        >
+                            {isItemAdd ? 'Item já adicionado' : buttonMessage}
+                        </ButtonPurchase>
+                        {addCartLoader ? <Loader isCircle /> : <></>}
+                    </div>
+                    <div className="cards-store-container">
+                        {booksStore ? (
+                            booksStore.map(
+                                ({ descBooks, id, photo, title, price }) => (
+                                    <Card
+                                        type
+                                        key={id}
+                                        descBooks={descBooks}
+                                        price={price}
+                                        link={`/store/${id}`}
+                                        photo={photo}
+                                        title={title}
+                                    />
+                                )
+                            )
+                        ) : (
+                            <div className="container-skeleton-foot-books">
+                                <div>
+                                    <SkeletonCard />
+                                    <SkeletonCard />
+                                    <SkeletonCard />
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
-        </BooksPurchase>
+            </BooksPurchase>
+        </>
     )
 }
 

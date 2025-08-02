@@ -17,11 +17,11 @@ export const useCsrfTokenStore = create<CsrfStore>((set) => ({
 
     setCsrfToken: (token: string) => set({ csrfToken: token }),
 
-    setViweNumberCart: (viweNumberCart: boolean) => set({viweNumberCart}),
+    setViweNumberCart: (viweNumberCart: boolean) => set({ viweNumberCart }),
 
     setRefreshTokenWarn: (value: boolean) => {
         return new Promise((resolve) => {
-            resolve(set({refreshTokenWarn: value}))
+            resolve(set({ refreshTokenWarn: value }))
         })
     },
 

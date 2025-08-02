@@ -2,16 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { PurchaseContainer } from './styles'
 import Card from '../Card'
 import { useLazyGetStoreBooksQuery } from '../../services/api'
-import Loader from '../Loader'
-import {
-    addItemToCache,
-    getItemFromCache
-} from '../../utils/localSrorageConfig'
+import { addItemToCache, getItemFromCache } from '../../utils/cacheConfig'
+import SkeletonCard from '../SkeletonCard'
 
 const Purchase = () => {
     const [getStoreBooks] = useLazyGetStoreBooksQuery()
-    const booksFromLocal = getItemFromCache<Books[]>('booksStore')
-    const [data, setData] = useState<Books[]>()
+    const booksFromLocal = getItemFromCache<BooksFromStore[]>('booksStore')
+    const [data, setData] = useState<BooksFromStore[]>()
     const [inView, setInView] = useState(false)
     const storeRef = useRef<HTMLElement>(null)
 
@@ -43,7 +40,6 @@ const Purchase = () => {
         }
         getStoreBooks().then((res) => {
             if (res.data) {
-                console.log('fez a aq')
                 addItemToCache('booksStore', res.data)
                 setData(res.data)
             }
@@ -64,10 +60,7 @@ const Purchase = () => {
             <div
                 className={`store card_container ${inView ? 'store--is-active' : ''}`}
             >
-                {!data ? (
-                    <Loader />
-                ) : (
-                    data &&
+                {data ? (
                     data.map(({ descBooks, id, photo, title, price }) => (
                         <Card
                             type
@@ -79,6 +72,14 @@ const Purchase = () => {
                             title={title}
                         />
                     ))
+                ) : (
+                    <div className="container-skeleton-store">
+                        <div className="skeletons-store">
+                            <SkeletonCard />
+                            <SkeletonCard />
+                            <SkeletonCard />
+                        </div>
+                    </div>
                 )}
             </div>
         </PurchaseContainer>

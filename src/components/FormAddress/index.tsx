@@ -15,6 +15,7 @@ import {
 import Loader from '../Loader'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 import { isErrorMessageExist } from '../../utils'
+import { removeAllCache } from '../../utils/cacheConfig'
 
 const FormAddress = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
@@ -179,7 +180,8 @@ const FormAddress = () => {
                                 .then((response) => {
                                     if (response.error) {
                                         localStorage.removeItem('logado')
-                                        return navigate('/login')
+                                        removeAllCache()
+                                        return navigate('/')
                                     }
                                     localStorage.setItem('logado', 'true')
                                     createAddress({
@@ -206,7 +208,8 @@ const FormAddress = () => {
                                 })
                         }
                         localStorage.removeItem('logado')
-                        return navigate('/login')
+                        removeAllCache()
+                        return navigate('/')
                     }
                     setIsLoader(false)
                     navigate('/profile')
@@ -219,7 +222,8 @@ const FormAddress = () => {
 
     useEffect(() => {
         if (!logado) {
-            return navigate('/login')
+            removeAllCache()
+            return navigate('/')
         }
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         isDefaulStoraget === 'true' ? setIsDefault(true) : setIsDefault(false)

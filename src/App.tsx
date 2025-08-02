@@ -1,12 +1,13 @@
 import { BrowserRouter } from 'react-router-dom'
 import Footer from './containers/Footer'
 import GlobalStyle from './globalStyles'
-import Rotas from './routes'
+import Rotas from './routes/routes'
 import { Provider } from 'react-redux'
 import store from './store'
 import CartListenner from './components/CartListenner'
 import { useCsrfTokenStore } from './hooks/useFetchCsrfToken'
 import { useEffect } from 'react'
+import ScrollToTop from './components/ScrollToTop'
 
 function App() {
     const fetchCsrfToken = useCsrfTokenStore((state) => state.fetchCsrfToken)
@@ -36,6 +37,7 @@ function App() {
             >
                 <CartListenner />
                 <GlobalStyle />
+                <ScrollToTop />
                 <Rotas />
                 <Footer />
             </BrowserRouter>

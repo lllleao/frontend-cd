@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import { ButtonContainer } from '../ButtonPurchase/styles'
 import { CardContainerStore } from '../Card/styles'
+import { SkeletonContainer } from '../SkeletonCard/styles'
 
 export const ProductsListCartContainer = styled.section`
     background-color: #000;
@@ -51,10 +52,13 @@ export const ProductsListCartContainer = styled.section`
                     margin-left: 0.5rem;
                     background-color: transparent;
                     font-size: 1.1rem;
-
+                    cursor: pointer;
                     option {
                         background-color: #000;
                     }
+                }
+                .disabled {
+                    cursor: default;
                 }
             }
 
@@ -63,6 +67,9 @@ export const ProductsListCartContainer = styled.section`
                 margin-top: 2rem;
                 font-size: 1.5rem;
                 cursor: pointer;
+            }
+            .disabled {
+                cursor: default;
             }
         }
         @media (max-width: 790px) {
@@ -81,6 +88,29 @@ export const ProductsListCartContainer = styled.section`
     }
 
     .cards-store-container {
+        .container-skeleton-product-list-books {
+            display: block;
+            margin: 0 auto;
+            width: 90%;
+            div {
+                display: flex;
+                gap: 2rem;
+                justify-content: space-between;
+                /* flex-wrap: wrap; */
+                ${SkeletonContainer} {
+                    max-width: 250px;
+
+                    .skeleton-img {
+                        height: 320px;
+                    }
+                }
+
+                @media screen and (max-width: 767px) {
+                    flex-direction: column;
+                    align-items: center;
+                }
+            }
+        }
         margin-top: 5rem;
         display: flex;
         justify-content: space-between;

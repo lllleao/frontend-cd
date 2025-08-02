@@ -2,19 +2,27 @@ import { ButtonCart, ItemsOnCart, ProductsListCartContainer } from './styles'
 import Header from '../../containers/Header'
 import {
     useGetRemoveItemMutation,
-    useGetStoreBooksQuery,
     useLazyGetItemsCartQuery,
+    useLazyGetStoreBooksQuery,
     useLazyGetTotalPriceQuery,
     useRefreshTokenMutation,
-    useUpdataPriceMutation
+    useUpdatePriceMutation
 } from '../../services/api'
 import { useEffect, useState } from 'react'
 import Card from '../Card'
 import { useNavigate } from 'react-router-dom'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 import { isErrorMessageExist, isLoginAndCsrf } from '../../utils'
+import {
+    addItemToCache,
+    getItemFromCache,
+    removeAllCache
+} from '../../utils/cacheConfig'
+import SkeletonCard from '../SkeletonCard'
 
 const ProductsListCart = () => {
+    const booksFromLocal = getItemFromCache<BooksFromStore[]>('booksStore')
+
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
     const logado = localStorage.getItem('logado')
 
@@ -26,9 +34,11 @@ const ProductsListCart = () => {
     const [getDataItems, { data }] = useLazyGetItemsCartQuery()
     const [getTotalPrice, { data: totalPrice }] = useLazyGetTotalPriceQuery()
     const [deleteCartItem] = useGetRemoveItemMutation()
-    const [updataPrice] = useUpdataPriceMutation()
-    const { data: booksStore } = useGetStoreBooksQuery()
+    const [updatePrice] = useUpdatePriceMutation()
+    const [getStoreBooks] = useLazyGetStoreBooksQuery()
     const [getRefresh] = useRefreshTokenMutation()
+
+    const [booksStore, setBooksStore] = useState<BooksFromStore[]>()
 
     const navigate = useNavigate()
 
@@ -45,7 +55,7 @@ const ProductsListCart = () => {
                                 .then((response) => {
                                     if (response.error) {
                                         localStorage.removeItem('logado')
-                                        return navigate('/login')
+                                        return navigate('/')
                                     }
                                     localStorage.setItem('logado', 'true')
                                     deleteCartItem({ id, csrfToken }).then(
@@ -70,7 +80,7 @@ const ProductsListCart = () => {
                                 })
                         }
                         localStorage.removeItem('logado')
-                        return navigate('/login')
+                        return navigate('/')
                     }
                     getDataItems(csrfToken).catch((err) => console.log(err))
                     setTimeout(
@@ -96,7 +106,7 @@ const ProductsListCart = () => {
     ) => {
         const quant = element.target.value
         setLoading(true)
-        updataPrice({
+        updatePrice({
             data: {
                 quantBefore,
                 quantCurrent: Number(quant),
@@ -111,10 +121,12 @@ const ProductsListCart = () => {
                     if (message === 'Token expirado') {
                         return getRefresh(csrfToken).then((res) => {
                             if (res.error) {
-                                return navigate('/login')
+                                localStorage.removeItem('logado')
+                                removeAllCache()
+                                return navigate('/')
                             }
 
-                            updataPrice({
+                            updatePrice({
                                 data: {
                                     quantBefore,
                                     quantCurrent: Number(quant),
@@ -136,8 +148,11 @@ const ProductsListCart = () => {
                                 setLoading(false)
                             })
                         })
+                    } else {
+                        localStorage.removeItem('logado')
+                        removeAllCache()
+                        return navigate('/')
                     }
-                    return navigate('/login')
                 }
                 if (csrfToken) {
                     getDataItems(csrfToken).catch((err) => console.log(err))
@@ -155,16 +170,28 @@ const ProductsListCart = () => {
     }
 
     useEffect(() => {
+        if (booksFromLocal) {
+            return setBooksStore(booksFromLocal)
+        }
+        getStoreBooks().then((res) => {
+            if (res.data) {
+                addItemToCache('booksStore', res.data)
+                setBooksStore(res.data)
+            }
+        })
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [getStoreBooks, refreshTokenWarn])
+
+    useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
 
-        getTotalPrice(csrfToken).catch((err) => {
+        getTotalPrice(csrfToken).catch((err: unknown) => {
             setBadToken(true)
             console.log(err)
         })
-        getDataItems(csrfToken).then(() => {
-            console.log('é dentro')
-        })
-    }, [csrfToken, getDataItems, getTotalPrice, logado, refreshTokenWarn])
+        getDataItems(csrfToken)
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [csrfToken, refreshTokenWarn])
 
     const handleClick = () => {
         if (
@@ -191,7 +218,7 @@ const ProductsListCart = () => {
                                         <li key={id}>
                                             <div className="img-delete">
                                                 <img
-                                                    src={photo}
+                                                    srcSet={photo}
                                                     alt="item cart"
                                                 />
                                             </div>
@@ -209,7 +236,7 @@ const ProductsListCart = () => {
                                                             quant
                                                         )
                                                     }
-                                                    className="quant"
+                                                    className={`quant ${loading ? 'disabled' : ''}`}
                                                     name="quant"
                                                     value={quant}
                                                     disabled={loading}
@@ -242,7 +269,7 @@ const ProductsListCart = () => {
                     <h3 className="title-books-store">COMPRE TAMBÉM</h3>
                     <div className="bar" />
                     <div className="cards-store-container">
-                        {booksStore &&
+                        {booksStore ? (
                             booksStore.map(
                                 ({ descBooks, id, photo, title, price }) => (
                                     <Card
@@ -255,7 +282,16 @@ const ProductsListCart = () => {
                                         title={title}
                                     />
                                 )
-                            )}
+                            )
+                        ) : (
+                            <div className="container-skeleton-product-list-books">
+                                <div>
+                                    <SkeletonCard />
+                                    <SkeletonCard />
+                                    <SkeletonCard />
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </ProductsListCartContainer>
