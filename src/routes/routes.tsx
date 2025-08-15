@@ -1,19 +1,19 @@
 import { Route, Routes } from 'react-router-dom'
 import Home from '../pages/Home'
-// import Books from '../components/Books'
-// import LoginOrSign from '../pages/LoginOrSign'
-// import ProductsListCart from '../components/ProductsListCart'
-// import Profile from '../components/Profile'
-// import Checkout from '../components/Checkout'
-// import Pix from '../components/Pix'
-// import AddressEdit from '../components/AddressEdit'
-// import { PrivateRoute } from './RouteGuards'
+import Books from '../components/Books'
+import LoginOrSign from '../pages/LoginOrSign'
+import ProductsListCart from '../components/ProductsListCart'
+import Profile from '../components/Profile'
+import Checkout from '../components/Checkout'
+import Pix from '../components/Pix'
+import AddressEdit from '../components/AddressEdit'
+import { PrivateRoute } from './RouteGuards'
 
 const Rotas = () => {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
-            {/* <Route path="/store/:id" element={<Books />} />
+            <Route path="/store/:id" element={<Books />} />
             <Route path="/login" element={<LoginOrSign />} />
             <Route
                 path="/profile"
@@ -54,7 +54,7 @@ const Rotas = () => {
                         <AddressEdit />
                     </PrivateRoute>
                 }
-            /> */}
+            />
         </Routes>
     )
 }
