@@ -2,8 +2,6 @@ name: Deploy frontend para Hostinger
 
 on:
     push:
-        branches:
-            - main
         tags:
             - 'deploy-*'
 jobs:
