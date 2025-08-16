@@ -3,13 +3,13 @@ import Card from '../Card'
 import { Carrossel, PublicLibContainer } from './styles'
 import CardsClone from '../CardsClone'
 import { useLazyGetPublicBooksQuery } from '../../services/api'
-import { addItemToCache, getItemFromCache } from '../../utils/cacheConfig'
+// import { addItemToCache } from '../../utils/cacheConfig'
 import SkeletonCard from '../SkeletonCard'
 
 const PublicLib = () => {
     const [getPublicBooks] = useLazyGetPublicBooksQuery()
     const [data, setData] = useState<Books[]>()
-    const localPublicBooks = getItemFromCache<Books[]>('publicBooks')
+    // const localPublicBooks = getItemFromCache<Books[]>('publicBooks')
     const carrousselRef = useRef<HTMLDivElement>(null)
     const hasMounted = useRef(false)
 
@@ -61,16 +61,15 @@ const PublicLib = () => {
     }, [carrousselItems])
 
     useEffect(() => {
-        if (localPublicBooks) {
-            return setData(localPublicBooks)
-        }
+        // if (localPublicBooks) {
+        //     return setData(localPublicBooks)
+        // }
         getPublicBooks().then((res) => {
             if (res.data) {
                 setData(res.data)
-                addItemToCache('publicBooks', res.data)
+                // addItemToCache('publicBooks', res.data)
             }
         })
-    // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [getPublicBooks])
 
     useEffect(() => {
