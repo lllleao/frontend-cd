@@ -20,6 +20,7 @@ jobs:
                 VITE_API_URL: ${{ secrets.VITE_API_URL }}
               run: npm run build
 
+              
             - name: Enviar arquivos via SCP (SSH)
               uses: appleboy/scp-action@v1
               with:
