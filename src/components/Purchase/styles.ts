@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { CardContainerStore } from '../Card/styles'
 
 export const PurchaseContainer = styled.section`
-    display: none;
+    /* display: none; */
     padding-top: 32px;
     .purchase__title,
     span {

@@ -10,8 +10,8 @@ export const HeaderContainer = styled.header`
         padding: 0;
     }
 
-    .cartIcon,
+    /* .cartIcon,
     .userIcon {
         display: none;
-    }
+    } */
 `
