@@ -9,9 +9,11 @@ export const HeaderContainer = styled.header`
     @media screen and (max-width: 767px) {
         padding: 0;
     }
-
-    /* .cartIcon,
-    .userIcon {
-        display: none;
-    } */
+    &.display-none-development {
+        display: block;
+        .cartIcon,
+        .userIcon {
+            display: none;
+        }
+    }
 `

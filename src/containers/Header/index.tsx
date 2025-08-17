@@ -5,7 +5,7 @@ import { useLazyGetItemsCartQuery } from '../../services/api'
 import { HeaderContainer } from './styles'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 import { useVerifyLogin } from '../../hooks/useVerifyLogin'
-import { isLoginAndCsrf } from '../../utils'
+import { isLoginAndCsrf, isOnDevelopment } from '../../utils'
 
 const Header = () => {
     const logado = localStorage.getItem('logado')
@@ -44,7 +44,7 @@ const Header = () => {
     }, [csrfToken, refreshTokenWarn])
 
     return (
-        <HeaderContainer>
+        <HeaderContainer className={isOnDevelopment ? '' : 'display-none-development'}>
             <MenuMob dataLength={data?.items.length} />
             <MenuDesktop
                 addAnimateCart={addAnimateCart}

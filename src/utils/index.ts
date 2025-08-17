@@ -53,7 +53,10 @@ export const isErrorMessageExist = (obj: unknown): obj is ErrorMessage => {
     )
 }
 
-export const isLoginAndCsrf = (logado: string | null, csrfToken: string | undefined) => {
+export const isLoginAndCsrf = (
+    logado: string | null,
+    csrfToken: string | undefined
+) => {
     if (!csrfToken) {
         return false
     }
@@ -64,3 +67,5 @@ export const isLoginAndCsrf = (logado: string | null, csrfToken: string | undefi
 
     return true
 }
+export const isOnDevelopment =
+    import.meta.env.VITE_ON_DEVELOPMENT === 'true' ? true : false

@@ -54,6 +54,10 @@ const GlobalStyle = createGlobalStyle`
         padding-bottom: 122px;
     }
 
+    .display-none-development {
+        display: none;
+    }
+
     @keyframes barOne {
         100% {
             left: 100%;
