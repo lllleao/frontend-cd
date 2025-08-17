@@ -1,4 +1,7 @@
 {
+    "compilerOptions": {
+        "module": "ESNext"
+    },
     "files": [],
     "references": [
         {
@@ -7,5 +10,5 @@
         {
             "path": "./tsconfig.node.json"
         }
-    ],
+    ]
 }

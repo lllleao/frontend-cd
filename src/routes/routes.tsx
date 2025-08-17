@@ -8,53 +8,60 @@ import Checkout from '../components/Checkout'
 import Pix from '../components/Pix'
 import AddressEdit from '../components/AddressEdit'
 import { PrivateRoute } from './RouteGuards'
+import { isOnDevelopment } from '../utils'
 
 const Rotas = () => {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/store/:id" element={<Books />} />
-            <Route path="/login" element={<LoginOrSign />} />
-            <Route
-                path="/profile"
-                element={
-                    <PrivateRoute>
-                        <Profile />
-                    </PrivateRoute>
-                }
-            />
-            <Route
-                path="/cart"
-                element={
-                    <PrivateRoute>
-                        <ProductsListCart />
-                    </PrivateRoute>
-                }
-            />
-            <Route
-                path="/checkout"
-                element={
-                    <PrivateRoute>
-                        <Checkout />
-                    </PrivateRoute>
-                }
-            />
-            <Route
-                path="/pix"
-                element={
-                    <PrivateRoute>
-                        <Pix />
-                    </PrivateRoute>
-                }
-            />
-            <Route
-                path="/address"
-                element={
-                    <PrivateRoute>
-                        <AddressEdit />
-                    </PrivateRoute>
-                }
-            />
+            {isOnDevelopment ? (
+                <>
+                    <Route path="/store/:id" element={<Books />} />
+                    <Route path="/login" element={<LoginOrSign />} />
+                    <Route
+                        path="/profile"
+                        element={
+                            <PrivateRoute>
+                                <Profile />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/cart"
+                        element={
+                            <PrivateRoute>
+                                <ProductsListCart />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/checkout"
+                        element={
+                            <PrivateRoute>
+                                <Checkout />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/pix"
+                        element={
+                            <PrivateRoute>
+                                <Pix />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/address"
+                        element={
+                            <PrivateRoute>
+                                <AddressEdit />
+                            </PrivateRoute>
+                        }
+                    />
+                </>
+            ) : (
+                <></>
+            )}
         </Routes>
     )
 }
