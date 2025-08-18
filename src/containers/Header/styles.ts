@@ -9,14 +9,7 @@ export const HeaderContainer = styled.header`
     @media screen and (max-width: 767px) {
         padding: 0;
     }
-    &.display-none-development {
-        display: block;
-        .cartIcon,
-        .userIcon {
-            display: none;
-        }
-    }
-
+    
     .cartIcon,
     .userIcon {
         display: block;
