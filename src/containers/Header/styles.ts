@@ -10,8 +10,12 @@ export const HeaderContainer = styled.header`
         padding: 0;
     }
     
-    .cartIcon,
-    .userIcon {
+    &.display-none-development {
         display: block;
+        .cartIcon,
+        .userIcon {
+            display: none;
+        }
     }
+
 `
