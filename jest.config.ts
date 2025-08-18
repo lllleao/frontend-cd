@@ -12,7 +12,17 @@ const config: JestConfigWithTsJest = {
         '\\.(png|jpg|jpeg|gif|svg)$': '<rootDir>/__mocks__/fileMock.ts'
     },
     setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
-    moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"]
+    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+    collectCoverage: true,
+    coverageDirectory: 'coverage',
+    coverageThreshold: {
+        global: {
+            branches: 80,
+            functions: 80,
+            lines: 80,
+            statements: 80
+        }
+    }
 }
 
 export default config
