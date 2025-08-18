@@ -16,4 +16,9 @@ export const HeaderContainer = styled.header`
             display: none;
         }
     }
+
+    .cartIcon,
+    .userIcon {
+        display: block;
+    }
 `
