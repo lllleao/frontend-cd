@@ -36,8 +36,6 @@ export const useCsrfTokenStore = create<CsrfStore>((set) => ({
             )
 
             const token = await res.json()
-            // const token = res as unknown as { token: string }
-            // console.log(token.token)
             set({ csrfToken: token.token })
         } catch (err) {
             console.error('Erro ao buscar CSRF token:', err)

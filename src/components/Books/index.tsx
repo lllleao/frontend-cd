@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { AboutBook, BookImg, BooksPurchase, SkeletonText } from './styles'
 import { useEffect, useState } from 'react'
 import ButtonPurchase from '../ButtonPurchase'
@@ -6,16 +6,19 @@ import {
     useAddToCartMutation,
     useLazyGetSpecificStoreBookQuery,
     useLazyGetStoreBooksQuery,
-    useLazyGetItemsCartQuery,
     useRefreshTokenMutation
 } from '../../services/api'
 import Card from '../Card'
 import Loader from '../Loader'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 import { isErrorMessageExist } from '../../utils'
-import { addItemToCache, getItemFromCache } from '../../utils/cacheConfig'
+import { getItemFromCache, verifyIfIsCached } from '../../utils/cacheConfig'
 import Header from '../../containers/Header'
 import SkeletonCard from '../SkeletonCard'
+import { useSelector } from 'react-redux'
+import { RootReducer } from '../../store'
+import useLogout from '../../hooks/useLogout'
+import { channelBroadcast } from '../../utils/channelBroadcast'
 
 let isSeeMore: boolean = false
 
@@ -28,11 +31,12 @@ const Book = () => {
     const setViweNumberCart = useCsrfTokenStore(
         (state) => state.setViweNumberCart
     )
+    const { numberCart } = useSelector((state: RootReducer) => state.cart)
+
+    const logout = useLogout()
 
     const channelName = 'cart_channel'
     const [addToCart] = useAddToCartMutation()
-    const [getDataItem] = useLazyGetItemsCartQuery()
-    const navigate = useNavigate()
     const [valueQuant, setValueQuant] = useState('1')
     const [addCartLoader, setAddCartLoader] = useState(false)
     const [buttonMessage, setButtonMessage] = useState('Adicionar ao carrinho')
@@ -41,12 +45,18 @@ const Book = () => {
     const [isItemAdd, setIsItemAdd] = useState(false)
     const { id } = useParams() as BookParams
 
-    const booksFromLocal = getItemFromCache<BooksFromStore[]>('booksStore')
+    const booksFromLocal = getItemFromCache<{
+        cache: BooksFromStore[]
+        timeExpiration: number
+    }>('booksStore')
 
     const [booksStore, setBooksStore] = useState<BooksFromStore[]>()
     const [getSpecificBook] = useLazyGetSpecificStoreBookQuery()
     const [data, setData] = useState<BooksPurchase>()
-    const specificBook = getItemFromCache<BooksPurchase>(`specific${id}`)
+    const specificBook = getItemFromCache<{
+        cache: BooksPurchase
+        timeExpiration: number
+    }>(`specific${id}`)
     const [getStoreBooks] = useLazyGetStoreBooksQuery()
 
     const [getRefresh] = useRefreshTokenMutation()
@@ -79,11 +89,7 @@ const Book = () => {
         if (data && csrfToken) {
             setAddCartLoader(true)
             const channel = new BroadcastChannel(channelName)
-            channel.postMessage({ type: 'UPDATE_COUNT', value: 'opa' })
-            channel.close()
-            if (csrfToken) {
-                setTimeout(() => getDataItem(csrfToken), 1000)
-            }
+
             addToCart({
                 items: [
                     {
@@ -106,7 +112,8 @@ const Book = () => {
                                         if (response.error) {
                                             setAddCartLoader(false)
 
-                                            return navigate('/login')
+                                            logout('/login')
+                                            return
                                         }
 
                                         addToCart({
@@ -135,7 +142,8 @@ const Book = () => {
                                                     return res.data
                                                 }
                                             }
-                                            setViweNumberCart(true)
+                                            channelBroadcast(numberCart + 1)
+                                            channel.close()
                                             setButtonMessage('Item adicionado')
                                             setTimeout(
                                                 () =>
@@ -158,11 +166,14 @@ const Book = () => {
                                 return res.data
                             default:
                                 setAddCartLoader(false)
+                                logout('/login')
 
-                                return navigate('/login')
+                                return
                         }
                     }
                     setViweNumberCart(true)
+                    channelBroadcast(numberCart + 1)
+
                     setButtonMessage('Item adicionado')
                     setTimeout(
                         () => setButtonMessage('Adicionar ao carrinho'),
@@ -175,29 +186,26 @@ const Book = () => {
     }
 
     useEffect(() => {
-        if (booksFromLocal) {
-            return setBooksStore(booksFromLocal)
-        }
-        getStoreBooks().then((res) => {
-            if (res.data) {
-                addItemToCache('booksStore', res.data)
-                setBooksStore(res.data)
-            }
-        })
+        verifyIfIsCached(
+            booksFromLocal,
+            setBooksStore,
+            getStoreBooks,
+            'booksStore'
+        )
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [getStoreBooks])
 
     useEffect(() => {
         if (!id) return
-        if (specificBook) {
-            return setData(specificBook)
-        }
-        getSpecificBook(id).then((res) => {
-            if (res.data) {
-                addItemToCache(`specific${id}`, res.data)
-                setData(res.data)
-            }
-        })
+        setButtonMessage('Adicionar ao carrinho')
+        setAddCartLoader(false)
+        verifyIfIsCached(
+            specificBook,
+            setData,
+            () => getSpecificBook(id),
+            `specific${id}`
+        )
+
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [getSpecificBook, id])
 

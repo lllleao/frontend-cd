@@ -3,16 +3,18 @@ import { handleBlur, handleFocus } from '../../../utils/contactFunctions'
 import { handleValidEmail } from '../../../utils/validationLoginSign'
 import { handleLogin } from '../formsFetch'
 import { ButtonLoginSign } from '../styles'
-import { useFormeState } from '../useFormState'
+import { useFormeState } from '../../../hooks/useFormState'
 import { RootReducer } from '../../../store'
 import { EmailUserMsgContainer } from './styles'
 import { DataLoginProp, useLoginUserMutation } from '../../../services/api'
 import { useNavigate } from 'react-router-dom'
 import { useCsrfTokenStore } from '../../../hooks/useFetchCsrfToken'
-import useLogout from '../../../hooks/useLogout'
+import useUserLoginResults from '../../../hooks/useUserLoginResults'
+import { useState } from 'react'
 
 const Login = () => {
-    const logout = useLogout()
+    const [viewPassword, setViewPassword] = useState(false)
+    const errorHandlers = useUserLoginResults()
     const { loginUserExist, msg } = useSelector(
         (state: RootReducer) => state.loginSigin
     )
@@ -41,8 +43,8 @@ const Login = () => {
 
     const data: DataLoginProp = {
         data: {
-            email,
-            password
+            email: email.trim(),
+            password: password
         },
         csrfToken
     }
@@ -64,13 +66,14 @@ const Login = () => {
                         handleLogin(
                             e,
                             isEmailValid,
+                            email,
                             password,
                             data,
                             dispatch,
                             makeLogin,
                             navigate,
                             fetchCsrfToken,
-                            logout
+                            errorHandlers
                         )
                     }
                 >
@@ -105,7 +108,7 @@ const Login = () => {
                             onFocus={(e) => handleFocus(e, setPasswordEmpty)}
                             onBlur={(e) => handleBlur(e, setPasswordEmpty)}
                             onChange={(e) => setPassword(e.target.value)}
-                            type="password"
+                            type={viewPassword ? 'text' : 'password'}
                             id="password-login"
                             value={password}
                         />
@@ -116,6 +119,17 @@ const Login = () => {
                             <i className="fa-solid fa-lock" />
                             <span>Senha</span>
                         </label>
+                        {viewPassword ? (
+                            <i
+                                onClick={() => setViewPassword(!viewPassword)}
+                                className="fa-solid fa-eye-slash eye-password"
+                            />
+                        ) : (
+                            <i
+                                onClick={() => setViewPassword(!viewPassword)}
+                                className="fa-solid fa-eye eye-password"
+                            />
+                        )}
                     </div>
                     <ButtonLoginSign type="submit">Login</ButtonLoginSign>
                 </form>

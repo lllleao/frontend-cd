@@ -5,7 +5,7 @@ import {
 } from '../../../utils/contactFunctions'
 import { handleValidEmail } from '../../../utils/validationLoginSign'
 import { ButtonLoginSign } from '../styles'
-import { useFormeState } from '../useFormState'
+import { useFormeState } from '../../../hooks/useFormState'
 import { handleSign } from '../formsFetch'
 import { EmailUserExist, WarnPassword } from './styles'
 import { useDispatch, useSelector } from 'react-redux'
@@ -14,15 +14,18 @@ import { useSignUserMutation } from '../../../services/api'
 import { useState } from 'react'
 import Loader from '../../Loader'
 import { useCsrfTokenStore } from '../../../hooks/useFetchCsrfToken'
+import useUserSignResults from '../../../hooks/useUserSignResults'
 
 const Sign = () => {
-    const { signUserExist, msg, missToken } = useSelector(
+    const [viewPassword, setViewPassword] = useState(false)
+    const [isLoader, setIsLoader] = useState(false)
+    const errorHandlers = useUserSignResults(setIsLoader)
+    const { signUserExist, msg } = useSelector(
         (state: RootReducer) => state.loginSigin
     )
     const [makeSign] = useSignUserMutation()
     const dispatch = useDispatch()
     const [isDisplay, setIsDisplay] = useState(false)
-    const [isLoader, setIsLoader] = useState(false)
 
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
 
@@ -47,8 +50,8 @@ const Sign = () => {
 
     const data = {
         data: {
-            name,
-            email,
+            name: name.trim(),
+            email: email.trim(),
             password
         },
         csrfToken
@@ -57,9 +60,9 @@ const Sign = () => {
     return (
         <>
             <EmailUserExist
-                className={signUserExist || missToken ? 'user-exist' : ''}
+                className={signUserExist ? 'user-exist' : ''}
             >
-                {msg} {!missToken && 'já existe'}
+                {msg}
             </EmailUserExist>
             <div className="sign login-sign">
                 <div className="login-sign__title">
@@ -76,8 +79,10 @@ const Sign = () => {
                             data,
                             dispatch,
                             name,
+                            email,
                             makeSign,
-                            setIsLoader
+                            setIsLoader,
+                            errorHandlers
                         )
                     }}
                 >
@@ -132,7 +137,7 @@ const Sign = () => {
                             onFocus={(e) => handleFocus(e, setPasswordEmpty)}
                             onBlur={(e) => handleBlur(e, setPasswordEmpty)}
                             onChange={(e) => setPassword(e.target.value)}
-                            type="password"
+                            type={viewPassword ? 'text' : 'password'}
                             id="password-sign"
                             value={password}
                         />
@@ -143,6 +148,17 @@ const Sign = () => {
                             <i className="fa-solid fa-lock" />
                             <span>Senha</span>
                         </label>
+                        {viewPassword ? (
+                            <i
+                                onClick={() => setViewPassword(!viewPassword)}
+                                className="fa-solid fa-eye-slash eye-password"
+                            />
+                        ) : (
+                            <i
+                                onClick={() => setViewPassword(!viewPassword)}
+                                className="fa-solid fa-eye eye-password"
+                            />
+                        )}
                         <WarnPassword $isDisplay={isDisplay}>
                             A senha deve ter pelo menos 8 caracteres, misturando
                             pelo menos números e letras, e não pode ser uma

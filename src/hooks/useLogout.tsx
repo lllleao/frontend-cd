@@ -8,12 +8,12 @@ const useLogout = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
     const navigate = useNavigate()
 
-    return function logout() {
+    return function logout(route: string) {
         localStorage.removeItem('logado')
         logoutApi(csrfToken)
             .then(() => {
                 removeAllCache()
-                navigate('/')
+                navigate(route)
             })
             .catch((err) => {
                 console.log(err)

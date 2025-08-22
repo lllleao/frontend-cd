@@ -47,7 +47,6 @@ const Checkout = () => {
 
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
-        console.log('vezes')
         getDataAddress({ csrfToken })
     // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [csrfToken, refreshTokenWarn, totalPrice])
@@ -76,7 +75,6 @@ const Checkout = () => {
         setIsDefaultAddress(isDefault)
         setIsSecondaryAddress(!isDefault)
 
-        console.log(isDefault)
         if (isDefault) {
             return setIsWarnSecondaryVisible(false)
         } else {

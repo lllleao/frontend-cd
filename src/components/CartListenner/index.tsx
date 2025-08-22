@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
-import { useLazyGetItemsCartQuery } from '../../services/api'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
+import { addItemToCache } from '../../utils/cacheConfig'
+import { useDispatch } from 'react-redux'
+import { updateNumberCart } from '../../store/reducers/cart'
 
 const CartListenner = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
-
-    const [getDataItem] = useLazyGetItemsCartQuery()
+    const dispatch = useDispatch()
 
     const channelName = 'cart_channel'
     useEffect(() => {
@@ -13,15 +14,14 @@ const CartListenner = () => {
 
         channel.onmessage = (event) => {
             if (event.data.type === 'UPDATE_COUNT' && csrfToken) {
-                setTimeout(() => getDataItem(csrfToken), 1000)
+
+                dispatch(updateNumberCart(event.data.value))
+                addItemToCache('numberCart', event.data.value)
             }
         }
 
-        return () => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-            channel.close
-        }
-    }, [csrfToken, getDataItem])
+        return () => channel.close()
+    }, [csrfToken, dispatch])
     return null
 }
 

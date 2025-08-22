@@ -13,15 +13,18 @@ import Card from '../Card'
 import { useNavigate } from 'react-router-dom'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 import { isErrorMessageExist, isLoginAndCsrf } from '../../utils'
-import {
-    addItemToCache,
-    getItemFromCache,
-    removeAllCache
-} from '../../utils/cacheConfig'
+import { getItemFromCache, verifyIfIsCached } from '../../utils/cacheConfig'
 import SkeletonCard from '../SkeletonCard'
+import { useSelector } from 'react-redux'
+import { RootReducer } from '../../store'
+import useLogout from '../../hooks/useLogout'
+import { channelBroadcast } from '../../utils/channelBroadcast'
 
 const ProductsListCart = () => {
-    const booksFromLocal = getItemFromCache<BooksFromStore[]>('booksStore')
+    const booksFromLocal = getItemFromCache<{
+        cache: BooksFromStore[]
+        timeExpiration: number
+    }>('booksStore')
 
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
     const logado = localStorage.getItem('logado')
@@ -29,6 +32,8 @@ const ProductsListCart = () => {
     const refreshTokenWarn = useCsrfTokenStore(
         (state) => state.refreshTokenWarn
     )
+    const { numberCart } = useSelector((state: RootReducer) => state.cart)
+
     const [badToken, setBadToken] = useState(false)
     const [loading, setLoading] = useState(false)
     const [getDataItems, { data }] = useLazyGetItemsCartQuery()
@@ -41,11 +46,13 @@ const ProductsListCart = () => {
     const [booksStore, setBooksStore] = useState<BooksFromStore[]>()
 
     const navigate = useNavigate()
-
-    const channelName = 'cart_channel'
+    const logout = useLogout()
 
     const handleDelete = (id: number | undefined, loading: boolean) => {
+        setLoading(true)
+
         if (id && !loading && csrfToken) {
+
             deleteCartItem({ id, csrfToken })
                 .then((res) => {
                     if (isErrorMessageExist(res)) {
@@ -54,8 +61,8 @@ const ProductsListCart = () => {
                             return getRefresh(csrfToken)
                                 .then((response) => {
                                     if (response.error) {
-                                        localStorage.removeItem('logado')
-                                        return navigate('/')
+                                        logout('/')
+                                        return
                                     }
                                     localStorage.setItem('logado', 'true')
                                     deleteCartItem({ id, csrfToken }).then(
@@ -63,6 +70,7 @@ const ProductsListCart = () => {
                                             getDataItems(csrfToken).catch(
                                                 (err) => console.log(err)
                                             )
+                                            channelBroadcast(numberCart - 1)
                                             setTimeout(
                                                 () =>
                                                     getTotalPrice(
@@ -79,10 +87,13 @@ const ProductsListCart = () => {
                                     console.log(error, 'err')
                                 })
                         }
-                        localStorage.removeItem('logado')
-                        return navigate('/')
+                        logout('/')
+                        return
                     }
+                    setLoading(false)
+
                     getDataItems(csrfToken).catch((err) => console.log(err))
+                    channelBroadcast(numberCart - 1)
                     setTimeout(
                         () =>
                             getTotalPrice(csrfToken).catch((err) =>
@@ -92,9 +103,6 @@ const ProductsListCart = () => {
                     )
                 })
                 .catch((error) => console.error('Erro ao remover item:', error))
-            const channel = new BroadcastChannel(channelName)
-            channel.postMessage({ type: 'UPDATE_COUNT', value: 'opa' })
-            channel.close()
         }
     }
 
@@ -121,9 +129,8 @@ const ProductsListCart = () => {
                     if (message === 'Token expirado') {
                         return getRefresh(csrfToken).then((res) => {
                             if (res.error) {
-                                localStorage.removeItem('logado')
-                                removeAllCache()
-                                return navigate('/')
+                                logout('/')
+                                return
                             }
 
                             updatePrice({
@@ -149,9 +156,8 @@ const ProductsListCart = () => {
                             })
                         })
                     } else {
-                        localStorage.removeItem('logado')
-                        removeAllCache()
-                        return navigate('/')
+                        logout('/')
+                        return
                     }
                 }
                 if (csrfToken) {
@@ -170,15 +176,12 @@ const ProductsListCart = () => {
     }
 
     useEffect(() => {
-        if (booksFromLocal) {
-            return setBooksStore(booksFromLocal)
-        }
-        getStoreBooks().then((res) => {
-            if (res.data) {
-                addItemToCache('booksStore', res.data)
-                setBooksStore(res.data)
-            }
-        })
+        verifyIfIsCached(
+            booksFromLocal,
+            setBooksStore,
+            getStoreBooks,
+            'booksStore'
+        )
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [getStoreBooks, refreshTokenWarn])
 

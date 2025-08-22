@@ -15,11 +15,12 @@ import {
 import Loader from '../Loader'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 import { isErrorMessageExist } from '../../utils'
-import { removeAllCache } from '../../utils/cacheConfig'
+import useLogout from '../../hooks/useLogout'
 
 const FormAddress = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
     const logado = localStorage.getItem('logado')
+    const logout = useLogout()
 
     const isDefaulStoraget = localStorage.getItem('isDefault') as string
     const [isDefault, setIsDefault] = useState(true)
@@ -146,7 +147,6 @@ const FormAddress = () => {
             isNumberValid,
             isStreetValid
         } = authForms()
-        console.log(isCpfValid)
 
         if (
             isCepValid &&
@@ -179,9 +179,8 @@ const FormAddress = () => {
                             return getRefresh(csrfToken)
                                 .then((response) => {
                                     if (response.error) {
-                                        localStorage.removeItem('logado')
-                                        removeAllCache()
-                                        return navigate('/')
+                                        logout('/')
+                                        return
                                     }
                                     localStorage.setItem('logado', 'true')
                                     createAddress({
@@ -207,9 +206,8 @@ const FormAddress = () => {
                                     console.log(error, 'err')
                                 })
                         }
-                        localStorage.removeItem('logado')
-                        removeAllCache()
-                        return navigate('/')
+                        logout('/')
+                        return;
                     }
                     setIsLoader(false)
                     navigate('/profile')
@@ -221,10 +219,6 @@ const FormAddress = () => {
     }
 
     useEffect(() => {
-        if (!logado) {
-            removeAllCache()
-            return navigate('/')
-        }
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         isDefaulStoraget === 'true' ? setIsDefault(true) : setIsDefault(false)
     }, [isDefaulStoraget, logado, navigate])

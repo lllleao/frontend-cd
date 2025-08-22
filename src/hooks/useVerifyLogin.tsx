@@ -24,7 +24,7 @@ export function useVerifyLogin() {
                     if (message === 'Token expirado') {
                         getRefresh(csrfToken).then((response) => {
                             if (response.error) {
-                                return logout()
+                                return logout('/')
                             }
                             localStorage.setItem('logado', 'true')
                             setRefreshTokenWarn(true).finally(() =>
@@ -33,7 +33,7 @@ export function useVerifyLogin() {
                         })
                         return undefined
                     } else {
-                        return logout()
+                        return logout('/')
                     }
                 }
                 localStorage.setItem('logado', 'true')

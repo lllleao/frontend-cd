@@ -17,10 +17,13 @@ import { NavigateFunction } from 'react-router-dom'
 import { validatePassword } from '../../utils/validationLoginSign'
 import { isErrorMessageExist } from '../../utils'
 import { DataLoginProp, DataSignupProp } from '../../services/api'
+import { LoginErrorMessage } from '../../hooks/useUserLoginResults'
+import { SignErrorMessage } from '../../hooks/useUserSignResults'
 
 export const handleLogin = (
     event: FormEvent<HTMLFormElement>,
     isEmailValid: boolean,
+    email: string,
     password: string,
     data: DataLoginProp,
     dispatch: Dispatch<UnknownAction>,
@@ -43,11 +46,12 @@ export const handleLogin = (
     >,
     navigate: NavigateFunction,
     fetchCsrfToken: () => Promise<unknown>,
-    logout: () => void
+    errorHandlers: Record<LoginErrorMessage, () => void>
 ) => {
     event.preventDefault()
-
-    if (isEmailValid && password) {
+    const regex = /^\s+$/
+    const isOnlySapce = regex.test(email) || regex.test(password)
+    if (isEmailValid && password && !isOnlySapce) {
         makeLogin(data)
             .then((res) => {
                 if (isErrorMessageExist(res)) {
@@ -55,48 +59,18 @@ export const handleLogin = (
                         message?: string
                         error?: string
                     }
-                    if (errorData.message === 'Usuário já logado') {
-                        console.log(res.error.data.message)
-                        dispatch(
-                            checkLoginUser({
-                                msg: 'Usuário já logado',
-                                loginUserExist: true,
-                                loginSuccess: false
-                            })
-                        )
-                        return setTimeout(() => {
-                            dispatch(
-                                checkLoginUser({
-                                    loginUserExist: false
-                                })
-                            )
-                            logout()
-                        }, 1000)
-                    } else if (errorData.message === 'Senha incorreta.') {
-                        return dispatch(
-                            checkLoginUser({
-                                msg: 'Senha Incorreta',
-                                loginUserExist: true,
-                                loginSuccess: false
-                            })
-                        )
-                    } else if (errorData.message === 'Email não verificado.') {
-                        return dispatch(
-                            checkLoginUser({
-                                msg: 'Email não verificado',
-                                loginUserExist: true,
-                                loginSuccess: false
-                            })
-                        )
-                    } else if (errorData.message === 'Usuário não existe.') {
-                        return dispatch(
-                            checkLoginUser({
-                                msg: 'Email não existe.',
-                                loginUserExist: true,
-                                loginSuccess: false
-                            })
-                        )
-                    }
+                    console.log(errorData.message)
+                    const handler =
+                        errorHandlers[errorData.message as LoginErrorMessage]
+                    if (handler) return handler()
+
+                    return dispatch(
+                        checkLoginUser({
+                            msg: 'Erro desconhecido',
+                            loginUserExist: true,
+                            loginSuccess: false
+                        })
+                    )
                 }
                 dispatch(checkLoginUser({ loginUserExist: false }))
                 fetchCsrfToken()
@@ -118,6 +92,7 @@ export const handleSign = (
     data: DataSignupProp,
     dispatch: Dispatch<UnknownAction>,
     name: string,
+    email: string,
     makeSign: (
         arg: DataSignupProp
     ) => MutationActionCreatorResult<
@@ -135,15 +110,18 @@ export const handleSign = (
             'api'
         >
     >,
-    setIsLoader: (value: React.SetStateAction<boolean>) => void
+    setIsLoader: (value: React.SetStateAction<boolean>) => void,
+    errorHandlers: Record<SignErrorMessage, () => void>
 ) => {
     event.preventDefault()
 
     const regex = /^\s+$/
+    const isOnlySapce = regex.test(name) || regex.test(email)
+
     const isPasswordCorrect = validatePassword(password)
     setIsDisplay(!isPasswordCorrect)
-    console.log(name, isPasswordCorrect, isEmailValid)
-    if (name && !regex.test(name) && isEmailValid && isPasswordCorrect) {
+
+    if (name && !isOnlySapce && isEmailValid && isPasswordCorrect) {
         setIsLoader(true)
 
         makeSign(data)
@@ -153,31 +131,16 @@ export const handleSign = (
                         message?: string
                         error?: string
                     }
-                    if (
-                        errorData.message ===
-                        'CSRF token ausente no cabeçalho da requisição.'
-                    ) {
-                        setIsLoader(false)
+                    const handler =
+                        errorHandlers[errorData.message as SignErrorMessage]
 
-                        return dispatch(
-                            checkSignUser({
-                                msg: 'Requisição não autorizada',
-                                missToken: true,
-                                signUserExist: false
-                            })
-                        )
-                    } else if (
-                        errorData.error === 'Este email já está em uso.'
-                    ) {
-                        setIsLoader(false)
-                        return dispatch(
-                            checkSignUser({
-                                msg: errorData.message,
-                                signUserExist: true,
-                                missToken: false
-                            })
-                        )
-                    }
+                    if (handler) return handler()
+                    return dispatch(
+                        checkSignUser({
+                            msg: 'Erro Desconhecido',
+                            signUserExist: true
+                        })
+                    )
                 }
                 setIsLoader(false)
                 dispatch(

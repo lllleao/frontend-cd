@@ -5,9 +5,6 @@ export const EmailUserMsgContainer = styled.div`
     display: flex;
     flex-direction: column;
     gap: 8px;
-    @media (max-width: 767px) {
-        position: static;
-    }
 
     .emailUserMsg {
         display: none;
@@ -22,5 +19,9 @@ export const EmailUserMsgContainer = styled.div`
         &.password {
             display: block;
         }
+    }
+
+    @media (max-width: 767px) {
+        position: static;
     }
 `

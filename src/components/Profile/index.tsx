@@ -1,18 +1,16 @@
-import { useNavigate } from 'react-router-dom'
 import { ButtonLogout, ProfileContainer, PurchaseCompleted } from './styles'
 import { useEffect, useState } from 'react'
 import {
     GetAddressProps,
     useLazyGetAddressQuery,
-    useLazyGetProfileDataQuery,
-    useLogoutMutation
+    useLazyGetProfileDataQuery
 } from '../../services/api'
 import OrdersCompleted from '../OrdersCompleted'
 import Header from '../../containers/Header'
 import ProfileAddress from '../AddressCard'
 import { defaultAddress, isLoginAndCsrf } from '../../utils'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
-import { removeAllCache } from '../../utils/cacheConfig'
+import useLogout from '../../hooks/useLogout'
 
 const Profile = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
@@ -23,7 +21,7 @@ const Profile = () => {
     )
 
     const [getDataProfile, { data }] = useLazyGetProfileDataQuery()
-    const [logout] = useLogoutMutation()
+    const logout = useLogout()
     const [getDataAddress, { data: dataAddress }] = useLazyGetAddressQuery()
     const [dataAddresDefault, setDataAddresDefault] = useState<
         GetAddressProps | undefined
@@ -31,20 +29,6 @@ const Profile = () => {
     const [dataAddresSecondary, setDataAddresSecondary] = useState<
         GetAddressProps | undefined
     >()
-
-    const navigate = useNavigate()
-
-    const handleLogout = () => {
-        localStorage.removeItem('loginSuccess')
-        logout(csrfToken)
-            .then(() => {
-                removeAllCache()
-                navigate('/')
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-    }
 
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
@@ -153,7 +137,7 @@ const Profile = () => {
                         isSelect={false}
                     />
 
-                    <ButtonLogout onClick={handleLogout}>SAIR</ButtonLogout>
+                    <ButtonLogout onClick={() => logout('/')}>SAIR</ButtonLogout>
                     <PurchaseCompleted>
                         <h4 className="title-order">COMPRAS REALIZADAS</h4>
                         <OrdersCompleted data={data} />

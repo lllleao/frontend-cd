@@ -2,13 +2,19 @@ import { useEffect, useRef, useState } from 'react'
 import { PurchaseContainer } from './styles'
 import Card from '../Card'
 import { useLazyGetStoreBooksQuery } from '../../services/api'
-import { addItemToCache, getItemFromCache } from '../../utils/cacheConfig'
+import {
+    getItemFromCache,
+    verifyIfIsCached
+} from '../../utils/cacheConfig'
 import SkeletonCard from '../SkeletonCard'
 import { isOnDevelopment } from '../../utils'
 
 const Purchase = () => {
     const [getStoreBooks] = useLazyGetStoreBooksQuery()
-    const booksFromLocal = getItemFromCache<BooksFromStore[]>('booksStore')
+    const booksFromLocal = getItemFromCache<{
+        cache: BooksFromStore[]
+        timeExpiration: number
+    }>('booksStore')
     const [data, setData] = useState<BooksFromStore[]>()
     const [inView, setInView] = useState(false)
     const storeRef = useRef<HTMLElement>(null)
@@ -36,20 +42,16 @@ const Purchase = () => {
     }, [])
 
     useEffect(() => {
-        if (booksFromLocal) {
-            return setData(booksFromLocal)
-        }
-        getStoreBooks().then((res) => {
-            if (res.data) {
-                addItemToCache('booksStore', res.data)
-                setData(res.data)
-            }
-        })
+        verifyIfIsCached(booksFromLocal, setData, getStoreBooks, 'booksStore')
     // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [getStoreBooks])
 
     return (
-        <PurchaseContainer ref={storeRef} id="purchase" className={`container ${isOnDevelopment ? '' : 'display-none-development'}`}>
+        <PurchaseContainer
+            ref={storeRef}
+            id="purchase"
+            className={`container ${isOnDevelopment ? '' : 'display-none-development'}`}
+        >
             <h2 className="purchase__title">
                 Que tal aproveitar e olhar os nossos materiais físicos [e
                 pagos]?

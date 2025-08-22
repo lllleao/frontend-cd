@@ -100,11 +100,21 @@ export const FormContainer = styled.div`
                     color: #000;
                     outline: none;
                 }
+
                 & .sign-email-error,
                 & .login-email-error {
                     border: 2px solid red;
                 }
+                .eye-password {
+                    position: absolute;
+                    top: 3px;
+                    right: 0;
+                    color: #000;
+                    cursor: pointer;
+                    padding: 8px;
+                }
             }
+
         }
 
         @media (max-width: 767px) {
