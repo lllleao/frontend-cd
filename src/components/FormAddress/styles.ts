@@ -34,7 +34,10 @@ export const FormAddressContainer = styled.div<FormProps>`
         background-color: #222;
         font-weight: bold;
         border-radius: 0.6rem;
-
+        .star {
+            color: #ef0b0b;
+            margin-left: 6px;
+        }
         .cep {
             border: ${({ $errorCEP }) => ($errorCEP ? '2px solid red' : '')};
         }

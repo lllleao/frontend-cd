@@ -16,6 +16,7 @@ import Loader from '../Loader'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 import { isErrorMessageExist } from '../../utils'
 import useLogout from '../../hooks/useLogout'
+import { authForms } from '../../utils/authInputForm'
 
 const FormAddress = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
@@ -109,32 +110,32 @@ const FormAddress = () => {
         }
     }
 
-    const authForms = () => {
-        const regex = /^\s+$/
-        const cepScape = cep.replace(/\D/g, '')
-        const isNameValid =
-            name.length !== 0 &&
-            !regex.test(name) &&
-            name.length > 3 &&
-            name.includes(' ')
-        const isCpfValid = cpfValidator(cpf)
-        const isCepValid = cepScape.length === 8
-        const isStreetValid = street.length <= 40
-        const isNeighborhoodValid = neighborhood.length <= 40
-        const isComplementValid =
-            complement.length <= 40 || complement.length === 0
-        const isNumberValid = number.length <= 6
+    // const authForms = () => {
+    //     const regex = /^\s+$/
+    //     const cepScape = cep.replace(/\D/g, '')
+    //     const isNameValid =
+    //         name &&
+    //         !regex.test(name) &&
+    //         name.length > 3 &&
+    //         name.includes(' ')
+    //     const isCpfValid = cpfValidator(cpf)
+    //     const isCepValid = cepScape.length === 8
+    //     const isStreetValid = street.length <= 40
+    //     const isNeighborhoodValid = neighborhood.length <= 40
+    //     const isComplementValid =
+    //         complement.length <= 40 || complement.length === 0
+    //     const isNumberValid = number.length <= 6
 
-        return {
-            isNameValid,
-            isCpfValid,
-            isCepValid,
-            isStreetValid,
-            isNeighborhoodValid,
-            isComplementValid,
-            isNumberValid
-        }
-    }
+    //     return {
+    //         isNameValid,
+    //         isCpfValid,
+    //         isCepValid,
+    //         isStreetValid,
+    //         isNeighborhoodValid,
+    //         isComplementValid,
+    //         isNumberValid
+    //     }
+    // }
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -146,7 +147,16 @@ const FormAddress = () => {
             isNeighborhoodValid,
             isNumberValid,
             isStreetValid
-        } = authForms()
+        } = authForms(
+            name,
+            cep,
+            cpf,
+            street,
+            neighborhood,
+            complement,
+            number,
+            cpfValidator
+        )
 
         if (
             isCepValid &&
@@ -207,7 +217,7 @@ const FormAddress = () => {
                                 })
                         }
                         logout('/')
-                        return;
+                        return
                     }
                     setIsLoader(false)
                     navigate('/profile')
@@ -236,6 +246,7 @@ const FormAddress = () => {
                         <div className="text-field-name">
                             <label className="form__label" htmlFor="name">
                                 Nome Completo
+                                <span className="star">*</span>
                             </label>
                             <input
                                 value={name}
@@ -255,6 +266,7 @@ const FormAddress = () => {
                         <div className="text-field-cpf">
                             <label className="form__label" htmlFor="cpf">
                                 CPF
+                                <span className="star">*</span>
                             </label>
                             <input
                                 value={cpf}
@@ -271,6 +283,7 @@ const FormAddress = () => {
                             <div className="text-field-cep">
                                 <label className="form__label" htmlFor="cep">
                                     CEP
+                                    <span className="star">*</span>
                                 </label>
                                 <input
                                     value={cep || ''}
@@ -285,6 +298,7 @@ const FormAddress = () => {
                             <div className="text-field-street">
                                 <label className="form__label" htmlFor="street">
                                     Rua
+                                    <span className="star">*</span>
                                 </label>
                                 <input
                                     value={street}
@@ -309,6 +323,7 @@ const FormAddress = () => {
                                     htmlFor="neighborhood"
                                 >
                                     Bairro
+                                    <span className="star">*</span>
                                 </label>
                                 <input
                                     value={neighborhood}
@@ -352,6 +367,7 @@ const FormAddress = () => {
                                 htmlFor="numberAddress"
                             >
                                 Número
+                                <span className="star">*</span>
                             </label>
                             <input
                                 value={number}

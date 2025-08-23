@@ -35,7 +35,7 @@ export const numberAndCaracterScape = (
     value = value
         .replace(/^[\s]+/, '')
         .replace(/[^a-zA-Z\u00C0-\u00FF\u0100-\u017F\s]/g, '')
-        
+
     if (value.length <= 40) {
         setName(value)
     }

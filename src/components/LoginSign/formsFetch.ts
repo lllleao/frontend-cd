@@ -117,11 +117,11 @@ export const handleSign = (
 
     const regex = /^\s+$/
     const isOnlySapce = regex.test(name) || regex.test(email)
+    const isNameValid = name && name.length > 3 && name.includes(' ')
 
     const isPasswordCorrect = validatePassword(password)
     setIsDisplay(!isPasswordCorrect)
-
-    if (name && !isOnlySapce && isEmailValid && isPasswordCorrect) {
+    if (isNameValid && !isOnlySapce && isEmailValid && isPasswordCorrect) {
         setIsLoader(true)
 
         makeSign(data)
