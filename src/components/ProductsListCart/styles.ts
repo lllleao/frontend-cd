@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import { ButtonContainer } from '../ButtonPurchase/styles'
 import { CardContainerStore } from '../Card/styles'
 import { SkeletonContainer } from '../SkeletonCard/styles'
+import { Container } from '../Loader/styles'
 
 export const ProductsListCartContainer = styled.section`
     background-color: #000;
@@ -143,6 +144,11 @@ export const ProductsListCartContainer = styled.section`
 
     .title-books-store {
         margin-top: 3rem;
+    }
+
+    ${Container} {
+        margin: 0;
+        display: inline;
     }
 `
 

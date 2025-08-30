@@ -7,7 +7,6 @@ import {
     useLazyGetTotalPriceQuery,
     usePurchaseDataMutation
 } from '../../services/api'
-import Header from '../../containers/Header'
 import ProfileAddress from '../AddressCard'
 import { Finish } from '../FormAddress/styles'
 import { defaultAddress, isLoginAndCsrf } from '../../utils'
@@ -153,7 +152,6 @@ const Checkout = () => {
 
     return (
         <>
-            <Header />
             <CheckoutContainer>
                 <div className="container">
                     <div className="bar-container">

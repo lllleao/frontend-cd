@@ -1,5 +1,4 @@
 import { ButtonCart, ItemsOnCart, ProductsListCartContainer } from './styles'
-import Header from '../../containers/Header'
 import {
     useGetRemoveItemMutation,
     useLazyGetItemsCartQuery,
@@ -19,6 +18,7 @@ import { useSelector } from 'react-redux'
 import { RootReducer } from '../../store'
 import useLogout from '../../hooks/useLogout'
 import { channelBroadcast } from '../../utils/channelBroadcast'
+import Loader from '../Loader'
 
 const ProductsListCart = () => {
     const booksFromLocal = getItemFromCache<{
@@ -28,16 +28,17 @@ const ProductsListCart = () => {
 
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
     const logado = localStorage.getItem('logado')
+    const logout = useLogout()
 
     const refreshTokenWarn = useCsrfTokenStore(
         (state) => state.refreshTokenWarn
     )
     const { numberCart } = useSelector((state: RootReducer) => state.cart)
 
-    const [badToken, setBadToken] = useState(false)
     const [loading, setLoading] = useState(false)
     const [getDataItems, { data }] = useLazyGetItemsCartQuery()
-    const [getTotalPrice, { data: totalPrice }] = useLazyGetTotalPriceQuery()
+    const [getTotalPrice, { data: totalPrice, isFetching }] =
+        useLazyGetTotalPriceQuery()
     const [deleteCartItem] = useGetRemoveItemMutation()
     const [updatePrice] = useUpdatePriceMutation()
     const [getStoreBooks] = useLazyGetStoreBooksQuery()
@@ -46,13 +47,11 @@ const ProductsListCart = () => {
     const [booksStore, setBooksStore] = useState<BooksFromStore[]>()
 
     const navigate = useNavigate()
-    const logout = useLogout()
 
     const handleDelete = (id: number | undefined, loading: boolean) => {
         setLoading(true)
 
         if (id && !loading && csrfToken) {
-
             deleteCartItem({ id, csrfToken })
                 .then((res) => {
                     if (isErrorMessageExist(res)) {
@@ -188,27 +187,24 @@ const ProductsListCart = () => {
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
 
-        getTotalPrice(csrfToken).catch((err: unknown) => {
-            setBadToken(true)
-            console.log(err)
-        })
+        getTotalPrice(csrfToken)
         getDataItems(csrfToken)
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [csrfToken, refreshTokenWarn])
 
     const handleClick = () => {
-        if (
-            totalPrice &&
-            !((totalPrice?.totalPrice as unknown as string) === '0') &&
-            !badToken
-        ) {
+        getTotalPrice(csrfToken).then((res) => {
+            console.log(res)
+            if (res.isError) {
+                return logout('/')
+            }
+
             navigate('/checkout')
-        }
+        })
     }
 
     return (
         <>
-            <Header />
             <ProductsListCartContainer>
                 <div className="container">
                     <ItemsOnCart>
@@ -262,13 +258,23 @@ const ProductsListCart = () => {
                                     )
                                 )}
                         </ul>
-                        <ButtonCart onClick={handleClick}>
-                            Comprar Agora
-                        </ButtonCart>
+                        {data && data.items.length > 0 ? (
+                            <ButtonCart onClick={handleClick}>
+                                Comprar Agora
+                            </ButtonCart>
+                        ) : (
+                            <></>
+                        )}
                     </ItemsOnCart>
                     <span className="total">
-                        Preço total: R$ {totalPrice?.totalPrice}
+                        Preço total: R${' '}
+                        {isFetching ? (
+                            <Loader isCircle />
+                        ) : (
+                            totalPrice?.totalPrice
+                        )}
                     </span>
+
                     <h3 className="title-books-store">COMPRE TAMBÉM</h3>
                     <div className="bar" />
                     <div className="cards-store-container">

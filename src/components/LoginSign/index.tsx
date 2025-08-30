@@ -11,7 +11,6 @@ import Login from './Login'
 import { useDispatch, useSelector } from 'react-redux'
 import { checkLoginUser, checkSignUser } from '../../store/reducers/loginSign'
 import { RootReducer } from '../../store'
-import Header from '../../containers/Header'
 
 const LoginSign = () => {
     const isLoginScreen = localStorage.getItem('isLoginScreen')
@@ -71,7 +70,6 @@ const LoginSign = () => {
 
     return (
         <>
-            <Header />
             <LoginSignContainer>
                 <div className="container">
                     <FormContainer

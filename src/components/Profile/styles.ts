@@ -53,7 +53,6 @@ export const PurchaseCompleted = styled.div`
                 @media (max-width: 881px) {
                     flex-direction: column;
                     align-items: center;
-
                 }
             }
         }

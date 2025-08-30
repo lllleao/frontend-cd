@@ -1,5 +1,12 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { AddressContainer } from './styles'
+import {
+    useGetCookieMutation,
+    useRefreshTokenMutation
+} from '../../services/api'
+import { isErrorMessageExist } from '../../utils'
+import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
+import useLogout from '../../hooks/useLogout'
 type AddressCardProps = {
     isDefault: boolean
     title: string
@@ -8,7 +15,7 @@ type AddressCardProps = {
     neighborhood: string
     complement: string
     cep: string
-    isSelect: boolean
+    isSelect?: boolean
     cpf: string
     name: string
 }
@@ -25,8 +32,30 @@ const AddressCard = ({
     cpf,
     name
 }: AddressCardProps) => {
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
+    const [getToken] = useGetCookieMutation()
+    const [getRefresh] = useRefreshTokenMutation()
+    const logout = useLogout()
+    const navigate = useNavigate()
+
     const handleIsAddressDefault = () => {
-        localStorage.setItem('isDefault', `${isDefault}`)
+        getToken(csrfToken).then((res) => {
+            if (isErrorMessageExist(res)) {
+                const message = res.error.data.message
+                if (message === 'Token expirado') {
+                    getRefresh(csrfToken).then((response) => {
+                        if (response.error) {
+                            return logout('/')
+                        }
+                    })
+                    return undefined
+                } else {
+                    return logout('/')
+                }
+            }
+            localStorage.setItem('isDefault', `${isDefault}`)
+            navigate('/address')
+        })
     }
 
     return (
@@ -34,13 +63,12 @@ const AddressCard = ({
             <AddressContainer $isSelect={isSelect}>
                 <header className="header-address">
                     <h3 className="address-card">{title}</h3>
-                    <Link
-                        to="/address"
+                    <a
                         className="edit-address"
                         onClick={handleIsAddressDefault}
                     >
                         <i className="fa-solid fa-pen-to-square" />
-                    </Link>
+                    </a>
                 </header>
                 <div className="card-address">
                     {isDefault ? (

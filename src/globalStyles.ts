@@ -34,6 +34,10 @@ const GlobalStyle = createGlobalStyle`
         }
     }
 
+    .main {
+        background-color: ${colors.balck};
+    }
+
     .container {
         max-width: 1216px;
         width: 100%;

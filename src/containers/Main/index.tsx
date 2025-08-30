@@ -6,12 +6,12 @@ import { MainContainer } from './styles'
 
 const Main = () => {
     return (
-        <MainContainer>
+        <>
             <Hero />
             <PublicLib />
             <Purchase />
             <Contact />
-        </MainContainer>
+        </>
     )
 }
 

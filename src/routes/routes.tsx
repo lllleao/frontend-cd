@@ -43,14 +43,6 @@ const Rotas = () => {
                         }
                     />
                     <Route
-                        path="/pix"
-                        element={
-                            <PrivateRoute>
-                                <Pix />
-                            </PrivateRoute>
-                        }
-                    />
-                    <Route
                         path="/address"
                         element={
                             <PrivateRoute>

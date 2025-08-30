@@ -124,7 +124,7 @@ export interface GetAddressProps {
     complement: string
     number: string
     isDefault: boolean
-    id: number
+    id?: number
 }
 
 type PixDatProps = {

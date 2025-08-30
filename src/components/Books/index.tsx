@@ -13,7 +13,6 @@ import Loader from '../Loader'
 import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
 import { isErrorMessageExist } from '../../utils'
 import { getItemFromCache, verifyIfIsCached } from '../../utils/cacheConfig'
-import Header from '../../containers/Header'
 import SkeletonCard from '../SkeletonCard'
 import { useSelector } from 'react-redux'
 import { RootReducer } from '../../store'
@@ -211,7 +210,6 @@ const Book = () => {
 
     return (
         <>
-            <Header />
             <BooksPurchase $isFeching={false}>
                 <div className="container">
                     {data ? (

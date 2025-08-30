@@ -8,6 +8,7 @@ import CartListenner from './components/CartListenner'
 import { useCsrfTokenStore } from './hooks/useFetchCsrfToken'
 import { useEffect } from 'react'
 import ScrollToTop from './components/ScrollToTop'
+import Header from './containers/Header'
 
 function App() {
     const fetchCsrfToken = useCsrfTokenStore((state) => state.fetchCsrfToken)
@@ -38,7 +39,10 @@ function App() {
                 <CartListenner />
                 <GlobalStyle />
                 <ScrollToTop />
-                <Rotas />
+                <Header />
+                <main className="main">
+                    <Rotas />
+                </main>
                 <Footer />
             </BrowserRouter>
         </Provider>
