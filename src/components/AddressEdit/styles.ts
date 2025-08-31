@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { ButtonContainer } from '../ButtonPurchase/styles'
+import { ButtonContainer } from '@/components/ButtonPurchase/styles'
 
 type CheckoutProps = {
     $errorCEP: boolean
@@ -40,8 +40,6 @@ export const CheckoutContainer = styled.div<CheckoutProps>`
             }
         }
     }
-
-
 
     .books-purchase {
         padding: 4rem 0;

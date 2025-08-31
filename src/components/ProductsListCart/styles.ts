@@ -1,8 +1,8 @@
 import styled from 'styled-components'
-import { ButtonContainer } from '../ButtonPurchase/styles'
-import { CardContainerStore } from '../Card/styles'
-import { SkeletonContainer } from '../SkeletonCard/styles'
-import { Container } from '../Loader/styles'
+import { ButtonContainer } from '@/components/ButtonPurchase/styles'
+import { CardContainerStore } from '@/components/Card/styles'
+import { SkeletonContainer } from '@/components/SkeletonCard/styles'
+import { Container } from '@/components/Loader/styles'
 
 export const ProductsListCartContainer = styled.section`
     background-color: #000;

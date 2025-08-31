@@ -1,16 +1,27 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { useRef, useState } from 'react'
-import { ContactContainer } from './styles'
-import { authentic } from '../../utils'
+import { ContactContainer, ErrorMessage } from './styles'
+import { authentic } from '@/utils'
+import { handleBlur, handleFocus } from '@/utils/contactFunctions'
+import { useSendEmailMutation } from '@/services/api'
+import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 import {
-    handleBlur,
-    handleFocus,
-    numberAndCaracterScape
-} from '../../utils/contactFunctions'
-import { useSendEmailMutation } from '../../services/api'
-import { emailVerify, nameVerify, phoneVerify, textBoxVerify } from '../../utils/inputfields'
+    handleEmailUser,
+    handleNameUser,
+    handlePhoneUser,
+    handleTextBox
+} from '@/utils/handlersInput'
+
+type DataEmail = {
+    emailUser: string
+    text: string
+    name: string
+    phone?: string
+}
 
 const Contact = () => {
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
+
     const [sendEmailForm] = useSendEmailMutation()
     const [inputErrorName, setInputErrorName] = useState(false)
     const [inputErrorMessage, setInputErrorMessage] = useState(false)
@@ -32,90 +43,39 @@ const Contact = () => {
 
     const [messageSuccess, setMessageSuccess] = useState(true)
 
-    function numeroMask(numero: string) {
-        let digits = numero.replace(/\D/g, '')
-
-        if (digits.length > 11) {
-            digits = digits.substring(0, 11)
-        }
-
-        let formatted = digits
-
-        if (digits.length > 2) {
-            formatted = `(${digits.substring(0, 2)}) ${digits.substring(2)}`
-        }
-
-        if (digits.length > 7) {
-            formatted = `(${digits.substring(0, 2)}) ${digits.substring(2, 3)} ${digits.substring(3, 7)}-${digits.substring(7)}`
-        }
-
-        setPhone(formatted)
-    }
-
-    const handleEmailUser = (email: string) => {
-        const isEmailValid = emailVerify(email)
-        setEmailUser(email)
-        if (isEmailValid || !email) return setInputErrorEmail(false)
-        setInputErrorEmail(true)
-    }
-
-    const handlePhoneUser = (phone: string) => {
-        numeroMask(phone)
-        const isPhoneValid = phoneVerify(phone)
-        if (isPhoneValid || !phone) return setInputErrorPhone(false)
-        setInputErrorPhone(true)
-    }
-
-    const handleNameUser = (name: string) => {
-        numberAndCaracterScape(name, setName)
-        const isNameValid = nameVerify(name)
-
-        if (isNameValid || !name) return setInputErrorName(false)
-        setInputErrorName(true)
-    }
-
-    function handleTextBox(text: string) {
-        const regex = /[^\p{L}\p{M}0-9!@?\s]/gu
-        const value = text.replace(regex, '')
-        console.log(value.length)
-        if (value.length < 100) setText(value)
-        const isTextBoxValid = textBoxVerify(text)
-        if (isTextBoxValid || !text) return setInputErrorMessage(false)
-        setInputErrorMessage(true)
-    }
-
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-
-        const data = {
-            emailUser,
-            text,
-            number: phone.replace(/[^\d]/g, ''),
-            name
+        const data: DataEmail = {
+            emailUser: emailUser.trim(),
+            text: text.trim(),
+            name: name.trim(),
+            ...(phone ? { phone: phone.replace(/[^\d]/g, '').trim() } : {})
         }
+        console.log(data)
 
-        const { nameIsValid, messageIsValid, emailIsValid, numberIsValid } =
+        const { nameIsValid, messageIsValid, emailIsValid, phoneIsValid } =
             authentic(emailUser, phone, name, text)
 
         emailIsValid ? setInputErrorEmail(false) : setInputErrorEmail(true)
 
-        nameIsValid ? setInputErrorName(true) : setInputErrorName(false)
-        messageIsValid
-            ? setInputErrorMessage(true)
-            : setInputErrorMessage(false)
+        nameIsValid ? setInputErrorName(false) : setInputErrorName(true)
 
+        messageIsValid
+            ? setInputErrorMessage(false)
+            : setInputErrorMessage(true)
         if (
             emailIsValid &&
-            !nameIsValid &&
-            !messageIsValid &&
-            numberIsValid &&
+            nameIsValid &&
+            messageIsValid &&
             !successForm &&
-            'csrfToken'
+            csrfToken
         ) {
+            if (!phoneIsValid && phone) return
+            console.log('entrou')
             setSuccessForm(true)
 
             sendEmailForm({
-                csrfToken: 'csrfToken.csrfToken',
+                csrfToken: csrfToken,
                 data
             })
                 .then(() => {
@@ -150,8 +110,6 @@ const Contact = () => {
             })
             .catch((err) => console.log(err))
     }
-
-
 
     return (
         <ContactContainer id="contact-us" className="contact-us container">
@@ -205,7 +163,13 @@ const Contact = () => {
                             value={name}
                             onBlur={(e) => handleBlur(e, setNameEmpty)}
                             onFocus={(e) => handleFocus(e, setNameEmpty)}
-                            onChange={(e) => handleNameUser(e.target.value)}
+                            onChange={(e) =>
+                                handleNameUser(
+                                    e.target.value,
+                                    setName,
+                                    setInputErrorName
+                                )
+                            }
                             className={`text-field__input name input-num ${inputErrorName && 'text-field__input-is-error'}`}
                             type="text"
                         />
@@ -220,7 +184,13 @@ const Contact = () => {
                             value={emailUser}
                             onBlur={(e) => handleBlur(e, setEmailEmpty)}
                             onFocus={(e) => handleFocus(e, setEmailEmpty)}
-                            onChange={(e) => handleEmailUser(e.target.value)}
+                            onChange={(e) =>
+                                handleEmailUser(
+                                    e.target.value,
+                                    setEmailUser,
+                                    setInputErrorEmail
+                                )
+                            }
                             className={`text-field__input email ${inputErrorEmail && 'text-field__input-is-error'}`}
                             type="text"
                         />
@@ -233,7 +203,13 @@ const Contact = () => {
                             value={phone}
                             onBlur={(e) => handleBlur(e, setNumEmpty)}
                             onFocus={(e) => handleFocus(e, setNumEmpty)}
-                            onChange={(e) => handlePhoneUser(e.target.value)}
+                            onChange={(e) =>
+                                handlePhoneUser(
+                                    e.target.value,
+                                    setPhone,
+                                    setInputErrorPhone
+                                )
+                            }
                             className={`text-field__input number ${inputErrorPhone && 'text-field__input-is-error'}`}
                             type="text"
                             maxLength={16}
@@ -242,10 +218,19 @@ const Contact = () => {
                             Número (opcional)
                         </label>
                     </div>
+                    <ErrorMessage $displayError={inputErrorMessage}>
+                        A mensagem deve ter no mínimo 19 caracteres
+                    </ErrorMessage>
                     <div className="text-field">
                         <textarea
                             value={text}
-                            onChange={(e) => handleTextBox(e.target.value)}
+                            onChange={(e) =>
+                                handleTextBox(
+                                    e.target.value,
+                                    setText,
+                                    setInputErrorMessage
+                                )
+                            }
                             className={`text-field__textarea message ${inputErrorMessage && 'text-field__input-is-error'}`}
                             placeholder="Olá! Achei as edições incriveis e gostaria de colaborar."
                         ></textarea>

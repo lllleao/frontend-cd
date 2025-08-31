@@ -2,19 +2,19 @@ import {
     handleBlur,
     handleFocus,
     numberAndCaracterScape
-} from '../../../utils/contactFunctions'
-import { handleValidEmail } from '../../../utils/validationLoginSign'
+} from '@/utils/contactFunctions'
+import { handleValidEmail } from '@/utils/validationLoginSign'
 import { ButtonLoginSign } from '../styles'
-import { useFormeState } from '../../../hooks/useFormState'
+import { useFormeState } from '@/hooks/useFormState'
 import { handleSign } from '../formsFetch'
 import { EmailUserExist, WarnPassword } from './styles'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootReducer } from '../../../store'
-import { useSignUserMutation } from '../../../services/api'
+import { RootReducer } from '@/store'
+import { useSignUserMutation } from '@/services/api'
 import { useState } from 'react'
-import Loader from '../../Loader'
-import { useCsrfTokenStore } from '../../../hooks/useFetchCsrfToken'
-import useUserSignResults from '../../../hooks/useUserSignResults'
+import Loader from '@/components/Loader'
+import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
+import useUserSignResults from '@/hooks/useUserSignResults'
 
 const Sign = () => {
     const [viewPassword, setViewPassword] = useState(false)
@@ -59,9 +59,7 @@ const Sign = () => {
 
     return (
         <>
-            <EmailUserExist
-                className={signUserExist ? 'user-exist' : ''}
-            >
+            <EmailUserExist className={signUserExist ? 'user-exist' : ''}>
                 {msg}
             </EmailUserExist>
             <div className="sign login-sign">

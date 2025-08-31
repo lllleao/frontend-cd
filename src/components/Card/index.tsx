@@ -1,5 +1,5 @@
 import { CardContainer, CardContainerStore } from './styles'
-import { handleTouch, loop, onMouseMove, onMouseUp } from '../../utils/carousel'
+import { handleTouch, loop, onMouseMove, onMouseUp } from '@/utils/carousel'
 
 export type Props = {
     link: string
@@ -75,14 +75,14 @@ const Card = ({
                 removeTouchStart
                     ? emptyFunction
                     : handleTouch(
-                            e,
-                            carrousselItems,
-                            items,
-                            clonedMainRight,
-                            clonedMainLibLeft,
-                            setRemoveTouchMove,
-                            setRemoveTouchEnd
-                        )
+                          e,
+                          carrousselItems,
+                          items,
+                          clonedMainRight,
+                          clonedMainLibLeft,
+                          setRemoveTouchMove,
+                          setRemoveTouchEnd
+                      )
             }
             onTouchMove={(e) =>
                 removeTouchMove
@@ -93,12 +93,12 @@ const Card = ({
                 removeTouchEnd
                     ? emptyFunction
                     : onMouseUp(
-                            elementWidth,
-                            mainLib,
-                            clonedMainLibLeft,
-                            clonedMainRight,
-                            carrousselItems
-                        )
+                          elementWidth,
+                          mainLib,
+                          clonedMainLibLeft,
+                          clonedMainRight,
+                          carrousselItems
+                      )
             }
             onTransitionEnd={(e) => loop(e)}
         >

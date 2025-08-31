@@ -1,3 +1,5 @@
+import React from 'react'
+
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 export const handleFocus = (
     event: React.FocusEvent<HTMLInputElement>,
@@ -39,4 +41,27 @@ export const numberAndCaracterScape = (
     if (value.length <= 40) {
         setName(value)
     }
+}
+
+export function numeroMask(
+    numero: string,
+    setValue: (value: React.SetStateAction<string>) => void
+) {
+    let digits = numero.replace(/\D/g, '')
+
+    if (digits.length > 11) {
+        digits = digits.substring(0, 11)
+    }
+
+    let formatted = digits
+
+    if (digits.length > 2) {
+        formatted = `(${digits.substring(0, 2)}) ${digits.substring(2)}`
+    }
+
+    if (digits.length > 7) {
+        formatted = `(${digits.substring(0, 2)}) ${digits.substring(2, 3)} ${digits.substring(3, 7)}-${digits.substring(7)}`
+    }
+
+    setValue(formatted)
 }

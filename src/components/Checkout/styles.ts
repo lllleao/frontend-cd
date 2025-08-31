@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { Finish } from '../FormAddress/styles'
+import { Finish } from '@/components/FormAddress/styles'
 
 export const CheckoutContainer = styled.div`
     background-color: #000;
@@ -94,9 +94,9 @@ export const ValidAddres = styled.span`
     border-radius: 1rem;
     &.animation-visible {
         display: block;
-        animation: textErro .5s ease-in-out;
+        animation: textErro 0.5s ease-in-out;
     }
     /* opacity: 0; */
-    `
+`
 
-    // display: ${({ $isWarnVisible }) => $isWarnVisible ? 'block' : 'none'};
+// display: ${({ $isWarnVisible }) => $isWarnVisible ? 'block' : 'none'};

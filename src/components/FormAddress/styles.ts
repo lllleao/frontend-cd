@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { ButtonContainer } from '../ButtonPurchase/styles'
+import { ButtonContainer } from '@/components/ButtonPurchase/styles'
 
 type FormProps = {
     $errorCEP: boolean

@@ -6,11 +6,11 @@ import {
     useLazyGetItemsCartQuery,
     useLazyGetTotalPriceQuery,
     usePurchaseDataMutation
-} from '../../services/api'
-import ProfileAddress from '../AddressCard'
-import { Finish } from '../FormAddress/styles'
-import { defaultAddress, isLoginAndCsrf } from '../../utils'
-import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
+} from '@/services/api'
+import ProfileAddress from '@/components/AddressCard'
+import { Finish } from '@/components/FormAddress/styles'
+import { defaultAddress, isLoginAndCsrf } from '@/utils'
+import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 
 const Checkout = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
@@ -41,13 +41,13 @@ const Checkout = () => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
         getTotalPrice(csrfToken)
         getDataItems(csrfToken)
-    // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [csrfToken, refreshTokenWarn])
 
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
         getDataAddress({ csrfToken })
-    // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [csrfToken, refreshTokenWarn, totalPrice])
 
     useEffect(() => {

@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { CardContainerStore } from '../Card/styles'
+import { CardContainerStore } from '@/components/Card/styles'
 
 export const PurchaseContainer = styled.section`
     /* display: none; */

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { useGetCookieMutation, useRefreshTokenMutation } from '../services/api'
-import { isErrorMessageExist, isLoginAndCsrf } from '../utils'
+import { useGetCookieMutation, useRefreshTokenMutation } from '@/services/api'
+import { isErrorMessageExist, isLoginAndCsrf } from '@/utils'
 import { useCsrfTokenStore } from './useFetchCsrfToken'
 import useLogout from './useLogout'
 

@@ -12,13 +12,13 @@ import {
     checkLoginUser,
     checkSignUser,
     EmailUser
-} from '../../store/reducers/loginSign'
+} from '@/store/reducers/loginSign'
 import { NavigateFunction } from 'react-router-dom'
-import { validatePassword } from '../../utils/validationLoginSign'
-import { isErrorMessageExist } from '../../utils'
-import { DataLoginProp, DataSignupProp } from '../../services/api'
-import { LoginErrorMessage } from '../../hooks/useUserLoginResults'
-import { SignErrorMessage } from '../../hooks/useUserSignResults'
+import { validatePassword } from '@/utils/validationLoginSign'
+import { isErrorMessageExist } from '@/utils'
+import { DataLoginProp, DataSignupProp } from '@/services/api'
+import { LoginErrorMessage } from '@/hooks/useUserLoginResults'
+import { SignErrorMessage } from '@/hooks/useUserSignResults'
 
 export const handleLogin = (
     event: FormEvent<HTMLFormElement>,

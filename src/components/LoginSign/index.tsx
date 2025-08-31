@@ -5,12 +5,12 @@ import {
     LoginSignContainer,
     SignSuccess
 } from './styles'
-import logo3 from '../../assets/logo-nova/logo3.png'
+import logo3 from '@/assets/logo-nova/logo3.png'
 import Sign from './Sign'
 import Login from './Login'
 import { useDispatch, useSelector } from 'react-redux'
-import { checkLoginUser, checkSignUser } from '../../store/reducers/loginSign'
-import { RootReducer } from '../../store'
+import { checkLoginUser, checkSignUser } from '@/store/reducers/loginSign'
+import { RootReducer } from '@/store'
 
 const LoginSign = () => {
     const isLoginScreen = localStorage.getItem('isLoginScreen')

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { useLogoutMutation } from '../services/api'
+import { useLogoutMutation } from '@/services/api'
 import { useCsrfTokenStore } from './useFetchCsrfToken'
-import { removeAllCache } from '../utils/cacheConfig'
+import { removeAllCache } from '@/utils/cacheConfig'
 
 const useLogout = () => {
     const [logoutApi] = useLogoutMutation()

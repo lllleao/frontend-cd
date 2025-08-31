@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import Card from '../Card'
+import Card from '@/components/Card'
 import { Carrossel, PublicLibContainer } from './styles'
-import CardsClone from '../CardsClone'
-import { useLazyGetPublicBooksQuery } from '../../services/api'
-import { getItemFromCache, verifyIfIsCached } from '../../utils/cacheConfig'
-import SkeletonCard from '../SkeletonCard'
-import { isOnDevelopment } from '../../utils'
+import CardsClone from '@/components/CardsClone'
+import { useLazyGetPublicBooksQuery } from '@/services/api'
+import { getItemFromCache, verifyIfIsCached } from '@/utils/cacheConfig'
+import SkeletonCard from '@/components/SkeletonCard'
+import { isOnDevelopment } from '@/utils'
 
 const PublicLib = () => {
     const [getPublicBooks] = useLazyGetPublicBooksQuery()
@@ -73,8 +73,13 @@ const PublicLib = () => {
             })
             return
         }
-        verifyIfIsCached(localPublicBooks, setData, getPublicBooks, 'publicBooks')
-    // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+        verifyIfIsCached(
+            localPublicBooks,
+            setData,
+            getPublicBooks,
+            'publicBooks'
+        )
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [getPublicBooks])
 
     useEffect(() => {

@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import loginSiginReducer from './reducers/loginSign'
 import cartReducer from './reducers/cart'
-import api from '../services/api'
+import api from '@/services/api'
 
 const store = configureStore({
     reducer: {

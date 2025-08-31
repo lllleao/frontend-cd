@@ -1,4 +1,4 @@
-import logo3 from '../../assets/logo-nova/logo3.png'
+import logo3 from '@/assets/logo-nova/logo3.png'
 import {
     AnimationHero,
     ButtonHero,

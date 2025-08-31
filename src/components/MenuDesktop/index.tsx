@@ -2,17 +2,14 @@ import { MenuDesktopContainer } from './styles'
 import { HashLink } from 'react-router-hash-link'
 import { useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
+import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 
 type MenuProps = {
     dataLength: number | undefined
     addAnimateCart: boolean
 }
 
-const MenuDesktop = ({
-    dataLength,
-    addAnimateCart
-}: MenuProps) => {
+const MenuDesktop = ({ dataLength, addAnimateCart }: MenuProps) => {
     const logado = localStorage.getItem('logado')
     const iconLoginProfileRef = useRef<HTMLLIElement>(null)
     const viweNumberCart = useCsrfTokenStore((state) => state.viweNumberCart)

@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { PurchaseContainer } from './styles'
-import Card from '../Card'
-import { useLazyGetStoreBooksQuery } from '../../services/api'
-import {
-    getItemFromCache,
-    verifyIfIsCached
-} from '../../utils/cacheConfig'
-import SkeletonCard from '../SkeletonCard'
-import { isOnDevelopment } from '../../utils'
+import Card from '@/components/Card'
+import { useLazyGetStoreBooksQuery } from '@/services/api'
+import { getItemFromCache, verifyIfIsCached } from '@/utils/cacheConfig'
+import SkeletonCard from '@/components/SkeletonCard'
+import { isOnDevelopment } from '@/utils'
 
 const Purchase = () => {
     const [getStoreBooks] = useLazyGetStoreBooksQuery()
@@ -43,7 +40,7 @@ const Purchase = () => {
 
     useEffect(() => {
         verifyIfIsCached(booksFromLocal, setData, getStoreBooks, 'booksStore')
-    // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [getStoreBooks])
 
     return (

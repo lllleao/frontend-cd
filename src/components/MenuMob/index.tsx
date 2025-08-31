@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { MenuBobContainer } from './styles'
 import { HashLink } from 'react-router-hash-link'
 import { Link } from 'react-router-dom'
-import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
+import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 
 type MenuProps = {
     dataLength: number | undefined

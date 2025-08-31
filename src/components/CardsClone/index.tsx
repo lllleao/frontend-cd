@@ -1,4 +1,4 @@
-import Card from '../Card'
+import Card from '@/components/Card'
 
 type PropsClone = {
     data: Books[] | undefined

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { EmailUser } from '../store/reducers/loginSign'
+import { EmailUser } from '@/componentsstore/reducers/loginSign'
 
 export type User = {
     email: string
@@ -67,8 +67,8 @@ type EmailDataProp = {
     data: {
         emailUser: string
         text: string
-        number: string
         name: string
+        phone?: string
     }
 }
 
@@ -187,8 +187,7 @@ const api = createApi({
                 url: 'email/send',
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'CSRF-Token': emailData.csrfToken
+                    'csrf-token': emailData.csrfToken
                 },
                 body: emailData.data
             })

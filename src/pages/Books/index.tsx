@@ -1,4 +1,4 @@
-import Book from '../../components/Books'
+import Book from '@/components/Books'
 
 const Books = () => {
     return (

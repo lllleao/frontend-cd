@@ -1,14 +1,14 @@
 import { Route, Routes } from 'react-router-dom'
-import Home from '../pages/Home'
-import Books from '../components/Books'
-import LoginOrSign from '../pages/LoginOrSign'
-import ProductsListCart from '../components/ProductsListCart'
-import Profile from '../components/Profile'
-import Checkout from '../components/Checkout'
-import Pix from '../components/Pix'
-import AddressEdit from '../components/AddressEdit'
+import Home from '@/pages/Home'
+import Books from '@/components/Books'
+import LoginOrSign from '@/pages/LoginOrSign'
+import ProductsListCart from '@/components/ProductsListCart'
+import Profile from '@/components/Profile'
+import Checkout from '@/components/Checkout'
+// import Pix from '@/components/Pix'
+import AddressEdit from '@/components/AddressEdit'
 import { PrivateRoute } from './RouteGuards'
-import { isOnDevelopment } from '../utils'
+import { isOnDevelopment } from '@/utils'
 
 const Rotas = () => {
     return (

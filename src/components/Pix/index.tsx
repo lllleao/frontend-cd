@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import ButtonPurchase from '../ButtonPurchase'
+import ButtonPurchase from '@/componentsButtonPurchase'
 import { ButtonCopyPaste, PixContainer } from './styles'
 
 const Pix = () => {
@@ -20,17 +20,21 @@ const Pix = () => {
             <PixContainer>
                 <div className="container">
                     <div className="pix-code">
-                        <img
-                            srcSet={qrcode}
-                        />
-                        <ButtonCopyPaste $isItemAdd={isItemAdd} onClick={handleCopy}>Copiar PIX COPIA-COLA</ButtonCopyPaste>
+                        <img srcSet={qrcode} />
+                        <ButtonCopyPaste
+                            $isItemAdd={isItemAdd}
+                            onClick={handleCopy}
+                        >
+                            Copiar PIX COPIA-COLA
+                        </ButtonCopyPaste>
                     </div>
                     <p>
                         O QRCODE IRÁ VENCER EM 30 MINUTOS
                         <br />
                         <br />
-                        Depois de efetuar o pagamento, clique em ACOMPANHAR PEDIDO. Você
-                        receberá um email com os detalhes da sua compra.
+                        Depois de efetuar o pagamento, clique em ACOMPANHAR
+                        PEDIDO. Você receberá um email com os detalhes da sua
+                        compra.
                     </p>
                     <ButtonPurchase>Acompanhar Pedido</ButtonPurchase>
                 </div>

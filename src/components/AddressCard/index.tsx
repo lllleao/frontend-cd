@@ -1,12 +1,9 @@
 import { useNavigate } from 'react-router-dom'
 import { AddressContainer } from './styles'
-import {
-    useGetCookieMutation,
-    useRefreshTokenMutation
-} from '../../services/api'
-import { isErrorMessageExist } from '../../utils'
-import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
-import useLogout from '../../hooks/useLogout'
+import { useGetCookieMutation, useRefreshTokenMutation } from '@/services/api'
+import { isErrorMessageExist } from '@/utils'
+import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
+import useLogout from '@/hooks/useLogout'
 type AddressCardProps = {
     isDefault: boolean
     title: string

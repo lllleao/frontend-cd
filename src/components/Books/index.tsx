@@ -1,23 +1,23 @@
 import { useParams } from 'react-router-dom'
 import { AboutBook, BookImg, BooksPurchase, SkeletonText } from './styles'
 import { useEffect, useState } from 'react'
-import ButtonPurchase from '../ButtonPurchase'
+import ButtonPurchase from '@/components/ButtonPurchase'
 import {
     useAddToCartMutation,
     useLazyGetSpecificStoreBookQuery,
     useLazyGetStoreBooksQuery,
     useRefreshTokenMutation
-} from '../../services/api'
-import Card from '../Card'
-import Loader from '../Loader'
-import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
-import { isErrorMessageExist } from '../../utils'
-import { getItemFromCache, verifyIfIsCached } from '../../utils/cacheConfig'
-import SkeletonCard from '../SkeletonCard'
+} from '@/services/api'
+import Card from '@/components/Card'
+import Loader from '@/components/Loader'
+import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
+import { isErrorMessageExist } from '@/utils'
+import { getItemFromCache, verifyIfIsCached } from '@/utils/cacheConfig'
+import SkeletonCard from '@/components/SkeletonCard'
 import { useSelector } from 'react-redux'
-import { RootReducer } from '../../store'
-import useLogout from '../../hooks/useLogout'
-import { channelBroadcast } from '../../utils/channelBroadcast'
+import { RootReducer } from '@/store'
+import useLogout from '@/hooks/useLogout'
+import { channelBroadcast } from '@/utils/channelBroadcast'
 
 let isSeeMore: boolean = false
 

@@ -1,4 +1,4 @@
-import FormAddress from '../FormAddress'
+import FormAddress from '@/components/FormAddress'
 import { AddressEditContainer } from './styles'
 
 const AddressEdit = () => {

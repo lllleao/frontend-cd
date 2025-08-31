@@ -6,19 +6,19 @@ import {
     useLazyGetTotalPriceQuery,
     useRefreshTokenMutation,
     useUpdatePriceMutation
-} from '../../services/api'
+} from '@/services/api'
 import { useEffect, useState } from 'react'
-import Card from '../Card'
+import Card from '@/components/Card'
 import { useNavigate } from 'react-router-dom'
-import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
-import { isErrorMessageExist, isLoginAndCsrf } from '../../utils'
-import { getItemFromCache, verifyIfIsCached } from '../../utils/cacheConfig'
-import SkeletonCard from '../SkeletonCard'
+import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
+import { isErrorMessageExist, isLoginAndCsrf } from '@/utils'
+import { getItemFromCache, verifyIfIsCached } from '@/utils/cacheConfig'
+import SkeletonCard from '@/components/SkeletonCard'
 import { useSelector } from 'react-redux'
-import { RootReducer } from '../../store'
-import useLogout from '../../hooks/useLogout'
-import { channelBroadcast } from '../../utils/channelBroadcast'
-import Loader from '../Loader'
+import { RootReducer } from '@/store'
+import useLogout from '@/hooks/useLogout'
+import { channelBroadcast } from '@/utils/channelBroadcast'
+import Loader from '@/components/Loader'
 
 const ProductsListCart = () => {
     const booksFromLocal = getItemFromCache<{

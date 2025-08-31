@@ -122,10 +122,10 @@ export const ContactContainer = styled.section`
                         resize: none;
                         font-size: 22px;
                         border-radius: 8px;
-                        border: 1px solid #fff;
+                        border: 2px solid #fff;
 
                         &-is-error {
-                            border: 1px solid red;
+                            border: 2px solid red;
                         }
                     }
 
@@ -226,4 +226,11 @@ export const ContactContainer = styled.section`
             top: 8rem;
         }
     }
+`
+export const ErrorMessage = styled.div<{ $displayError: boolean }>`
+    display: ${({ $displayError }) => !$displayError && 'none'};
+    background-color: #952323;
+    text-align: center;
+    margin: 0.5rem 0;
+    padding: 0.5rem 0;
 `

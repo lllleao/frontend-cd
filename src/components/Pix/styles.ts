@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { ButtonContainer } from '../ButtonPurchase/styles'
+import { ButtonContainer } from '@/componentsButtonPurchase/styles'
 
 export const PixContainer = styled.div`
     text-align: center;

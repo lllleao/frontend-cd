@@ -1,5 +1,5 @@
-import { User } from "../../services/api"
-import formatDate from "../../utils/formatDate"
+import { User } from '@/services/api'
+import formatDate from '@/utils/formatDate'
 // import { OrderItems } from "./styles"
 
 type OrdersCompletedProps = {

@@ -4,7 +4,6 @@ export const nameVerify = (name: string): boolean => {
     const isOnlySapce = regex.test(name)
     const parts = name.trim().split(' ')
     if (!isOnlySapce) return false
-    console.log(parts.length < 2 && parts[1] && parts[0].length < 3 && parts[1].length < 3)
     if (parts.length < 2) return false
     if (parts[0].length < 3 || parts[1].length < 3) return false
     return true
@@ -26,15 +25,15 @@ export const phoneVerify = (phone: string): boolean => {
     const isOnlySapce = regex.test(phone)
     const isPhoneValid = !isOnlySapce && phone.length === 16
 
-
     return isPhoneValid
 }
 
-export const textBoxVerify = (phone: string): boolean => {
-    const regex = /[^\p{L}\p{M}0-9!@?\s]/gu
+export const textBoxVerify = (text: string): boolean => {
+    const regex = /[^\p{L}\p{M}0-9!@?,.\s]/gu
 
-    const scapeCaracter = regex.test(phone)
-    const isTextBoxValid = !scapeCaracter && phone.length < 19 && phone.length > 100
+    const scapeCaracter = regex.test(text)
+    const isTextBoxValid =
+        scapeCaracter || text.length < 19 || text.length > 100
 
     if (isTextBoxValid) return false
 

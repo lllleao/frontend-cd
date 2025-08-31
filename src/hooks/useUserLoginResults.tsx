@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux'
-import { checkLoginUser } from '../store/reducers/loginSign'
+import { checkLoginUser } from '@/store/reducers/loginSign'
 import useLogout from './useLogout'
 
 export type LoginErrorMessage =

@@ -1,11 +1,13 @@
 import { useDispatch } from 'react-redux'
-import { checkSignUser } from '../store/reducers/loginSign'
+import { checkSignUser } from '@/store/reducers/loginSign'
 
 export type SignErrorMessage =
     | 'CSRF token ausente no cabeçalho da requisição.'
     | 'Este email já está em uso.'
 
-const useUserSignResults = (setIsLoader: (value: React.SetStateAction<boolean>) => void ) => {
+const useUserSignResults = (
+    setIsLoader: (value: React.SetStateAction<boolean>) => void
+) => {
     const dispatch = useDispatch()
 
     const handleUserCSRFTOKEN = () => {
@@ -24,7 +26,7 @@ const useUserSignResults = (setIsLoader: (value: React.SetStateAction<boolean>) 
         dispatch(
             checkSignUser({
                 msg: 'Este email já está em uso.',
-                signUserExist: true,
+                signUserExist: true
             })
         )
     }

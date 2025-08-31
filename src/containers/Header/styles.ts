@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { colors } from '../../globalStyles'
+import { colors } from '@/globalStyles'
 
 export const HeaderContainer = styled.header`
     position: relative;
@@ -9,7 +9,7 @@ export const HeaderContainer = styled.header`
     @media screen and (max-width: 767px) {
         padding: 0;
     }
-    
+
     &.display-none-development {
         display: block;
         .cartIcon,
@@ -17,5 +17,4 @@ export const HeaderContainer = styled.header`
             display: none;
         }
     }
-
 `

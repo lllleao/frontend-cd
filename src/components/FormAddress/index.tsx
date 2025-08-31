@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react'
-import cpfValidator from '../../utils/cpfValidator'
+import cpfValidator from '@/utils/cpfValidator'
 import { useNavigate } from 'react-router-dom'
-import { numberAndCaracterScape } from '../../utils/contactFunctions'
+import { numberAndCaracterScape } from '@/utils/contactFunctions'
 import {
     BarFormAddress,
     Finish,
@@ -11,12 +11,12 @@ import {
 import {
     useCreateAddressMutation,
     useRefreshTokenMutation
-} from '../../services/api'
-import Loader from '../Loader'
-import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
-import { isErrorMessageExist } from '../../utils'
-import useLogout from '../../hooks/useLogout'
-import { authForms } from '../../utils/authInputForm'
+} from '@/services/api'
+import Loader from '@/components/Loader'
+import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
+import { isErrorMessageExist } from '@/utils'
+import useLogout from '@/hooks/useLogout'
+import { authForms } from '@/utils/authInputForm'
 
 const FormAddress = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string

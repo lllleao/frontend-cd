@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
-import MenuDesktop from '../../components/MenuDesktop'
-import MenuMob from '../../components/MenuMob'
-import { useLazyGetItemsCartQuery } from '../../services/api'
+import MenuDesktop from '@/components/MenuDesktop'
+import MenuMob from '@/components/MenuMob'
+import { useLazyGetItemsCartQuery } from '@/services/api'
 import { HeaderContainer } from './styles'
-import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
-import { useVerifyLogin } from '../../hooks/useVerifyLogin'
-import { isLoginAndCsrf, isOnDevelopment } from '../../utils'
-import { addItemToCache, getItemFromCache } from '../../utils/cacheConfig'
+import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
+import { useVerifyLogin } from '@/hooks/useVerifyLogin'
+import { isLoginAndCsrf, isOnDevelopment } from '@/utils'
+import { addItemToCache, getItemFromCache } from '@/utils/cacheConfig'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootReducer } from '../../store'
-import { updateNumberCart } from '../../store/reducers/cart'
+import { RootReducer } from '@/store'
+import { updateNumberCart } from '@/store/reducers/cart'
 
 const Header = () => {
     const logado = localStorage.getItem('logado')
@@ -52,7 +52,6 @@ const Header = () => {
                 if ((res.data.items.length as number) === 0) {
                     setViweNumberCart(false)
                 } else {
-
                     setViweNumberCart(true)
                     setAddAnimateCart(false)
                     setTimeout(() => {

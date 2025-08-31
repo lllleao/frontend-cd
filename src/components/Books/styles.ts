@@ -1,5 +1,5 @@
 import styled, { keyframes } from 'styled-components'
-import { CardContainerStore } from '../Card/styles'
+import { CardContainerStore } from '@/components/Card/styles'
 
 const shimmer = keyframes`
     0% {

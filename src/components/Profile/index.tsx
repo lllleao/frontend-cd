@@ -3,12 +3,12 @@ import { useEffect } from 'react'
 import {
     useLazyGetAddressQuery,
     useLazyGetProfileDataQuery
-} from '../../services/api'
-import OrdersCompleted from '../OrdersCompleted'
-import ProfileAddress from '../AddressCard'
-import { useCsrfTokenStore } from '../../hooks/useFetchCsrfToken'
-import useLogout from '../../hooks/useLogout'
-import { useProfileData } from '../../hooks/useProfileData'
+} from '@/services/api'
+import OrdersCompleted from '@/components/OrdersCompleted'
+import ProfileAddress from '@/components/AddressCard'
+import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
+import useLogout from '@/hooks/useLogout'
+import { useProfileData } from '@/hooks/useProfileData'
 
 const Profile = () => {
     const profileAddressTitle = ['Endereço padrão', 'Endereço secundário']
