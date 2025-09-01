@@ -8,10 +8,8 @@ export const authForms = (
     number: string,
     cpfValidator: (cpf: string) => boolean
 ) => {
-    const regex = /^\s+$/
     const cepScape = cep.replace(/\D/g, '')
-    const isNameValid =
-        name && name.length > 3 && name.includes(' ')
+    const isNameValid = name && name.length > 3 && name.includes(' ')
     const isCpfValid = cpfValidator(cpf)
     const isCepValid = cepScape.length === 8
     const isStreetValid = street.length <= 40

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { GetAddressProps } from '@/componentsservices/api'
+import { GetAddressProps } from '@/services/api'
 
 interface ProfileData {
     address: GetAddressProps[]

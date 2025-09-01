@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { CardContainerStore } from '@/componentsCard/styles'
+import { CardContainerStore } from '@/components/Card/styles'
 
 export const OrderItems = styled(CardContainerStore)`
     width: 250px;

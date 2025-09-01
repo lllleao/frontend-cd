@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { EmailUser } from '@/componentsstore/reducers/loginSign'
+import { EmailUser } from '@/store/reducers/loginSign'
 
 export type User = {
     email: string

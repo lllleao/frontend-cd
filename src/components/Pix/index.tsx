@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import ButtonPurchase from '@/componentsButtonPurchase'
+import ButtonPurchase from '@/components/ButtonPurchase'
 import { ButtonCopyPaste, PixContainer } from './styles'
 
 const Pix = () => {
