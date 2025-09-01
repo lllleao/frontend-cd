@@ -79,3 +79,35 @@ A plataforma será expandida para um **e-commerce completo**, permitindo a venda
 ## 📜 Licença
 
 Este projeto é de uso interno e artístico. Direitos reservados aos autores da Cidadeclipse.
+
+---
+
+## 🐳 Como Rodar com Docker
+
+1. Clonar o repositório e instalar dependências:
+
+```shell
+git clone https://github.com/lllleao/frontend-cd.git
+cd frontend-cd
+npm install
+```
+
+2. Subir o container:
+
+```shell
+docker build -t frontend-cd .
+docker run -d -p 8080:80 frontend-cd
+```
+
+🌐 Acesso
+
+Disponível em: http://localhost:8080
+
+## ⚡ Alternativa sem Docker
+```shell
+git clone https://github.com/lllleao/frontend-cd.git
+cd frontend-cd
+npm install
+npm run dev
+```
+
