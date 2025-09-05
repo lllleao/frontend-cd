@@ -39,3 +39,27 @@ export const textBoxVerify = (text: string): boolean => {
 
     return true
 }
+
+export const passwordVerify = (password: string): boolean => {
+    const hasMinLength = password.length >= 8
+
+    // não pode ser só números
+    const isNumeric = /^\d+$/.test(password)
+
+    // não pode ser só letras
+    const isAlpha = /^[a-zA-Z]+$/.test(password)
+
+    // não pode ser só espaços
+    const isOnlySpace = /^\s+$/.test(password)
+
+    // não pode conter caracteres proibidos
+    const hasForbiddenChars = /[~<>\\.]/.test(password)
+
+    return (
+        hasMinLength &&
+        !isNumeric &&
+        !isAlpha &&
+        !isOnlySpace &&
+        !hasForbiddenChars
+    )
+}

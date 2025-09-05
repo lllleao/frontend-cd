@@ -1,6 +1,4 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { handleBlur, handleFocus } from '@/utils/contactFunctions'
-import { handleValidEmail } from '@/utils/validationLoginSign'
 import { handleLogin } from '../formsFetch'
 import { ButtonLoginSign } from '../styles'
 import { useFormeState } from '@/hooks/useFormState'
@@ -11,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 import useUserLoginResults from '@/hooks/useUserLoginResults'
 import { useState } from 'react'
+import { handleEmailUser, handlePassword } from '@/utils/handlersInput'
 
 const Login = () => {
     const [viewPassword, setViewPassword] = useState(false)
@@ -27,18 +26,16 @@ const Login = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
 
     const {
-        emailEmpty,
         email,
         isEmailValid,
-        passwordEmpty,
         password,
-        setEmailEmpty,
         setEmail,
         setIsEmailValid,
-        setPasswordEmpty,
         setPassword,
         emailBorderError,
-        setEmailBorderError
+        setEmailBorderError,
+        isPasswordValid,
+        setIsPasswordValid
     } = useFormeState()
 
     const data: DataLoginProp = {
@@ -66,8 +63,7 @@ const Login = () => {
                         handleLogin(
                             e,
                             isEmailValid,
-                            email,
-                            password,
+                            isPasswordValid,
                             data,
                             dispatch,
                             makeLogin,
@@ -79,45 +75,41 @@ const Login = () => {
                 >
                     <div className="form__text-field">
                         <input
-                            className={`input email ${emailBorderError ? '' : 'login-email-error'}`}
-                            onFocus={(e) => handleFocus(e, setEmailEmpty)}
-                            onBlur={(e) => handleBlur(e, setEmailEmpty)}
+                            className={`input email ${emailBorderError && 'input-error'}`}
                             onChange={(e) =>
-                                handleValidEmail(
+                                handleEmailUser(
                                     e.target.value,
                                     setEmail,
-                                    setIsEmailValid,
-                                    setEmailBorderError
+                                    setEmailBorderError,
+                                    setIsEmailValid
                                 )
                             }
                             type="email"
                             id="email-login"
                             value={email}
+                            placeholder="Email"
                         />
-                        <label
-                            className={emailEmpty ? 'active' : ''}
-                            htmlFor="email-login"
-                        >
+                        <label htmlFor="email-login">
                             <i className="fa-solid fa-envelope" />
-                            <span>Email</span>
                         </label>
                     </div>
                     <div className="form__text-field">
                         <input
                             className="input password"
-                            onFocus={(e) => handleFocus(e, setPasswordEmpty)}
-                            onBlur={(e) => handleBlur(e, setPasswordEmpty)}
-                            onChange={(e) => setPassword(e.target.value)}
                             type={viewPassword ? 'text' : 'password'}
+                            onChange={(e) =>
+                                handlePassword(
+                                    e.target.value,
+                                    setPassword,
+                                    setIsPasswordValid
+                                )
+                            }
                             id="password-login"
                             value={password}
+                            placeholder="Senha"
                         />
-                        <label
-                            className={passwordEmpty ? 'active' : ''}
-                            htmlFor="password-login"
-                        >
+                        <label htmlFor="password-login">
                             <i className="fa-solid fa-lock" />
-                            <span>Senha</span>
                         </label>
                         {viewPassword ? (
                             <i

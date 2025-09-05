@@ -28,9 +28,8 @@ export const useCsrfTokenStore = create<CsrfStore>((set) => ({
     fetchCsrfToken: async () => {
         try {
             const res = await fetch(
-                'http://localhost:3000/auth/get-csrfToken',
+                `${import.meta.env.VITE_API_URL}/auth/get-csrfToken`,
                 {
-                    credentials: 'include',
                     method: 'POST'
                 }
             )

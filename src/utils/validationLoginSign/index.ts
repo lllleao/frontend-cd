@@ -1,3 +1,5 @@
+import { emailVerify } from '../inputfields'
+
 export const handleValidEmail = (
     value: string,
     setEmail: (value: React.SetStateAction<string>) => void,
@@ -5,17 +7,19 @@ export const handleValidEmail = (
     setEmailBorderError: (value: React.SetStateAction<boolean>) => void
 ) => {
     setEmail(value)
-    const regex = /^\s+$/
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    const testValidation = emailPattern.test(value)
-    const isEmpty = regex.test(value)
-    if (value.length !== 0 && !testValidation && !isEmpty) {
+    // const regex = /^\s+$/
+    // const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    // const testValidation = emailPattern.test(value)
+    // const isEmpty = regex.test(value)
+    const isEmailValid = emailVerify(value)
+    if (value.length === 0 || isEmailValid) {
         setEmailBorderError(false)
     } else {
+        console.log('opa')
         setEmailBorderError(true)
     }
 
-    setIsEmailValid(testValidation)
+    setIsEmailValid(isEmailValid)
 }
 
 export const validatePassword = (password: string): boolean => {

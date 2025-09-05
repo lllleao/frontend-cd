@@ -1,22 +1,16 @@
 import { useState } from 'react'
 
 export const useFormeState = () => {
-    const [passwordEmpty, setPasswordEmpty] = useState(false)
-    const [emailEmpty, setEmailEmpty] = useState(false)
-    const [nameEmpty, setNameEmpty] = useState(false)
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isEmailValid, setIsEmailValid] = useState(false)
-    const [emailBorderError, setEmailBorderError] = useState(true)
+    const [emailBorderError, setEmailBorderError] = useState(false)
+    const [nameBorderError, setNameBorderError] = useState(false)
+    const [isNameValid, setIsNameValid] = useState(false)
+    const [isPasswordValid, setIsPasswordValid] = useState(false)
 
     return {
-        passwordEmpty,
-        setPasswordEmpty,
-        emailEmpty,
-        setEmailEmpty,
-        nameEmpty,
-        setNameEmpty,
         name,
         setName,
         email,
@@ -26,6 +20,12 @@ export const useFormeState = () => {
         isEmailValid,
         setIsEmailValid,
         emailBorderError,
-        setEmailBorderError
+        setEmailBorderError,
+        nameBorderError,
+        setNameBorderError,
+        setIsNameValid,
+        isNameValid,
+        isPasswordValid,
+        setIsPasswordValid
     }
 }

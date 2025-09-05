@@ -79,19 +79,6 @@ export const FormContainer = styled.div`
                         margin-right: 0.5rem;
                         color: #000;
                     }
-
-                    span {
-                        display: inline-block;
-                        opacity: 0.5;
-                        color: #000;
-                        transition: opacity 0.1s;
-                    }
-
-                    &.active {
-                        span {
-                            display: none;
-                        }
-                    }
                 }
 
                 .input {
@@ -99,10 +86,15 @@ export const FormContainer = styled.div`
                     padding: 0.6rem 0.2rem 0.6rem 2rem;
                     color: #000;
                     outline: none;
+
+                    &::placeholder {
+                        color: #000;
+                        font-size: 1.1rem;
+                        letter-spacing: 0.1rem;
+                    }
                 }
 
-                & .sign-email-error,
-                & .login-email-error {
+                & .input-error {
                     border: 2px solid red;
                 }
                 .eye-password {
@@ -113,8 +105,11 @@ export const FormContainer = styled.div`
                     cursor: pointer;
                     padding: 8px;
                 }
-            }
 
+                .fa-solid {
+                    cursor: pointer;
+                }
+            }
         }
 
         @media (max-width: 767px) {

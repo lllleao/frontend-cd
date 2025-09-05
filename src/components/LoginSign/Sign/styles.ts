@@ -15,8 +15,8 @@ export const EmailUserExist = styled.div`
     }
 `
 export const WarnPassword = styled.span<{ $isDisplay: boolean }>`
-    display: ${({ $isDisplay }) => $isDisplay ? 'block' : 'none'};
+    display: ${({ $isDisplay }) => ($isDisplay ? 'block' : 'none')};
     margin-top: 1rem;
     text-align: justify;
-    color: #ad2a2a;
+    color: #f54c4c;
 `

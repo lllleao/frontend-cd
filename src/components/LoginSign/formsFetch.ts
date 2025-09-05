@@ -14,7 +14,6 @@ import {
     EmailUser
 } from '@/store/reducers/loginSign'
 import { NavigateFunction } from 'react-router-dom'
-import { validatePassword } from '@/utils/validationLoginSign'
 import { isErrorMessageExist } from '@/utils'
 import { DataLoginProp, DataSignupProp } from '@/services/api'
 import { LoginErrorMessage } from '@/hooks/useUserLoginResults'
@@ -23,8 +22,7 @@ import { SignErrorMessage } from '@/hooks/useUserSignResults'
 export const handleLogin = (
     event: FormEvent<HTMLFormElement>,
     isEmailValid: boolean,
-    email: string,
-    password: string,
+    isPasswordValid: boolean,
     data: DataLoginProp,
     dispatch: Dispatch<UnknownAction>,
     makeLogin: (
@@ -49,12 +47,20 @@ export const handleLogin = (
     errorHandlers: Record<LoginErrorMessage, () => void>
 ) => {
     event.preventDefault()
-    const regex = /^\s+$/
-    const isOnlySapce = regex.test(email) || regex.test(password)
-    if (isEmailValid && password && !isOnlySapce) {
+    if (!isPasswordValid) {
+        dispatch(
+            checkLoginUser({
+                msg: 'Senha Incorreta',
+                loginUserExist: true,
+                loginSuccess: false
+            })
+        )
+    }
+    if (isEmailValid && isPasswordValid) {
         makeLogin(data)
             .then((res) => {
                 if (isErrorMessageExist(res)) {
+                    console.log(res)
                     const errorData = res.error.data as {
                         message?: string
                         error?: string
@@ -88,11 +94,10 @@ export const handleSign = (
     setIsDisplay: (value: React.SetStateAction<boolean>) => void,
     event: FormEvent<HTMLFormElement>,
     isEmailValid: boolean,
-    password: string,
+    isPasswordValid: boolean,
+    isNameValid: boolean,
     data: DataSignupProp,
     dispatch: Dispatch<UnknownAction>,
-    name: string,
-    email: string,
     makeSign: (
         arg: DataSignupProp
     ) => MutationActionCreatorResult<
@@ -115,13 +120,8 @@ export const handleSign = (
 ) => {
     event.preventDefault()
 
-    const regex = /^\s+$/
-    const isOnlySapce = regex.test(name) || regex.test(email)
-    const isNameValid = name && name.length > 3 && name.includes(' ')
-
-    const isPasswordCorrect = validatePassword(password)
-    setIsDisplay(!isPasswordCorrect)
-    if (isNameValid && !isOnlySapce && isEmailValid && isPasswordCorrect) {
+    setIsDisplay(!isPasswordValid)
+    if (isNameValid && isPasswordValid && isEmailValid) {
         setIsLoader(true)
 
         makeSign(data)

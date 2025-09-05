@@ -1,9 +1,3 @@
-import {
-    handleBlur,
-    handleFocus,
-    numberAndCaracterScape
-} from '@/utils/contactFunctions'
-import { handleValidEmail } from '@/utils/validationLoginSign'
 import { ButtonLoginSign } from '../styles'
 import { useFormeState } from '@/hooks/useFormState'
 import { handleSign } from '../formsFetch'
@@ -15,6 +9,11 @@ import { useState } from 'react'
 import Loader from '@/components/Loader'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 import useUserSignResults from '@/hooks/useUserSignResults'
+import {
+    handleEmailUser,
+    handleNameUser,
+    handlePassword
+} from '@/utils/handlersInput'
 
 const Sign = () => {
     const [viewPassword, setViewPassword] = useState(false)
@@ -30,22 +29,22 @@ const Sign = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
 
     const {
-        emailEmpty,
         email,
         isEmailValid,
         name,
-        nameEmpty,
-        passwordEmpty,
         password,
-        setEmailEmpty,
         setEmail,
         setIsEmailValid,
         setName,
-        setNameEmpty,
-        setPasswordEmpty,
         setPassword,
         emailBorderError,
-        setEmailBorderError
+        setEmailBorderError,
+        nameBorderError,
+        setNameBorderError,
+        setIsNameValid,
+        isNameValid,
+        isPasswordValid,
+        setIsPasswordValid
     } = useFormeState()
 
     const data = {
@@ -73,11 +72,10 @@ const Sign = () => {
                             setIsDisplay,
                             e,
                             isEmailValid,
-                            password,
+                            isPasswordValid,
+                            isNameValid,
                             data,
                             dispatch,
-                            name,
-                            email,
                             makeSign,
                             setIsLoader,
                             errorHandlers
@@ -86,65 +84,61 @@ const Sign = () => {
                 >
                     <div className="form__text-field">
                         <input
-                            className="input name"
-                            onFocus={(e) => handleFocus(e, setNameEmpty)}
-                            onBlur={(e) => handleBlur(e, setNameEmpty)}
+                            className={`input name ${nameBorderError && 'input-error'}`}
                             onChange={(e) =>
-                                numberAndCaracterScape(e.target.value, setName)
+                                handleNameUser(
+                                    e.target.value,
+                                    setName,
+                                    setNameBorderError,
+                                    setIsNameValid
+                                )
                             }
                             value={name}
                             type="text"
                             id="name"
+                            placeholder="Nome Completo"
                         />
-                        <label
-                            className={nameEmpty ? 'active' : ''}
-                            htmlFor="name"
-                        >
+                        <label htmlFor="name">
                             <i className="fa-solid fa-user" />
-                            <span>Nome</span>
                         </label>
                     </div>
                     <div className="form__text-field">
                         <input
-                            className={`input email ${emailBorderError ? '' : 'sign-email-error'}`}
-                            onFocus={(e) => handleFocus(e, setEmailEmpty)}
-                            onBlur={(e) => handleBlur(e, setEmailEmpty)}
+                            className={`input email ${emailBorderError && 'input-error'}`}
                             onChange={(e) =>
-                                handleValidEmail(
+                                handleEmailUser(
                                     e.target.value,
                                     setEmail,
-                                    setIsEmailValid,
-                                    setEmailBorderError
+                                    setEmailBorderError,
+                                    setIsEmailValid
                                 )
                             }
                             type="email"
                             id="email-sign"
                             value={email}
+                            placeholder="Email"
                         />
-                        <label
-                            className={emailEmpty ? 'active' : ''}
-                            htmlFor="email-sign"
-                        >
+                        <label htmlFor="email-sign">
                             <i className="fa-solid fa-envelope" />
-                            <span>Email</span>
                         </label>
                     </div>
                     <div className="form__text-field">
                         <input
                             className="input password"
-                            onFocus={(e) => handleFocus(e, setPasswordEmpty)}
-                            onBlur={(e) => handleBlur(e, setPasswordEmpty)}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) =>
+                                handlePassword(
+                                    e.target.value,
+                                    setPassword,
+                                    setIsPasswordValid
+                                )
+                            }
                             type={viewPassword ? 'text' : 'password'}
                             id="password-sign"
                             value={password}
+                            placeholder="Senha"
                         />
-                        <label
-                            className={passwordEmpty ? 'active' : ''}
-                            htmlFor="password-sign"
-                        >
+                        <label htmlFor="password-sign">
                             <i className="fa-solid fa-lock" />
-                            <span>Senha</span>
                         </label>
                         {viewPassword ? (
                             <i
@@ -160,7 +154,8 @@ const Sign = () => {
                         <WarnPassword $isDisplay={isDisplay}>
                             A senha deve ter pelo menos 8 caracteres, misturando
                             pelo menos números e letras, e não pode ser uma
-                            sequência numérica ou alfabética.
+                            sequência numérica ou alfabética. E não pode ter
+                            ~&lt;&gt;\
                         </WarnPassword>
                     </div>
                     <ButtonLoginSign type="submit">Cadastrar</ButtonLoginSign>
