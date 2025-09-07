@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { ButtonContainer } from '../ButtonPurchase/styles'
 
 export const PublicLibContainer = styled.section`
     padding-top: 32px;
@@ -126,5 +127,24 @@ export const Carrossel = styled.div`
                 display: block;
             }
         }
+    }
+`
+export const NavPageBooks = styled.nav`
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+
+    .button-nav-page {
+        background-color: green;
+    }
+`
+
+export const ButtonNavPage = styled(ButtonContainer)`
+    &.is-disabled {
+        background-color: grey;
+    }
+
+    @media screen and (max-width: 767px) {
+        display: none;
     }
 `

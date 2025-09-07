@@ -1,14 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
 import Card from '@/components/Card'
-import { Carrossel, PublicLibContainer } from './styles'
+import {
+    ButtonNavPage,
+    Carrossel,
+    NavPageBooks,
+    PublicLibContainer
+} from './styles'
 import CardsClone from '@/components/CardsClone'
-import { useLazyGetPublicBooksQuery } from '@/services/api'
+import {
+    useGetPublicBooksLengthQuery,
+    useLazyGetPublicBooksQuery
+} from '@/services/api'
 import { getItemFromCache, verifyIfIsCached } from '@/utils/cacheConfig'
 import SkeletonCard from '@/components/SkeletonCard'
 import { isOnDevelopment } from '@/utils'
 
 const PublicLib = () => {
-    const [getPublicBooks] = useLazyGetPublicBooksQuery()
+    const [getPublicBooks, { isFetching }] = useLazyGetPublicBooksQuery()
+    const { data: publicBooksTotalLength } = useGetPublicBooksLengthQuery()
     const [data, setData] = useState<Books[]>()
     const localPublicBooks = getItemFromCache<{
         cache: Books[]
@@ -16,6 +25,12 @@ const PublicLib = () => {
     }>('publicBooks')
     const carrousselRef = useRef<HTMLDivElement>(null)
     const hasMounted = useRef(false)
+
+    const [page, setPage] = useState(1)
+    const booksQuantPage = 4
+    const [offSet, setOffSet] = useState(0)
+    const [nextDisabled, setNextDisabled] = useState(false)
+    const [prevDisabled, setPrevDisabled] = useState(true)
 
     const [removeTouchStart, setRemoveTouchStart] = useState(false)
     const [removeTouchEnd, setRemoveTouchEnd] = useState(true)
@@ -25,7 +40,7 @@ const PublicLib = () => {
         useState<NodeListOf<Element> | null>(null)
     const [items, setItems] = useState<Element[]>()
     const [mainLib, setMainLib] = useState<number>()
-    const mainLibElement = useRef(null)
+    const mainLibElement = useRef<HTMLElement>(null)
     const [clonedMainLibLeft, setClonedMainLibLeft] = useState<number>()
     const [clonedMainRight, setClonedMainRight] = useState<number>()
     const [elementWidth, setElementWidth] = useState<number>()
@@ -65,22 +80,36 @@ const PublicLib = () => {
     }, [carrousselItems])
 
     useEffect(() => {
+        if (!mainLibElement.current) return
         if (!isOnDevelopment) {
-            getPublicBooks().then((res) => {
+            if (window.innerWidth <= 767) {
+                setData(publicBooksTotalLength)
+                return
+            }
+            getPublicBooks({
+                take: booksQuantPage,
+                skip: offSet
+            }).then((res) => {
                 if (res.data) {
                     setData(res.data)
                 }
             })
             return
         }
+
+        if (window.innerWidth <= 767) {
+            setData(publicBooksTotalLength)
+            return
+        }
         verifyIfIsCached(
             localPublicBooks,
             setData,
             getPublicBooks,
-            'publicBooks'
+            'publicBooks',
+            { take: booksQuantPage, skip: offSet, isLength: false }
         )
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
-    }, [getPublicBooks])
+    }, [getPublicBooks, publicBooksTotalLength])
 
     useEffect(() => {
         if (!data) return
@@ -116,6 +145,38 @@ const PublicLib = () => {
         }
     }, [data])
 
+    useEffect(() => {
+        if (!hasMounted.current) return
+
+        setNextDisabled(
+            page * booksQuantPage >=
+                (publicBooksTotalLength?.length as number) || isFetching
+        )
+
+        setPrevDisabled(page === 1)
+
+        getPublicBooks({
+            take: booksQuantPage,
+            skip: offSet
+        }).then((res) => {
+            if (res.data) {
+                console.log(res.data)
+                setData(res.data)
+            }
+        })
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [getPublicBooks, offSet])
+
+    const handleNext = () => {
+        setOffSet((p) => p + booksQuantPage)
+        setPage((p) => p + 1)
+    }
+
+    const handlePrev = () => {
+        setOffSet((p) => p - booksQuantPage)
+        setPage((p) => p - 1)
+    }
+
     return (
         <PublicLibContainer
             ref={mainLibElement}
@@ -126,7 +187,7 @@ const PublicLib = () => {
             <div className="cursor">
                 <span className="mask-left"></span>
                 <span className="mask-right"></span>
-                {data ? (
+                {!isFetching ? (
                     <Carrossel
                         ref={carrousselRef}
                         className="card_container carroussel"
@@ -172,6 +233,7 @@ const PublicLib = () => {
                                     />
                                 )
                             )}
+
                         <CardsClone
                             setRemoveTouchMove={setRemoveTouchMove}
                             setRemoveTouchEnd={setRemoveTouchEnd}
@@ -199,6 +261,26 @@ const PublicLib = () => {
                         </div>
                     </div>
                 )}
+                <NavPageBooks aria-label="Paginação">
+                    <li>
+                        <ButtonNavPage
+                            className={`${prevDisabled && 'is-disabled'}`}
+                            disabled={prevDisabled}
+                            onClick={handlePrev}
+                        >
+                            Anterior
+                        </ButtonNavPage>
+                    </li>
+                    <li>
+                        <ButtonNavPage
+                            className={`${nextDisabled && 'is-disabled'}`}
+                            disabled={nextDisabled}
+                            onClick={handleNext}
+                        >
+                            Próximo
+                        </ButtonNavPage>
+                    </li>
+                </NavPageBooks>
             </div>
         </PublicLibContainer>
     )

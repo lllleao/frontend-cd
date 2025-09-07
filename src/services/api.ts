@@ -1,139 +1,21 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { EmailUser } from '@/store/reducers/loginSign'
-
-export type User = {
-    email: string
-    name: string
-    dataPurchase: DataOrder[]
-}
-
-export type DataSignupProp = {
-    data: {
-        name: string
-        email: string
-        password: string
-    }
-    csrfToken: string
-}
-
-export interface DataLoginProp {
-    data: Omit<DataSignupProp['data'], 'name'>
-    csrfToken: string
-}
-
-type DataOrder = {
-    totalPrice: number
-    createdAt: Date
-    items: itemsOrder[]
-}
-
-type itemsOrder = {
-    name: string
-    photo: string
-    price: number
-    quant: number
-}
-
-type BooksCart = {
-    items: [
-        {
-            price: number
-            quant: number
-            name: string
-            photo: string
-        }
-    ]
-    csrfToken: string
-}
-
-export type GetBooksCart = {
-    items: [
-        {
-            price: number
-            quant: number
-            id?: number
-            name: string
-            photo: string
-        }
-    ]
-}
-
-type CsrfProp = {
-    csrfToken: string
-}
-
-type EmailDataProp = {
-    csrfToken: string
-    data: {
-        emailUser: string
-        text: string
-        name: string
-        phone?: string
-    }
-}
-
-type UpdatePrice = {
-    data: {
-        quantBefore: number
-        quantCurrent: number
-        idItem: number | undefined
-        price: number
-    }
-    csrfToken: string
-}
-
-export type TotalPriceProps = {
-    totalPrice: number
-}
-
-type ItemsInfo = {
-    price: number
-    quant: number
-    id?: number
-    name: string
-    photo: string
-}
-
-export interface PurchaseDataProps {
-    data: {
-        name: string
-        cpf: string
-        zipCode: string
-        street: string
-        neighborhood: string
-        complement: string
-        number: string
-        itemsInfo: ItemsInfo[]
-        totalPrice: number
-        isDefault: boolean
-    }
-    csrfToken: string
-}
-
-interface CreateAddressProps {
-    csrfToken: string
-    data: Omit<PurchaseDataProps['data'], 'itemsInfo' | 'totalPrice'>
-}
-
-export interface GetAddressProps {
-    name: string
-    cpf: string
-    zipCode: string
-    street: string
-    neighborhood: string
-    complement: string
-    number: string
-    isDefault: boolean
-    id?: number
-}
-
-type PixDatProps = {
-    pixData: {
-        qrcode: string
-        imagemQrcode: string
-        linkVisualizacao: string
-    }
-}
+import {
+    BooksCart,
+    CsrfProp,
+    DataSignupProp,
+    EmailDataProp,
+    GetBooksCart,
+    PixDatProps,
+    TotalPriceProps,
+    UpdatePrice,
+    User
+} from '@/types/types'
+import {
+    DataLoginProp,
+    GetAddressProps,
+    PurchaseDataProps
+} from '@/interfaces/interfaces'
 
 const api = createApi({
     baseQuery: fetchBaseQuery({
@@ -192,8 +74,16 @@ const api = createApi({
                 body: emailData.data
             })
         }),
-        getPublicBooks: builder.query<Books[], void>({
-            query: () => 'books/free'
+        getPublicBooks: builder.query<
+            Books[],
+            { take?: number; skip?: number }
+        >({
+            query: ({ skip, take }) => {
+                return `books/free?take=${take}&skip=${skip}`
+            }
+        }),
+        getPublicBooksLength: builder.query<Books[], void>({
+            query: () => 'books/free-length'
         }),
         getStoreBooks: builder.query<BooksFromStore[], void>({
             query: () => 'books/store'
@@ -326,6 +216,7 @@ const api = createApi({
 
 export const {
     useLazyGetPublicBooksQuery,
+    useGetPublicBooksLengthQuery,
     useVerifyCSRFTokenMutation,
     useLazyGetStoreBooksQuery,
     useGetStoreBooksQuery,

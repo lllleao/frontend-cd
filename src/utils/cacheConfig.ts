@@ -26,20 +26,21 @@ export const removeAllCache = () => {
     localStorage.removeItem('numberCart')
 }
 
-export const verifyIfIsCached = <T>(
+export const verifyIfIsCached = <T, Args extends unknown[]>(
     localCache: { cache: T; timeExpiration: number } | null,
     setData: React.Dispatch<React.SetStateAction<T | undefined>>,
-    getData: (arg?: void) => Promise<{ data?: T }>,
-    cacheName: string
+    getData: (...args: Args) => Promise<{ data?: T }>,
+    cacheName: string,
+    ...args: Args
 ) => {
     const dateNowToExpirationCache = Date.now()
 
     if (localCache && dateNowToExpirationCache < localCache.timeExpiration) {
         setData(localCache.cache)
-        return;
+        return
     }
 
-    getData().then((res) => {
+    getData(...args).then((res) => {
         if (res.data) {
             setData(res.data)
             addItemToCache(cacheName, res.data)

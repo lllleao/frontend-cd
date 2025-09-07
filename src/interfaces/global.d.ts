@@ -6,13 +6,6 @@ declare interface Books {
     id?: number
 }
 
-type CreditsValues = {
-    id: number
-    store_book_id: number
-    type: string
-    person: string
-}
-
 declare interface BooksFromStore extends Omit<Books, 'link'> {
     price: number
 }
@@ -26,9 +19,7 @@ declare interface BooksPurchase extends Omit<BooksFromStore, 'descBooks'> {
     store_books_credits: CreditsValues[]
 }
 
-declare interface BooksCart
-    extends Omit<Books, 'link' | 'title' | 'descBooks' | 'id'> {
-    quant: number
-    name: string
-    id?: number
+interface CreateAddressProps {
+    csrfToken: string
+    data: Omit<PurchaseDataProps['data'], 'itemsInfo' | 'totalPrice'>
 }
