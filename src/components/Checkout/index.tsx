@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react'
 import { CheckoutContainer, ChoseAddress, ValidAddres } from './styles'
+
+import ProfileAddress from '@/components/AddressCard'
+import { Finish } from '@/components/FormAddress/styles'
+import { defaultAddress, isLoginAndCsrf } from '@/utils'
+import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
+import { GetAddressProps } from '@/interfaces/interfaces'
 import {
-    GetAddressProps,
     useLazyGetAddressQuery,
     useLazyGetItemsCartQuery,
     useLazyGetTotalPriceQuery,
     usePurchaseDataMutation
 } from '@/services/api'
-import ProfileAddress from '@/components/AddressCard'
-import { Finish } from '@/components/FormAddress/styles'
-import { defaultAddress, isLoginAndCsrf } from '@/utils'
-import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 
 const Checkout = () => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string

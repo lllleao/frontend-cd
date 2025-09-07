@@ -4,12 +4,13 @@ import { ButtonLoginSign } from '../styles'
 import { useFormeState } from '@/hooks/useFormState'
 import { RootReducer } from '@/store'
 import { EmailUserMsgContainer } from './styles'
-import { DataLoginProp, useLoginUserMutation } from '@/services/api'
+import { useLoginUserMutation } from '@/services/api'
 import { useNavigate } from 'react-router-dom'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 import useUserLoginResults from '@/hooks/useUserLoginResults'
 import { useState } from 'react'
 import { handleEmailUser, handlePassword } from '@/utils/handlersInput'
+import { DataLoginProp } from '@/interfaces/interfaces'
 
 const Login = () => {
     const [viewPassword, setViewPassword] = useState(false)

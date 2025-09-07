@@ -1,5 +1,5 @@
+import { GetAddressProps } from '@/interfaces/interfaces'
 import { create } from 'zustand'
-import { GetAddressProps } from '@/services/api'
 
 interface ProfileData {
     address: GetAddressProps[]

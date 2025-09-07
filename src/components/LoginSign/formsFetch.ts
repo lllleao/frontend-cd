@@ -15,9 +15,10 @@ import {
 } from '@/store/reducers/loginSign'
 import { NavigateFunction } from 'react-router-dom'
 import { isErrorMessageExist } from '@/utils'
-import { DataLoginProp, DataSignupProp } from '@/services/api'
 import { LoginErrorMessage } from '@/hooks/useUserLoginResults'
 import { SignErrorMessage } from '@/hooks/useUserSignResults'
+import { DataLoginProp } from '@/interfaces/interfaces'
+import { DataSignupProp } from '@/types/types'
 
 export const handleLogin = (
     event: FormEvent<HTMLFormElement>,

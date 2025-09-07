@@ -1,4 +1,4 @@
-import { User } from '@/services/api'
+import { User } from '@/types/types'
 import formatDate from '@/utils/formatDate'
 // import { OrderItems } from "./styles"
 
