@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import Card from '@/components/Card'
 import {
     ButtonNavPage,
-    Carrossel,
+    ButtonSeeAll,
+    NavPageAllBooks,
     NavPageBooks,
     PublicLibContainer
 } from './styles'
-import CardsClone from '@/components/CardsClone'
 import {
     useGetPublicBooksLengthQuery,
     useLazyGetPublicBooksQuery
@@ -14,6 +14,7 @@ import {
 import { getItemFromCache, verifyIfIsCached } from '@/utils/cacheConfig'
 import SkeletonCard from '@/components/SkeletonCard'
 import { isOnDevelopment } from '@/utils'
+import { Link } from 'react-router-dom'
 
 const PublicLib = () => {
     const [getPublicBooks, { isFetching }] = useLazyGetPublicBooksQuery()
@@ -23,7 +24,6 @@ const PublicLib = () => {
         cache: Books[]
         timeExpiration: number
     }>('publicBooks')
-    const carrousselRef = useRef<HTMLDivElement>(null)
     const hasMounted = useRef(false)
 
     const [page, setPage] = useState(1)
@@ -31,59 +31,16 @@ const PublicLib = () => {
     const [offSet, setOffSet] = useState(0)
     const [nextDisabled, setNextDisabled] = useState(false)
     const [prevDisabled, setPrevDisabled] = useState(true)
-
-    const [removeTouchStart, setRemoveTouchStart] = useState(false)
-    const [removeTouchEnd, setRemoveTouchEnd] = useState(true)
-    const [removeTouchMove, setRemoveTouchMove] = useState(true)
-
-    const [carrousselItems, setCarrousselItems] =
-        useState<NodeListOf<Element> | null>(null)
-    const [items, setItems] = useState<Element[]>()
-    const [mainLib, setMainLib] = useState<number>()
     const mainLibElement = useRef<HTMLElement>(null)
-    const [clonedMainLibLeft, setClonedMainLibLeft] = useState<number>()
-    const [clonedMainRight, setClonedMainRight] = useState<number>()
-    const [elementWidth, setElementWidth] = useState<number>()
-
-    useEffect(() => {
-        if (!carrousselItems) return
-        const handleResizer = (entries: ResizeObserverEntry[]) => {
-            const currentWidth = entries[0].borderBoxSize[0].inlineSize
-            if (currentWidth > 706 && carrousselItems) {
-                setRemoveTouchStart(true)
-                setRemoveTouchEnd(true)
-                setRemoveTouchMove(true)
-                carrousselItems.forEach((item) => {
-                    ;(item as HTMLElement).style.cssText = `transform: none;`
-                })
-            } else if (carrousselItems) {
-                setElementWidth(carrousselItems[0].clientWidth)
-                setRemoveTouchStart(false)
-                setRemoveTouchEnd(false)
-                setRemoveTouchMove(false)
-            }
-        }
-
-        const resizerObserver = new ResizeObserver(handleResizer)
-
-        if (mainLibElement.current) {
-            resizerObserver.observe(mainLibElement.current)
-        }
-
-        return () => {
-            if (mainLibElement.current) {
-                // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
-                resizerObserver.unobserve(mainLibElement.current)
-            }
-            resizerObserver.disconnect()
-        }
-    }, [carrousselItems])
 
     useEffect(() => {
         if (!mainLibElement.current) return
+        if (!publicBooksTotalLength) return
+
         if (!isOnDevelopment) {
             if (window.innerWidth <= 767) {
-                setData(publicBooksTotalLength)
+                setData(publicBooksTotalLength.slice(0, 3))
+                hasMounted.current = true
                 return
             }
             getPublicBooks({
@@ -92,13 +49,17 @@ const PublicLib = () => {
             }).then((res) => {
                 if (res.data) {
                     setData(res.data)
+                    hasMounted.current = true
                 }
             })
             return
         }
 
         if (window.innerWidth <= 767) {
-            setData(publicBooksTotalLength)
+            console.log(publicBooksTotalLength)
+            setData(publicBooksTotalLength.slice(0, 3))
+            hasMounted.current = true
+
             return
         }
         verifyIfIsCached(
@@ -108,46 +69,13 @@ const PublicLib = () => {
             'publicBooks',
             { take: booksQuantPage, skip: offSet, isLength: false }
         )
+        hasMounted.current = true
+
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [getPublicBooks, publicBooksTotalLength])
 
     useEffect(() => {
-        if (!data) return
-
-        if (carrousselRef.current && data && !hasMounted.current) {
-            hasMounted.current = true
-            const carrousselInner =
-                carrousselRef.current.querySelectorAll('.card_lib')
-            setCarrousselItems(
-                carrousselRef.current.querySelectorAll('.card_lib')
-            )
-            const itemsInner = [...carrousselInner]
-            setItems(itemsInner)
-            setMainLib(
-                itemsInner.indexOf(
-                    carrousselRef.current.querySelector('#main') as Element
-                )
-            )
-            setClonedMainLibLeft(
-                itemsInner.indexOf(
-                    carrousselRef.current.querySelector(
-                        '#main_cloned_left'
-                    ) as Element
-                )
-            )
-            setClonedMainRight(
-                itemsInner.indexOf(
-                    carrousselRef.current.querySelector(
-                        '#main_cloned_right'
-                    ) as Element
-                )
-            )
-        }
-    }, [data])
-
-    useEffect(() => {
         if (!hasMounted.current) return
-
         setNextDisabled(
             page * booksQuantPage >=
                 (publicBooksTotalLength?.length as number) || isFetching
@@ -160,7 +88,6 @@ const PublicLib = () => {
             skip: offSet
         }).then((res) => {
             if (res.data) {
-                console.log(res.data)
                 setData(res.data)
             }
         })
@@ -184,45 +111,13 @@ const PublicLib = () => {
             className="public-lb container"
         >
             <h2 className="public-lb__title">TÁRTARO CAFETERIA</h2>
-            <div className="cursor">
-                <span className="mask-left"></span>
-                <span className="mask-right"></span>
+            <div>
                 {!isFetching ? (
-                    <Carrossel
-                        ref={carrousselRef}
-                        className="card_container carroussel"
-                    >
-                        <CardsClone
-                            setRemoveTouchMove={setRemoveTouchMove}
-                            setRemoveTouchEnd={setRemoveTouchEnd}
-                            mainLib={mainLib}
-                            items={items}
-                            elementWidth={elementWidth}
-                            clonedMainRight={clonedMainRight}
-                            clonedMainLibLeft={clonedMainLibLeft}
-                            carrousselItems={carrousselItems}
-                            removeTouchEnd={removeTouchEnd}
-                            removeTouchMove={removeTouchMove}
-                            removeTouchStart={removeTouchStart}
-                            idName="main_cloned_left"
-                            quant={data?.length}
-                            data={data}
-                        />
+                    <div className="all-books">
                         {data &&
                             data.map(
                                 ({ title, id, link, photo, descBooks }) => (
                                     <Card
-                                        mainLib={mainLib}
-                                        elementWidth={elementWidth}
-                                        setRemoveTouchMove={setRemoveTouchMove}
-                                        setRemoveTouchEnd={setRemoveTouchEnd}
-                                        items={items}
-                                        clonedMainRight={clonedMainRight}
-                                        clonedMainLibLeft={clonedMainLibLeft}
-                                        carrousselItems={carrousselItems}
-                                        removeTouchEnd={removeTouchEnd}
-                                        removeTouchMove={removeTouchMove}
-                                        removeTouchStart={removeTouchStart}
                                         idName="main"
                                         title={title}
                                         id={id}
@@ -233,24 +128,7 @@ const PublicLib = () => {
                                     />
                                 )
                             )}
-
-                        <CardsClone
-                            setRemoveTouchMove={setRemoveTouchMove}
-                            setRemoveTouchEnd={setRemoveTouchEnd}
-                            mainLib={mainLib}
-                            items={items}
-                            elementWidth={elementWidth}
-                            clonedMainRight={clonedMainRight}
-                            clonedMainLibLeft={clonedMainLibLeft}
-                            carrousselItems={carrousselItems}
-                            removeTouchEnd={removeTouchEnd}
-                            removeTouchMove={removeTouchMove}
-                            removeTouchStart={removeTouchStart}
-                            idName="main_cloned_right"
-                            quant={3}
-                            data={data}
-                        />
-                    </Carrossel>
+                    </div>
                 ) : (
                     <div className="container-skeleton-public">
                         <div className="skeletons-public">
@@ -281,6 +159,15 @@ const PublicLib = () => {
                         </ButtonNavPage>
                     </li>
                 </NavPageBooks>
+                <NavPageAllBooks>
+                    <ButtonSeeAll
+                        as={Link}
+                        to="all-projects"
+                        className="see-all"
+                    >
+                        VER TODAS
+                    </ButtonSeeAll>
+                </NavPageAllBooks>
             </div>
         </PublicLibContainer>
     )

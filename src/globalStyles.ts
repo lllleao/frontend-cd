@@ -52,12 +52,6 @@ const GlobalStyle = createGlobalStyle`
         }
     }
 
-    .card_container {
-        display: flex;
-        column-gap: 16px;
-        padding-bottom: 122px;
-    }
-
     .display-none-development {
         display: none;
     }

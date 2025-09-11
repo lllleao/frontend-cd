@@ -9,11 +9,13 @@ import Checkout from '@/components/Checkout'
 import AddressEdit from '@/components/AddressEdit'
 import { PrivateRoute } from './RouteGuards'
 import { isOnDevelopment } from '@/utils'
+import AllPublicBooks from '@/containers/AllPublicBooks'
 
 const Rotas = () => {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/all-projects" element={<AllPublicBooks />} />
             {isOnDevelopment ? (
                 <>
                     <Route path="/store/:id" element={<Books />} />

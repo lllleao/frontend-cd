@@ -8,6 +8,7 @@ export const CardContainerStore = styled(Link)`
     justify-content: flex-start;
     height: min-content;
     transition: transform 0.3s;
+    width: 90%;
     img {
         border: 4px solid #fff;
         border-radius: 18px;
@@ -23,23 +24,11 @@ export const CardContainerStore = styled(Link)`
         font-weight: bold;
         width: 80%;
     }
-
-    @media screen and (max-width: 767px) {
-        display: block;
-
-        img {
-            width: clamp(270px, 60vw, 460px);
-        }
-        h3 {
-            width: 100%;
-        }
-    }
 `
 export const CardContainer = styled.a`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
     height: min-content;
     transition: transform 0.3s;
     img {
@@ -59,14 +48,11 @@ export const CardContainer = styled.a`
     }
 
     @media screen and (max-width: 767px) {
-        display: block;
-
         img {
-            width: clamp(270px, 60vw, 460px);
+            max-width: 270px;
         }
         h3 {
             width: 100%;
         }
     }
 `
-

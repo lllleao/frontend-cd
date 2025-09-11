@@ -21,6 +21,7 @@ export const PublicLibContainer = styled.section`
             }
         }
     }
+
     & .public-lb {
         &__title {
             text-align: center;
@@ -41,91 +42,15 @@ export const PublicLibContainer = styled.section`
                 margin: 0 auto 32px;
             }
         }
-
-        .cursor {
-            position: relative;
-            .mask-left,
-            .mask-right {
-                display: none;
-            }
-
-            @media (max-width: 767px) {
-                .mask-left,
-                .mask-right {
-                    display: block;
-                }
-            }
-        }
     }
-`
-
-export const Carrossel = styled.div`
-    .cloned {
-        display: none;
-    }
-
-    &.carroussel {
-        @media (min-width: 768px) {
-            width: 90%;
-            display: grid;
-            grid-template-columns: repeat(2, minmax(250px, 0.3fr));
-            place-content: center;
-            row-gap: 3rem;
-            column-gap: 3rem;
-            margin: 0 auto;
-        }
-        &::before,
-        &::after {
-            display: none;
-        }
-
-        @media (max-width: 767px) {
-            position: relative;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border-top: 1px solid #eee;
-            border-bottom: 1px solid #eee;
-            padding: 16px;
-
-            &::before {
-                display: block;
-                content: '';
-                position: absolute;
-                background: linear-gradient(
-                    90deg,
-                    #000000ee,
-                    #000000a4,
-                    #00000075,
-                    #00000000
-                );
-                top: 0;
-                left: 0;
-                height: 100%;
-                width: 15%;
-                z-index: 1;
-            }
-
-            &::after {
-                display: block;
-                content: '';
-                position: absolute;
-                background: linear-gradient(
-                    90deg,
-                    #00000000,
-                    #00000075,
-                    #000000a4,
-                    #000000ee
-                );
-                top: 0;
-                right: 0;
-                width: 15%;
-                height: 100%;
-            }
-
-            .cloned {
-                display: block;
-            }
+    .all-books {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+        .card_lib_pub {
+            flex: 0 1 300px;
         }
     }
 `
@@ -145,6 +70,19 @@ export const ButtonNavPage = styled(ButtonContainer)`
     }
 
     @media screen and (max-width: 767px) {
+        display: none;
+    }
+`
+export const NavPageAllBooks = styled.nav`
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+`
+export const ButtonSeeAll = styled(ButtonContainer)`
+    display: inline-block;
+    text-decoration: none;
+
+    @media screen and (min-width: 768px) {
         display: none;
     }
 `

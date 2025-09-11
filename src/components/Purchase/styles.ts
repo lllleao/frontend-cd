@@ -1,8 +1,6 @@
 import styled from 'styled-components'
-import { CardContainerStore } from '@/components/Card/styles'
 
 export const PurchaseContainer = styled.section`
-    /* display: none; */
     padding-top: 32px;
     .purchase__title,
     span {
@@ -25,7 +23,9 @@ export const PurchaseContainer = styled.section`
     }
 
     .store {
-        column-gap: 62px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
         justify-content: center;
         .container-skeleton-store {
             width: 90%;
@@ -37,10 +37,10 @@ export const PurchaseContainer = styled.section`
             }
         }
         .card_container__book {
+            flex: 0 1 270px;
             -webkit-transform: translateY(20%);
             -webkit-filter: blur(15px);
             -webkit-opacity: 0;
-
             transform: translateY(20%);
             filter: blur(15px);
             opacity: 0;
@@ -57,15 +57,6 @@ export const PurchaseContainer = styled.section`
                 &:nth-child(3) {
                     transition-delay: 1.5s;
                 }
-            }
-        }
-
-        @media (max-width: 1023px) {
-            flex-wrap: wrap;
-
-            .card_container__book {
-                width: clamp(270px, 60vw, 360px);
-                margin-bottom: 2.5rem;
             }
         }
     }
@@ -89,17 +80,6 @@ export const PurchaseContainer = styled.section`
             &:nth-child(3) {
                 transition-delay: 2.5s;
             }
-        }
-    }
-
-    ${CardContainerStore} {
-        text-align: center;
-        img {
-            width: 70%;
-        }
-
-        p {
-            margin: 1rem auto 0;
         }
     }
 `

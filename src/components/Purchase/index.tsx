@@ -57,9 +57,7 @@ const Purchase = () => {
                 [ENTREGA SOMENTE PARA FORTALEZA/CE]
             </h2>
             <span>[clique na capa para comprar]</span>
-            <div
-                className={`store card_container ${inView ? 'store--is-active' : ''}`}
-            >
+            <div className={`store ${inView ? 'store--is-active' : ''}`}>
                 {data ? (
                     data.map(({ descBooks, id, photo, title, price }) => (
                         <Card
