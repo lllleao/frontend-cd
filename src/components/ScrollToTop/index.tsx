@@ -5,7 +5,13 @@ const ScrollToTop = () => {
     const { pathname } = useLocation()
 
     useEffect(() => {
-        const shouldScrollToTopPaths = ['/store', '/cart', '/profile', '/checkout']
+        const shouldScrollToTopPaths = [
+            '/store',
+            '/cart',
+            '/profile',
+            '/checkout',
+            '/all-projects'
+        ]
 
         const shouldScrollToTop = shouldScrollToTopPaths.some((route) =>
             pathname.startsWith(route)

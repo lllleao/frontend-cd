@@ -16,5 +16,7 @@ export const FooterContainer = styled.footer`
 
     .copy-right {
         text-align: center;
+        margin-top: 4rem;
+        padding-bottom: 1rem;
     }
 `
