@@ -8,6 +8,7 @@ export type LoginErrorMessage =
     | 'Email não verificado.'
     | 'Usuário não existe.'
     | 'CSRF token ausente no cabeçalho da requisição.'
+    | 'Você atingiu o limite de requisições.'
 
 const useUserLoginResults = () => {
     const logout = useLogout()
@@ -71,12 +72,23 @@ const useUserLoginResults = () => {
         )
     }
 
+    const handleTooManyReqs = () => {
+        dispatch(
+            checkLoginUser({
+                msg: 'Muitas tentativas, tente mais tarde',
+                loginUserExist: true,
+                loginSuccess: false
+            })
+        )
+    }
+
     const errorHandlers: Record<LoginErrorMessage, () => void> = {
         'Usuário já logado': handleUserAlreadyLogged,
         'Email não verificado.': handleUnverifiedEmail,
         'Senha incorreta.': handleWrongPassword,
         'Usuário não existe.': handleUserNotExist,
-        'CSRF token ausente no cabeçalho da requisição.': handleUserCSRFTOKEN
+        'CSRF token ausente no cabeçalho da requisição.': handleUserCSRFTOKEN,
+        'Você atingiu o limite de requisições.': handleTooManyReqs
     }
 
     return errorHandlers
