@@ -8,20 +8,17 @@ import {
     FormAddressContainer,
     TitleForms
 } from './styles'
-import {
-    useCreateAddressMutation,
-    useRefreshTokenMutation
-} from '@/services/api'
+import { useCreateAddressMutation } from '@/services/api'
 import Loader from '@/components/Loader'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
-import { isErrorMessageExist } from '@/utils'
-import useLogout from '@/hooks/useLogout'
 import { authForms } from '@/utils/authInputForm'
+import useRefreshToken from '@/hooks/useRefreshToken'
+import { useProfileData } from '@/hooks/useProfileData'
 
 const FormAddress = () => {
+    const refresheTokenFunction = useRefreshToken()
+
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
-    const logado = localStorage.getItem('logado')
-    const logout = useLogout()
 
     const isDefaulStoraget = localStorage.getItem('isDefault') as string
     const [isDefault, setIsDefault] = useState(true)
@@ -36,10 +33,12 @@ const FormAddress = () => {
     const [number, setNumber] = useState('')
     const navigate = useNavigate()
     const [createAddress] = useCreateAddressMutation()
-    const [getRefresh] = useRefreshTokenMutation()
 
     const [errorCEP, setErrorCEP] = useState(false)
     const [errorCpf, setErrorCpf] = useState(false)
+
+    const setProfileAddress = useProfileData((state) => state.setProfileAddress)
+    const address = useProfileData((state) => state.address)
 
     const scapeSpecialCaracter = (
         street: string,
@@ -110,33 +109,6 @@ const FormAddress = () => {
         }
     }
 
-    // const authForms = () => {
-    //     const regex = /^\s+$/
-    //     const cepScape = cep.replace(/\D/g, '')
-    //     const isNameValid =
-    //         name &&
-    //         !regex.test(name) &&
-    //         name.length > 3 &&
-    //         name.includes(' ')
-    //     const isCpfValid = cpfValidator(cpf)
-    //     const isCepValid = cepScape.length === 8
-    //     const isStreetValid = street.length <= 40
-    //     const isNeighborhoodValid = neighborhood.length <= 40
-    //     const isComplementValid =
-    //         complement.length <= 40 || complement.length === 0
-    //     const isNumberValid = number.length <= 6
-
-    //     return {
-    //         isNameValid,
-    //         isCpfValid,
-    //         isCepValid,
-    //         isStreetValid,
-    //         isNeighborhoodValid,
-    //         isComplementValid,
-    //         isNumberValid
-    //     }
-    // }
-
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const {
@@ -148,13 +120,13 @@ const FormAddress = () => {
             isNumberValid,
             isStreetValid
         } = authForms(
-            name,
-            cep,
-            cpf,
-            street,
-            neighborhood,
-            complement,
-            number,
+            name.trim(),
+            cep.trim(),
+            cpf.trim(),
+            street.trim(),
+            neighborhood.trim(),
+            complement.trim(),
+            number.trim(),
             cpfValidator
         )
 
@@ -183,43 +155,63 @@ const FormAddress = () => {
                 }
             })
                 .then((res) => {
-                    if (isErrorMessageExist(res)) {
-                        const message = res.error.data.message as string
-                        if (message === 'Token expirado') {
-                            return getRefresh(csrfToken)
-                                .then((response) => {
-                                    if (response.error) {
-                                        logout('/')
-                                        return
+                    if (res.error) {
+                        return refresheTokenFunction(res, () => {
+                            createAddress({
+                                csrfToken,
+                                data: {
+                                    zipCode: cep.trim().replace(/\D/g, ''),
+                                    complement: complement.trim(),
+                                    cpf: cpf.trim().replace(/\D/g, ''),
+                                    name: name.trim(),
+                                    neighborhood: neighborhood.trim(),
+                                    number: number.trim(),
+                                    isDefault,
+                                    street: street.trim()
+                                }
+                            }).then(() => {
+                                setIsLoader(false)
+                                setProfileAddress([
+                                    {
+                                        zipCode: cep.trim().replace(/\D/g, ''),
+                                        complement: complement.trim(),
+                                        cpf: cpf.trim().replace(/\D/g, ''),
+                                        name: name.trim(),
+                                        neighborhood: neighborhood.trim(),
+                                        number: number.trim(),
+                                        isDefault,
+                                        street: street.trim(),
+                                        id: isDefault ? 1 : 2
                                     }
-                                    localStorage.setItem('logado', 'true')
-                                    createAddress({
-                                        csrfToken,
-                                        data: {
-                                            zipCode: cep
-                                                .trim()
-                                                .replace(/\D/g, ''),
-                                            complement: complement.trim(),
-                                            cpf: cpf.trim().replace(/\D/g, ''),
-                                            name: name.trim(),
-                                            neighborhood: neighborhood.trim(),
-                                            number: number.trim(),
-                                            isDefault,
-                                            street: street.trim()
-                                        }
-                                    }).then(() => {
-                                        setIsLoader(false)
-                                        navigate('/profile')
-                                    })
-                                })
-                                .catch((error) => {
-                                    console.log(error, 'err')
-                                })
-                        }
-                        logout('/')
-                        return
+                                ])
+                                navigate('/profile')
+                            })
+                        })
                     }
                     setIsLoader(false)
+
+                    const oneOfTheAddress = address.filter(
+                        (item) => item.isDefault !== isDefault
+                    )
+
+                    const currentAddress = address.filter(
+                        (item) => item.isDefault === isDefault
+                    )
+
+                    setProfileAddress([
+                        {
+                            zipCode: cep.trim().replace(/\D/g, ''),
+                            complement: complement.trim(),
+                            cpf: cpf.trim().replace(/\D/g, ''),
+                            name: name.trim(),
+                            neighborhood: neighborhood.trim(),
+                            number: number.trim(),
+                            isDefault: false,
+                            street: street.trim(),
+                            id: currentAddress[0].id
+                        },
+                        oneOfTheAddress[0]
+                    ])
                     navigate('/profile')
                 })
                 .catch((err) => {
@@ -231,7 +223,7 @@ const FormAddress = () => {
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         isDefaulStoraget === 'true' ? setIsDefault(true) : setIsDefault(false)
-    }, [isDefaulStoraget, logado, navigate])
+    }, [isDefaulStoraget])
     return (
         <>
             <BarFormAddress>

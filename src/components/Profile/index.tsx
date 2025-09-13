@@ -9,8 +9,13 @@ import ProfileAddress from '@/components/AddressCard'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 import useLogout from '@/hooks/useLogout'
 import { useProfileData } from '@/hooks/useProfileData'
+import useRefreshToken from '@/hooks/useRefreshToken'
+import useSortAddress from '@/hooks/useSortAddress'
 
 const Profile = () => {
+    const refresheTokenFunction = useRefreshToken()
+    const sortAddress = useSortAddress()
+
     const profileAddressTitle = ['Endereço padrão', 'Endereço secundário']
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
 
@@ -31,8 +36,19 @@ const Profile = () => {
 
     useEffect(() => {
         if (!csrfToken) return
-        if (address[0].street !== 'Padrão') return
         getDataProfile(csrfToken).then((res) => {
+            if (res.error) {
+                return refresheTokenFunction(res, () => {
+                    getDataProfile(csrfToken).then((response) => {
+                        if (response.data) {
+                            setProfileNameEmail({
+                                email: response.data?.email,
+                                name: response.data?.name
+                            })
+                        }
+                    })
+                })
+            }
             if (res.data) {
                 setProfileNameEmail({
                     email: res.data?.email,
@@ -40,10 +56,21 @@ const Profile = () => {
                 })
             }
         })
+
         getDataAddress({ csrfToken }).then((res) => {
-            console.log(res)
+            if (res.error) {
+                return refresheTokenFunction(res, () => {
+                    getDataAddress({ csrfToken }).then((response) => {
+                        if (response.isSuccess) {
+                            const dataAddress = sortAddress(res.data)
+                            setProfileAddress(dataAddress)
+                        }
+                    })
+                })
+            }
             if (res.isSuccess) {
-                setProfileAddress(res.data)
+                const dataAddress = sortAddress(res.data)
+                setProfileAddress(dataAddress)
             }
         })
 
@@ -66,13 +93,12 @@ const Profile = () => {
                                 neighborhood,
                                 number,
                                 street,
-                                zipCode,
-                                id
+                                zipCode
                             },
                             index
                         ) => (
                             <ProfileAddress
-                                key={id}
+                                key={index}
                                 cep={zipCode}
                                 complement={complement}
                                 cpf={cpf}
@@ -81,7 +107,7 @@ const Profile = () => {
                                 neighborhood={neighborhood}
                                 number={number}
                                 street={street}
-                                title={profileAddressTitle[index]}
+                                title={profileAddressTitle[isDefault ? 0 : 1]}
                             />
                         )
                     )}

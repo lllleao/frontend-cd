@@ -1,4 +1,9 @@
-import { emailVerify, nameVerify, phoneVerify, textBoxVerify } from './inputfields'
+import {
+    emailVerify,
+    nameVerify,
+    phoneVerify,
+    textBoxVerify
+} from './inputfields'
 
 export function authentic(
     emailUser: string,
@@ -18,21 +23,6 @@ export function authentic(
         messageIsValid
     }
 }
-
-export const defaultAddress = [
-    {
-        data: {
-            name: '',
-            cpf: '00000000000',
-            zipCode: '00000000',
-            street: 'Padrão',
-            neighborhood: 'Padrão',
-            complement: 'Complemento Padrão',
-            number: '123A',
-            isDefault: false
-        }
-    }
-]
 
 type ErrorMessage = {
     error: { data: { message: string } }

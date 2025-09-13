@@ -21,7 +21,7 @@ export const useProfileData = create<ProfileData>((set) => ({
             neighborhood: 'Padrão',
             complement: 'Complemento Padrão',
             number: '123A',
-            isDefault: false,
+            isDefault: true,
             id: 1
         },
         {

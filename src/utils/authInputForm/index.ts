@@ -1,3 +1,5 @@
+import { nameVerify } from '../inputfields'
+
 export const authForms = (
     name: string,
     cep: string,
@@ -8,11 +10,13 @@ export const authForms = (
     number: string,
     cpfValidator: (cpf: string) => boolean
 ) => {
+    const cepRegex = /^\d{8}$/
+    const streetRegex = /^(?!\d+$).{1,40}$/
     const cepScape = cep.replace(/\D/g, '')
-    const isNameValid = name && name.length > 3 && name.includes(' ')
+    const isNameValid = nameVerify(name)
     const isCpfValid = cpfValidator(cpf)
-    const isCepValid = cepScape.length === 8
-    const isStreetValid = street.length <= 40
+    const isCepValid = cepRegex.test(cepScape)
+    const isStreetValid = streetRegex.test(street)
     const isNeighborhoodValid = neighborhood.length <= 40
     const isComplementValid = complement.length <= 40 || complement.length === 0
     const isNumberValid = number.length <= 6

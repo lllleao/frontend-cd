@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { AddressContainer } from './styles'
-import { useGetCookieMutation, useRefreshTokenMutation } from '@/services/api'
-import { isErrorMessageExist } from '@/utils'
+import { useGetCookieMutation } from '@/services/api'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
-import useLogout from '@/hooks/useLogout'
+import useRefreshToken from '@/hooks/useRefreshToken'
 type AddressCardProps = {
     isDefault: boolean
     title: string
@@ -31,25 +30,18 @@ const AddressCard = ({
 }: AddressCardProps) => {
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
     const [getToken] = useGetCookieMutation()
-    const [getRefresh] = useRefreshTokenMutation()
-    const logout = useLogout()
     const navigate = useNavigate()
+    const refresheTokenFunction = useRefreshToken()
 
     const handleIsAddressDefault = () => {
         getToken(csrfToken).then((res) => {
-            if (isErrorMessageExist(res)) {
-                const message = res.error.data.message
-                if (message === 'Token expirado') {
-                    getRefresh(csrfToken).then((response) => {
-                        if (response.error) {
-                            return logout('/')
-                        }
-                    })
-                    return undefined
-                } else {
-                    return logout('/')
-                }
+            if (res.error) {
+                return refresheTokenFunction(res, () => {
+                    localStorage.setItem('isDefault', `${isDefault}`)
+                    navigate('/address')
+                })
             }
+
             localStorage.setItem('isDefault', `${isDefault}`)
             navigate('/address')
         })

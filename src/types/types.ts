@@ -13,7 +13,7 @@ export type itemsOrder = {
 }
 
 export type DataOrder = {
-    totalPrice: number
+    totalPrice: string
     createdAt: Date
     items: itemsOrder[]
 }
@@ -82,7 +82,7 @@ export type UpdatePrice = {
 }
 
 export type TotalPriceProps = {
-    totalPrice: number
+    totalPrice: string
 }
 
 export type ItemsInfo = {

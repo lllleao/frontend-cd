@@ -4,14 +4,13 @@ import {
     useLazyGetItemsCartQuery,
     useLazyGetStoreBooksQuery,
     useLazyGetTotalPriceQuery,
-    useRefreshTokenMutation,
     useUpdatePriceMutation
 } from '@/services/api'
 import { useEffect, useState } from 'react'
 import Card from '@/components/Card'
 import { useNavigate } from 'react-router-dom'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
-import { isErrorMessageExist, isLoginAndCsrf } from '@/utils'
+import { isLoginAndCsrf } from '@/utils'
 import { getItemFromCache, verifyIfIsCached } from '@/utils/cacheConfig'
 import SkeletonCard from '@/components/SkeletonCard'
 import { useSelector } from 'react-redux'
@@ -19,8 +18,10 @@ import { RootReducer } from '@/store'
 import useLogout from '@/hooks/useLogout'
 import { channelBroadcast } from '@/utils/channelBroadcast'
 import Loader from '@/components/Loader'
+import useRefreshToken from '@/hooks/useRefreshToken'
 
 const ProductsListCart = () => {
+    const refresheTokenFunction = useRefreshToken()
     const booksFromLocal = getItemFromCache<{
         cache: BooksFromStore[]
         timeExpiration: number
@@ -33,6 +34,11 @@ const ProductsListCart = () => {
     const refreshTokenWarn = useCsrfTokenStore(
         (state) => state.refreshTokenWarn
     )
+
+    const setRefreshTokenWarn = useCsrfTokenStore(
+        (state) => state.setRefreshTokenWarn
+    )
+
     const { numberCart } = useSelector((state: RootReducer) => state.cart)
 
     const [loading, setLoading] = useState(false)
@@ -42,11 +48,24 @@ const ProductsListCart = () => {
     const [deleteCartItem] = useGetRemoveItemMutation()
     const [updatePrice] = useUpdatePriceMutation()
     const [getStoreBooks] = useLazyGetStoreBooksQuery()
-    const [getRefresh] = useRefreshTokenMutation()
 
     const [booksStore, setBooksStore] = useState<BooksFromStore[]>()
 
     const navigate = useNavigate()
+
+    const handleDoPurchase = () => {
+        getTotalPrice(csrfToken).then((res) => {
+            console.log(res)
+            if (res.error) {
+                return logout('/')
+            }
+            if (res.data) {
+                if (res.data.totalPrice && res.data.totalPrice !== '0') {
+                    navigate('/checkout')
+                }
+            }
+        })
+    }
 
     const handleDelete = (id: number | undefined, loading: boolean) => {
         setLoading(true)
@@ -54,45 +73,29 @@ const ProductsListCart = () => {
         if (id && !loading && csrfToken) {
             deleteCartItem({ id, csrfToken })
                 .then((res) => {
-                    if (isErrorMessageExist(res)) {
-                        const message = res.error.data.message as string
-                        if (message === 'Token expirado') {
-                            return getRefresh(csrfToken)
-                                .then((response) => {
-                                    if (response.error) {
-                                        logout('/')
-                                        return
-                                    }
-                                    localStorage.setItem('logado', 'true')
-                                    deleteCartItem({ id, csrfToken }).then(
-                                        () => {
-                                            getDataItems(csrfToken).catch(
-                                                (err) => console.log(err)
-                                            )
-                                            channelBroadcast(numberCart - 1)
-                                            setTimeout(
-                                                () =>
-                                                    getTotalPrice(
-                                                        csrfToken
-                                                    ).catch((err) =>
-                                                        console.log(err)
-                                                    ),
-                                                500
-                                            )
-                                        }
-                                    )
-                                })
-                                .catch((error) => {
-                                    console.log(error, 'err')
-                                })
-                        }
-                        logout('/')
-                        return
+                    if (res.error) {
+                        return refresheTokenFunction(res, () => {
+                            deleteCartItem({ id, csrfToken }).then(() => {
+                                setLoading(false)
+                                channelBroadcast(numberCart - 1)
+                                setRefreshTokenWarn(true).finally(() =>
+                                    setRefreshTokenWarn(false)
+                                )
+                                setTimeout(
+                                    () =>
+                                        getTotalPrice(csrfToken).catch((err) =>
+                                            console.log(err)
+                                        ),
+                                    500
+                                )
+                            })
+                        })
                     }
                     setLoading(false)
-
-                    getDataItems(csrfToken).catch((err) => console.log(err))
                     channelBroadcast(numberCart - 1)
+                    setRefreshTokenWarn(true).finally(() =>
+                        setRefreshTokenWarn(false)
+                    )
                     setTimeout(
                         () =>
                             getTotalPrice(csrfToken).catch((err) =>
@@ -123,53 +126,42 @@ const ProductsListCart = () => {
             csrfToken
         })
             .then((res) => {
-                if (isErrorMessageExist(res)) {
-                    const message = res.error.data.message as string
-                    if (message === 'Token expirado') {
-                        return getRefresh(csrfToken).then((res) => {
-                            if (res.error) {
-                                logout('/')
-                                return
-                            }
-
-                            updatePrice({
-                                data: {
-                                    quantBefore,
-                                    quantCurrent: Number(quant),
-                                    idItem,
-                                    price
-                                },
-                                csrfToken
-                            }).then(() => {
-                                getDataItems(csrfToken).catch((err) =>
-                                    console.log(err)
-                                )
-                                setTimeout(
-                                    () =>
-                                        getTotalPrice(csrfToken).catch((err) =>
-                                            console.log(err)
-                                        ),
-                                    500
-                                )
-                                setLoading(false)
-                            })
+                if (res.error) {
+                    return refresheTokenFunction(res, () => {
+                        updatePrice({
+                            data: {
+                                quantBefore,
+                                quantCurrent: Number(quant),
+                                idItem,
+                                price
+                            },
+                            csrfToken
+                        }).then(() => {
+                            setRefreshTokenWarn(true).finally(() =>
+                                setRefreshTokenWarn(false)
+                            )
+                            setTimeout(
+                                () =>
+                                    getTotalPrice(csrfToken).catch((err) =>
+                                        console.log(err)
+                                    ),
+                                500
+                            )
+                            setLoading(false)
                         })
-                    } else {
-                        logout('/')
-                        return
-                    }
+                    })
                 }
-                if (csrfToken) {
-                    getDataItems(csrfToken).catch((err) => console.log(err))
-                    setTimeout(
-                        () =>
-                            getTotalPrice(csrfToken).catch((err) =>
-                                console.log(err)
-                            ),
-                        500
-                    )
-                    setLoading(false)
-                }
+                setRefreshTokenWarn(true).finally(() =>
+                    setRefreshTokenWarn(false)
+                )
+                setTimeout(
+                    () =>
+                        getTotalPrice(csrfToken).catch((err) =>
+                            console.log(err)
+                        ),
+                    500
+                )
+                setLoading(false)
             })
             .catch((err) => console.log(err))
     }
@@ -186,22 +178,19 @@ const ProductsListCart = () => {
 
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
+        getTotalPrice(csrfToken).then((res) => {
+            if (res.error) {
+                refresheTokenFunction(res, () => getTotalPrice(csrfToken))
+            }
+        })
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [csrfToken])
 
-        getTotalPrice(csrfToken)
+    useEffect(() => {
+        if (!isLoginAndCsrf(logado, csrfToken)) return
         getDataItems(csrfToken)
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [csrfToken, refreshTokenWarn])
-
-    const handleClick = () => {
-        getTotalPrice(csrfToken).then((res) => {
-            console.log(res)
-            if (res.isError) {
-                return logout('/')
-            }
-
-            navigate('/checkout')
-        })
-    }
 
     return (
         <>
@@ -259,7 +248,7 @@ const ProductsListCart = () => {
                                 )}
                         </ul>
                         {data && data.items.length > 0 ? (
-                            <ButtonCart onClick={handleClick}>
+                            <ButtonCart onClick={handleDoPurchase}>
                                 Comprar Agora
                             </ButtonCart>
                         ) : (

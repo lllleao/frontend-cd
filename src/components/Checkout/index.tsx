@@ -3,7 +3,7 @@ import { CheckoutContainer, ChoseAddress, ValidAddres } from './styles'
 
 import ProfileAddress from '@/components/AddressCard'
 import { Finish } from '@/components/FormAddress/styles'
-import { defaultAddress, isLoginAndCsrf } from '@/utils'
+import { isLoginAndCsrf } from '@/utils'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 import { GetAddressProps } from '@/interfaces/interfaces'
 import {
@@ -12,13 +12,23 @@ import {
     useLazyGetTotalPriceQuery,
     usePurchaseDataMutation
 } from '@/services/api'
+import { useProfileData } from '@/hooks/useProfileData'
+import useSortAddress from '@/hooks/useSortAddress'
+import useRefreshToken from '@/hooks/useRefreshToken'
 
 const Checkout = () => {
+    const refresheTokenFunction = useRefreshToken()
+
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
     const logado = localStorage.getItem('logado')
+    const sortAddress = useSortAddress()
+    const defaultAddress = useProfileData((state) => state.address)
+
+    const [dataAddress, setDataAddress] =
+        useState<GetAddressProps[]>(defaultAddress)
 
     const [getDataItems, { data }] = useLazyGetItemsCartQuery()
-    const [getDataAddress, { data: dataAddress }] = useLazyGetAddressQuery()
+    const [getDataAddress] = useLazyGetAddressQuery()
     const [isWarnDefaultVisible, setIsWarnDefaultVisible] = useState(false)
     const [isWarnSecondaryVisible, setIsWarnSecondaryVisible] = useState(false)
     const [doPurchase] = usePurchaseDataMutation()
@@ -31,12 +41,7 @@ const Checkout = () => {
     const [isSecondaryAddress, setIsSecondaryAddress] = useState(false)
     const [getTotalPrice, { data: totalPrice }] = useLazyGetTotalPriceQuery()
 
-    const [dataAddresDefault, setDataAddresDefault] = useState<
-        GetAddressProps | undefined
-    >()
-    const [dataAddresSecondary, setDataAddresSecondary] = useState<
-        GetAddressProps | undefined
-    >()
+    const titlesAddress = ['Endereço padrão', 'Endereço secundário']
 
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
@@ -47,39 +52,25 @@ const Checkout = () => {
 
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
-        getDataAddress({ csrfToken })
+        getDataAddress({ csrfToken }).then((res) => {
+            setDataAddress(sortAddress(res.data))
+        })
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
-    }, [csrfToken, refreshTokenWarn, totalPrice])
+    }, [csrfToken, refreshTokenWarn])
 
     useEffect(() => {
-        if (!isLoginAndCsrf(logado, csrfToken)) return
-
-        if (dataAddress && dataAddress[0] && dataAddress[0].isDefault) {
-            setDataAddresDefault(dataAddress[0])
-        }
-
-        if (dataAddress && dataAddress[1] && dataAddress[1].isDefault) {
-            setDataAddresDefault(dataAddress[1])
-        }
-
-        if (dataAddress && dataAddress[0] && !dataAddress[0].isDefault) {
-            setDataAddresSecondary(dataAddress[0])
-        }
-
-        if (dataAddress && dataAddress[1] && !dataAddress[1].isDefault) {
-            setDataAddresSecondary(dataAddress[1])
-        }
-    }, [csrfToken, dataAddress, logado, refreshTokenWarn])
+        console.log(dataAddress, 'lapa')
+    }, [dataAddress])
 
     const handleClick = (isDefault: boolean) => {
+        console.log('la')
         setIsDefaultAddress(isDefault)
         setIsSecondaryAddress(!isDefault)
 
         if (isDefault) {
             return setIsWarnSecondaryVisible(false)
-        } else {
-            return setIsWarnDefaultVisible(false)
         }
+        return setIsWarnDefaultVisible(false)
     }
 
     const acceptPurchase = (
@@ -108,16 +99,48 @@ const Checkout = () => {
                             }
                         }
                     ),
-                    totalPrice: totalPrice.totalPrice,
+                    totalPrice: Number(totalPrice.totalPrice),
                     isDefault: dataAddressFunction.isDefault
                 },
                 csrfToken
             })
                 .then((res) => {
                     if (res.error) {
-                        return new Error(
-                            'Algum problema com a geração do qrcode'
-                        )
+                        refresheTokenFunction(res, () => {
+                            doPurchase({
+                                data: {
+                                    zipCode: dataAddressFunction.zipCode
+                                        .trim()
+                                        .replace(/\D/g, ''),
+                                    complement:
+                                        dataAddressFunction.complement.trim(),
+                                    cpf: dataAddressFunction.cpf
+                                        .trim()
+                                        .replace(/\D/g, ''),
+                                    name: dataAddressFunction.name.trim(),
+                                    neighborhood:
+                                        dataAddressFunction.neighborhood.trim(),
+                                    number: dataAddressFunction.number.trim(),
+                                    street: dataAddressFunction.street.trim(),
+                                    itemsInfo: data.items.map(
+                                        ({ name, photo, price, quant, id }) => {
+                                            return {
+                                                name,
+                                                photo,
+                                                price,
+                                                quant,
+                                                id
+                                            }
+                                        }
+                                    ),
+                                    totalPrice: Number(totalPrice.totalPrice),
+                                    isDefault: dataAddressFunction.isDefault
+                                },
+                                csrfToken
+                            }).then((response) => {
+                                console.log(response)
+                            })
+                        })
                     }
                     console.log(res)
                     // localStorage.setItem('qrCode', res.data.pixData.imagemQrcode)
@@ -129,25 +152,24 @@ const Checkout = () => {
     }
 
     const handlePurchase = () => {
-        if (isDefaultAddress && !dataAddresDefault) {
-            return (
-                setIsWarnDefaultVisible(true),
-                setIsWarnSecondaryVisible(false)
-            )
+        const isDefaultAddressMock = dataAddress[0].street === 'Padrão'
+        const isSecondaryAddressMock = dataAddress[1].street === 'Padrão'
+
+        if (isDefaultAddressMock && isDefaultAddress) {
+            setIsWarnDefaultVisible(true)
         }
 
-        if (isSecondaryAddress && !dataAddresSecondary)
-            return (
-                setIsWarnSecondaryVisible(true),
-                setIsWarnDefaultVisible(false)
-            )
-
-        if (isDefaultAddress && dataAddresDefault) {
-            return acceptPurchase(dataAddresDefault)
+        if (isSecondaryAddressMock && isSecondaryAddress) {
+            setIsWarnSecondaryVisible(true)
         }
 
-        if (isSecondaryAddress && dataAddresSecondary) {
-            return acceptPurchase(dataAddresSecondary)
+        if (isDefaultAddress && !isDefaultAddressMock) {
+            console.log(dataAddress[0])
+            return acceptPurchase(dataAddress[0])
+        }
+
+        if (isSecondaryAddress && !isSecondaryAddressMock) {
+            return acceptPurchase(dataAddress[1])
         }
     }
 
@@ -178,126 +200,74 @@ const Checkout = () => {
                     <p className="price-tot">
                         Preço Total R$ {totalPrice?.totalPrice},00
                     </p>
-                    <ChoseAddress $isChecked={isDefaultAddress}>
-                        <li className="address-list">
-                            <div>
-                                <label>
-                                    <div
-                                        className="address-list__input-box"
-                                        onClick={() => handleClick(true)}
-                                    >
-                                        <div className="address-list__input-box__ball" />
-                                    </div>
-                                </label>
-                                <ProfileAddress
-                                    name={
-                                        dataAddresDefault
-                                            ? dataAddresDefault.name
-                                            : defaultAddress[0].data.name
-                                    }
-                                    cpf={
-                                        dataAddresDefault
-                                            ? dataAddresDefault.cpf
-                                            : defaultAddress[0].data.cpf
-                                    }
-                                    cep={
-                                        dataAddresDefault
-                                            ? dataAddresDefault.zipCode
-                                            : defaultAddress[0].data.zipCode
-                                    }
-                                    complement={
-                                        dataAddresDefault
-                                            ? dataAddresDefault.complement
-                                            : defaultAddress[0].data.complement
-                                    }
-                                    neighborhood={
-                                        dataAddresDefault
-                                            ? dataAddresDefault.neighborhood
-                                            : defaultAddress[0].data
-                                                  .neighborhood
-                                    }
-                                    number={
-                                        dataAddresDefault
-                                            ? dataAddresDefault.number
-                                            : defaultAddress[0].data.number
-                                    }
-                                    street={
-                                        dataAddresDefault
-                                            ? dataAddresDefault.street
-                                            : defaultAddress[0].data.street
-                                    }
-                                    title="Endereço padrão"
-                                    isDefault={true}
-                                    isSelect={isDefaultAddress}
-                                />
-                            </div>
-                            <ValidAddres
-                                className={`${isWarnDefaultVisible ? 'animation-visible' : ''}`}
+                    {dataAddress.map(
+                        (
+                            {
+                                complement,
+                                cpf,
+                                isDefault,
+                                name,
+                                neighborhood,
+                                number,
+                                street,
+                                zipCode
+                            },
+                            index
+                        ) => (
+                            <ChoseAddress
+                                key={index}
+                                $isChecked={
+                                    isDefault
+                                        ? isDefaultAddress
+                                        : isSecondaryAddress
+                                }
                             >
-                                Insira um endereço válido
-                            </ValidAddres>
-                        </li>
-                    </ChoseAddress>
-                    <ChoseAddress $isChecked={isSecondaryAddress}>
-                        <li className="address-list">
-                            <div>
-                                <label>
-                                    <div
-                                        className="address-list__input-box"
-                                        onClick={() => handleClick(false)}
-                                    >
-                                        <div className="address-list__input-box__ball" />
+                                <li className="address-list">
+                                    <div>
+                                        <label>
+                                            <div
+                                                className="address-list__input-box"
+                                                onClick={() =>
+                                                    handleClick(isDefault)
+                                                }
+                                            >
+                                                <div className="address-list__input-box__ball" />
+                                            </div>
+                                        </label>
+                                        <ProfileAddress
+                                            name={name}
+                                            cpf={cpf}
+                                            cep={zipCode}
+                                            complement={complement}
+                                            neighborhood={neighborhood}
+                                            number={number}
+                                            street={street}
+                                            title={titlesAddress[index]}
+                                            isDefault={isDefault}
+                                            isSelect={
+                                                isDefault
+                                                    ? isDefaultAddress
+                                                    : isSecondaryAddress
+                                            }
+                                        />
                                     </div>
-                                </label>
-                                <ProfileAddress
-                                    name={
-                                        dataAddresSecondary
-                                            ? dataAddresSecondary.name
-                                            : defaultAddress[0].data.name
-                                    }
-                                    cpf={
-                                        dataAddresSecondary
-                                            ? dataAddresSecondary.cpf
-                                            : defaultAddress[0].data.cpf
-                                    }
-                                    cep={
-                                        dataAddresSecondary
-                                            ? dataAddresSecondary.zipCode
-                                            : defaultAddress[0].data.zipCode
-                                    }
-                                    complement={
-                                        dataAddresSecondary
-                                            ? dataAddresSecondary.complement
-                                            : defaultAddress[0].data.complement
-                                    }
-                                    neighborhood={
-                                        dataAddresSecondary
-                                            ? dataAddresSecondary.neighborhood
-                                            : defaultAddress[0].data
-                                                  .neighborhood
-                                    }
-                                    number={
-                                        dataAddresSecondary
-                                            ? dataAddresSecondary.number
-                                            : defaultAddress[0].data.number
-                                    }
-                                    street={
-                                        dataAddresSecondary
-                                            ? dataAddresSecondary.street
-                                            : defaultAddress[0].data.street
-                                    }
-                                    title="Endereço secundário"
-                                    isDefault={false}
-                                    isSelect={isSecondaryAddress}
-                                />
-                            </div>
-                            <ValidAddres
-                                className={`${isWarnSecondaryVisible ? 'animation-visible' : ''}`}
-                            >
-                                Insira um endereço válido
-                            </ValidAddres>
-                        </li>
-                    </ChoseAddress>
+                                    {isDefault ? (
+                                        <ValidAddres
+                                            className={`${isWarnDefaultVisible ? 'animation-visible' : ''}`}
+                                        >
+                                            Insira um endereço válido
+                                        </ValidAddres>
+                                    ) : (
+                                        <ValidAddres
+                                            className={`${isWarnSecondaryVisible ? 'animation-visible' : ''}`}
+                                        >
+                                            Insira um endereço válido
+                                        </ValidAddres>
+                                    )}
+                                </li>
+                            </ChoseAddress>
+                        )
+                    )}
 
                     <div className="button-checkout">
                         <Finish
