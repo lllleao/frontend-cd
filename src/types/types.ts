@@ -34,27 +34,26 @@ export type DataSignupProp = {
 }
 
 export type BooksCart = {
-    items: [
-        {
-            price: number
-            quant: number
-            name: string
-            photo: string
-        }
-    ]
+    items: {
+        price: number
+        quant: number
+        name: string
+        photo: string
+        id: number
+    }
+
     csrfToken: string
 }
 
 export type GetBooksCart = {
-    items: [
-        {
-            price: number
-            quant: number
-            id?: number
-            name: string
-            photo: string
-        }
-    ]
+    items: {
+        price: number
+        quant: number
+        id?: number
+        name: string
+        photo: string
+        productId?: number
+    }[]
 }
 
 export type CsrfProp = {
@@ -73,10 +72,8 @@ export type EmailDataProp = {
 
 export type UpdatePrice = {
     data: {
-        quantBefore: number
         quantCurrent: number
         idItem: number | undefined
-        price: number
     }
     csrfToken: string
 }
@@ -91,6 +88,7 @@ export type ItemsInfo = {
     id?: number
     name: string
     photo: string
+    productId?: number
 }
 
 export type PixDatProps = {

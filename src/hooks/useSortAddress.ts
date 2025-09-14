@@ -26,7 +26,6 @@ const useSortAddress = () => {
         }
 
         const finalList = [defaultAddres, secondaryAddress] as GetAddressProps[]
-        console.log(finalList, 'drento')
         return finalList
     }
 

@@ -6,18 +6,8 @@ export interface DataLoginProp {
 }
 
 export interface PurchaseDataProps {
-    data: {
-        name: string
-        cpf: string
-        zipCode: string
-        street: string
-        neighborhood: string
-        complement: string
-        number: string
-        itemsInfo: ItemsInfo[]
-        totalPrice: number
-        isDefault: boolean
-    }
+    itemsInfo: ItemsInfo[]
+    addressId: number
     csrfToken: string
 }
 

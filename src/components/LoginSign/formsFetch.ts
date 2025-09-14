@@ -45,7 +45,8 @@ export const handleLogin = (
     >,
     navigate: NavigateFunction,
     fetchCsrfToken: () => Promise<unknown>,
-    errorHandlers: Record<LoginErrorMessage, () => void>
+    errorHandlers: Record<LoginErrorMessage, () => void>,
+    logout: (route: string) => void
 ) => {
     event.preventDefault()
     if (!isPasswordValid) {
@@ -60,24 +61,29 @@ export const handleLogin = (
     if (isEmailValid && isPasswordValid) {
         makeLogin(data)
             .then((res) => {
-                if (isErrorMessageExist(res)) {
-                    console.log(res)
-                    const errorData = res.error.data as {
-                        message?: string
-                        error?: string
+                if (res.error) {
+                    if (isErrorMessageExist(res)) {
+                        console.log(res)
+                        const errorData = res.error.data as {
+                            message?: string
+                            error?: string
+                        }
+                        console.log(errorData.message)
+                        const handler =
+                            errorHandlers[
+                                errorData.message as LoginErrorMessage
+                            ]
+                        if (handler) return handler()
                     }
-                    console.log(errorData.message)
-                    const handler =
-                        errorHandlers[errorData.message as LoginErrorMessage]
-                    if (handler) return handler()
-
-                    return dispatch(
+                    logout('/')
+                    dispatch(
                         checkLoginUser({
                             msg: 'Erro desconhecido',
                             loginUserExist: true,
                             loginSuccess: false
                         })
                     )
+                    return undefined
                 }
                 dispatch(checkLoginUser({ loginUserExist: false }))
                 fetchCsrfToken()
@@ -127,21 +133,23 @@ export const handleSign = (
 
         makeSign(data)
             .then((res) => {
-                if (isErrorMessageExist(res)) {
-                    const errorData = res.error.data as {
-                        message?: string
-                        error?: string
-                    }
-                    const handler =
-                        errorHandlers[errorData.message as SignErrorMessage]
+                if (res.error) {
+                    if (isErrorMessageExist(res)) {
+                        const errorData = res.error.data as {
+                            message?: string
+                            error?: string
+                        }
+                        const handler =
+                            errorHandlers[errorData.message as SignErrorMessage]
 
-                    if (handler) return handler()
-                    return dispatch(
-                        checkSignUser({
-                            msg: 'Erro Desconhecido',
-                            signUserExist: true
-                        })
-                    )
+                        if (handler) return handler()
+                        return dispatch(
+                            checkSignUser({
+                                msg: 'Erro Desconhecido',
+                                signUserExist: true
+                            })
+                        )
+                    }
                 }
                 setIsLoader(false)
                 dispatch(

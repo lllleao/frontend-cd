@@ -9,7 +9,6 @@ import { GetAddressProps } from '@/interfaces/interfaces'
 import {
     useLazyGetAddressQuery,
     useLazyGetItemsCartQuery,
-    useLazyGetTotalPriceQuery,
     usePurchaseDataMutation
 } from '@/services/api'
 import { useProfileData } from '@/hooks/useProfileData'
@@ -39,14 +38,41 @@ const Checkout = () => {
     const [isDefaultAddress, setIsDefaultAddress] = useState(true)
 
     const [isSecondaryAddress, setIsSecondaryAddress] = useState(false)
-    const [getTotalPrice, { data: totalPrice }] = useLazyGetTotalPriceQuery()
+    const [totalPrice, setTotalPrice] = useState(0)
 
     const titlesAddress = ['Endereço padrão', 'Endereço secundário']
 
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
-        getTotalPrice(csrfToken)
-        getDataItems(csrfToken)
+        getDataItems(csrfToken).then((res) => {
+            if (res.error) {
+                return refresheTokenFunction(res, () => {
+                    getDataItems(csrfToken).then((response) => {
+                        if (response.data) {
+                            setTotalPrice(
+                                response.data.items.reduce(
+                                    (acum, currentPrice) => {
+                                        return (
+                                            acum +
+                                            currentPrice.price *
+                                                currentPrice.quant
+                                        )
+                                    },
+                                    0
+                                )
+                            )
+                        }
+                    })
+                })
+            }
+            if (res.data) {
+                setTotalPrice(
+                    res.data.items.reduce((acum, currentPrice) => {
+                        return acum + currentPrice.price * currentPrice.quant
+                    }, 0)
+                )
+            }
+        })
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [csrfToken, refreshTokenWarn])
 
@@ -58,12 +84,7 @@ const Checkout = () => {
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [csrfToken, refreshTokenWarn])
 
-    useEffect(() => {
-        console.log(dataAddress, 'lapa')
-    }, [dataAddress])
-
     const handleClick = (isDefault: boolean) => {
-        console.log('la')
         setIsDefaultAddress(isDefault)
         setIsSecondaryAddress(!isDefault)
 
@@ -78,64 +99,37 @@ const Checkout = () => {
     ) => {
         if (data && totalPrice && dataAddressFunction) {
             doPurchase({
-                data: {
-                    zipCode: dataAddressFunction.zipCode
-                        .trim()
-                        .replace(/\D/g, ''),
-                    complement: dataAddressFunction.complement.trim(),
-                    cpf: dataAddressFunction.cpf.trim().replace(/\D/g, ''),
-                    name: dataAddressFunction.name.trim(),
-                    neighborhood: dataAddressFunction.neighborhood.trim(),
-                    number: dataAddressFunction.number.trim(),
-                    street: dataAddressFunction.street.trim(),
-                    itemsInfo: data.items.map(
-                        ({ name, photo, price, quant, id }) => {
-                            return {
-                                name,
-                                photo,
-                                price,
-                                quant,
-                                id
-                            }
+                itemsInfo: data.items.map(
+                    ({ name, photo, price, quant, id, productId }) => {
+                        return {
+                            name,
+                            photo,
+                            price,
+                            quant,
+                            id,
+                            productId
                         }
-                    ),
-                    totalPrice: Number(totalPrice.totalPrice),
-                    isDefault: dataAddressFunction.isDefault
-                },
-                csrfToken
+                    }
+                ),
+                csrfToken,
+                addressId: dataAddressFunction.id as number
             })
                 .then((res) => {
                     if (res.error) {
                         refresheTokenFunction(res, () => {
                             doPurchase({
-                                data: {
-                                    zipCode: dataAddressFunction.zipCode
-                                        .trim()
-                                        .replace(/\D/g, ''),
-                                    complement:
-                                        dataAddressFunction.complement.trim(),
-                                    cpf: dataAddressFunction.cpf
-                                        .trim()
-                                        .replace(/\D/g, ''),
-                                    name: dataAddressFunction.name.trim(),
-                                    neighborhood:
-                                        dataAddressFunction.neighborhood.trim(),
-                                    number: dataAddressFunction.number.trim(),
-                                    street: dataAddressFunction.street.trim(),
-                                    itemsInfo: data.items.map(
-                                        ({ name, photo, price, quant, id }) => {
-                                            return {
-                                                name,
-                                                photo,
-                                                price,
-                                                quant,
-                                                id
-                                            }
+                                itemsInfo: data.items.map(
+                                    ({ name, photo, price, quant, id }) => {
+                                        return {
+                                            name,
+                                            photo,
+                                            price,
+                                            quant,
+                                            id
                                         }
-                                    ),
-                                    totalPrice: Number(totalPrice.totalPrice),
-                                    isDefault: dataAddressFunction.isDefault
-                                },
+                                    }
+                                ),
+                                addressId: dataAddressFunction.id as number,
                                 csrfToken
                             }).then((response) => {
                                 console.log(response)
@@ -164,7 +158,6 @@ const Checkout = () => {
         }
 
         if (isDefaultAddress && !isDefaultAddressMock) {
-            console.log(dataAddress[0])
             return acceptPurchase(dataAddress[0])
         }
 
@@ -197,9 +190,7 @@ const Checkout = () => {
                                 </li>
                             ))}
                     </ul>
-                    <p className="price-tot">
-                        Preço Total R$ {totalPrice?.totalPrice},00
-                    </p>
+                    <p className="price-tot">Preço Total R$ {totalPrice},00</p>
                     {dataAddress.map(
                         (
                             {

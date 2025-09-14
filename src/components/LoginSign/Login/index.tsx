@@ -11,8 +11,10 @@ import useUserLoginResults from '@/hooks/useUserLoginResults'
 import { useState } from 'react'
 import { handleEmailUser, handlePassword } from '@/utils/handlersInput'
 import { DataLoginProp } from '@/interfaces/interfaces'
+import useLogout from '@/hooks/useLogout'
 
 const Login = () => {
+    const logout = useLogout()
     const [viewPassword, setViewPassword] = useState(false)
     const errorHandlers = useUserLoginResults()
     const { loginUserExist, msg } = useSelector(
@@ -70,7 +72,8 @@ const Login = () => {
                             makeLogin,
                             navigate,
                             fetchCsrfToken,
-                            errorHandlers
+                            errorHandlers,
+                            logout
                         )
                     }
                 >

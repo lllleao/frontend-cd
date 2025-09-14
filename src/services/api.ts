@@ -188,7 +188,7 @@ const api = createApi({
                 headers: {
                     'csrf-token': data.csrfToken
                 },
-                body: data.items[0]
+                body: data.items
             })
         }),
         updatePrice: builder.mutation<void, UpdatePrice>({
@@ -202,14 +202,20 @@ const api = createApi({
             })
         }),
         purchaseData: builder.mutation<PixDatProps, PurchaseDataProps>({
-            query: (purchaseData) => ({
-                url: 'cart/create-purchase',
-                method: 'POST',
-                headers: {
-                    'csrf-token': purchaseData.csrfToken
-                },
-                body: purchaseData.data
-            })
+            query: ({ addressId, csrfToken, itemsInfo }) => {
+                console.log(itemsInfo[0])
+                return {
+                    url: 'cart/create-purchase',
+                    method: 'POST',
+                    headers: {
+                        'csrf-token': csrfToken
+                    },
+                    body: {
+                        itemsInfo,
+                        addressId
+                    }
+                }
+            }
         })
     })
 })

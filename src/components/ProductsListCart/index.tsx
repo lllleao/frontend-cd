@@ -3,7 +3,6 @@ import {
     useGetRemoveItemMutation,
     useLazyGetItemsCartQuery,
     useLazyGetStoreBooksQuery,
-    useLazyGetTotalPriceQuery,
     useUpdatePriceMutation
 } from '@/services/api'
 import { useEffect, useState } from 'react'
@@ -15,7 +14,6 @@ import { getItemFromCache, verifyIfIsCached } from '@/utils/cacheConfig'
 import SkeletonCard from '@/components/SkeletonCard'
 import { useSelector } from 'react-redux'
 import { RootReducer } from '@/store'
-import useLogout from '@/hooks/useLogout'
 import { channelBroadcast } from '@/utils/channelBroadcast'
 import Loader from '@/components/Loader'
 import useRefreshToken from '@/hooks/useRefreshToken'
@@ -29,7 +27,7 @@ const ProductsListCart = () => {
 
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
     const logado = localStorage.getItem('logado')
-    const logout = useLogout()
+    const [totalPrice, setTotalPrice] = useState(0)
 
     const refreshTokenWarn = useCsrfTokenStore(
         (state) => state.refreshTokenWarn
@@ -42,9 +40,7 @@ const ProductsListCart = () => {
     const { numberCart } = useSelector((state: RootReducer) => state.cart)
 
     const [loading, setLoading] = useState(false)
-    const [getDataItems, { data }] = useLazyGetItemsCartQuery()
-    const [getTotalPrice, { data: totalPrice, isFetching }] =
-        useLazyGetTotalPriceQuery()
+    const [getDataItems, { data, isFetching }] = useLazyGetItemsCartQuery()
     const [deleteCartItem] = useGetRemoveItemMutation()
     const [updatePrice] = useUpdatePriceMutation()
     const [getStoreBooks] = useLazyGetStoreBooksQuery()
@@ -54,17 +50,9 @@ const ProductsListCart = () => {
     const navigate = useNavigate()
 
     const handleDoPurchase = () => {
-        getTotalPrice(csrfToken).then((res) => {
-            console.log(res)
-            if (res.error) {
-                return logout('/')
-            }
-            if (res.data) {
-                if (res.data.totalPrice && res.data.totalPrice !== '0') {
-                    navigate('/checkout')
-                }
-            }
-        })
+        if (totalPrice !== 0 && data && !loading) {
+            navigate('/checkout')
+        }
     }
 
     const handleDelete = (id: number | undefined, loading: boolean) => {
@@ -81,13 +69,6 @@ const ProductsListCart = () => {
                                 setRefreshTokenWarn(true).finally(() =>
                                     setRefreshTokenWarn(false)
                                 )
-                                setTimeout(
-                                    () =>
-                                        getTotalPrice(csrfToken).catch((err) =>
-                                            console.log(err)
-                                        ),
-                                    500
-                                )
                             })
                         })
                     }
@@ -96,13 +77,6 @@ const ProductsListCart = () => {
                     setRefreshTokenWarn(true).finally(() =>
                         setRefreshTokenWarn(false)
                     )
-                    setTimeout(
-                        () =>
-                            getTotalPrice(csrfToken).catch((err) =>
-                                console.log(err)
-                            ),
-                        500
-                    )
                 })
                 .catch((error) => console.error('Erro ao remover item:', error))
         }
@@ -110,18 +84,14 @@ const ProductsListCart = () => {
 
     const handleChangeOption = (
         element: React.ChangeEvent<HTMLSelectElement>,
-        idItem: number | undefined,
-        price: number,
-        quantBefore: number
+        idItem: number | undefined
     ) => {
         const quant = element.target.value
         setLoading(true)
         updatePrice({
             data: {
-                quantBefore,
                 quantCurrent: Number(quant),
-                idItem,
-                price
+                idItem
             },
             csrfToken
         })
@@ -130,22 +100,13 @@ const ProductsListCart = () => {
                     return refresheTokenFunction(res, () => {
                         updatePrice({
                             data: {
-                                quantBefore,
                                 quantCurrent: Number(quant),
-                                idItem,
-                                price
+                                idItem
                             },
                             csrfToken
                         }).then(() => {
                             setRefreshTokenWarn(true).finally(() =>
                                 setRefreshTokenWarn(false)
-                            )
-                            setTimeout(
-                                () =>
-                                    getTotalPrice(csrfToken).catch((err) =>
-                                        console.log(err)
-                                    ),
-                                500
                             )
                             setLoading(false)
                         })
@@ -153,13 +114,6 @@ const ProductsListCart = () => {
                 }
                 setRefreshTokenWarn(true).finally(() =>
                     setRefreshTokenWarn(false)
-                )
-                setTimeout(
-                    () =>
-                        getTotalPrice(csrfToken).catch((err) =>
-                            console.log(err)
-                        ),
-                    500
                 )
                 setLoading(false)
             })
@@ -178,17 +132,35 @@ const ProductsListCart = () => {
 
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
-        getTotalPrice(csrfToken).then((res) => {
+        getDataItems(csrfToken).then((res) => {
             if (res.error) {
-                refresheTokenFunction(res, () => getTotalPrice(csrfToken))
+                return refresheTokenFunction(res, () => {
+                    getDataItems(csrfToken).then((response) => {
+                        if (response.data) {
+                            setTotalPrice(
+                                response.data.items.reduce(
+                                    (acum, currentPrice) => {
+                                        return (
+                                            acum +
+                                            currentPrice.price *
+                                                currentPrice.quant
+                                        )
+                                    },
+                                    0
+                                )
+                            )
+                        }
+                    })
+                })
+            }
+            if (res.data) {
+                setTotalPrice(
+                    res.data.items.reduce((acum, currentPrice) => {
+                        return acum + currentPrice.price * currentPrice.quant
+                    }, 0)
+                )
             }
         })
-        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
-    }, [csrfToken])
-
-    useEffect(() => {
-        if (!isLoginAndCsrf(logado, csrfToken)) return
-        getDataItems(csrfToken)
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [csrfToken, refreshTokenWarn])
 
@@ -214,14 +186,12 @@ const ProductsListCart = () => {
                                                 {quant} x {name}
                                             </div>
                                             <div className="total-price">
-                                                Valor: R$ {price},00
+                                                Valor: R$ {price * quant},00
                                                 <select
                                                     onChange={(e) =>
                                                         handleChangeOption(
                                                             e,
-                                                            id,
-                                                            price,
-                                                            quant
+                                                            id
                                                         )
                                                     }
                                                     className={`quant ${loading ? 'disabled' : ''}`}
@@ -257,11 +227,7 @@ const ProductsListCart = () => {
                     </ItemsOnCart>
                     <span className="total">
                         Preço total: R${' '}
-                        {isFetching ? (
-                            <Loader isCircle />
-                        ) : (
-                            totalPrice?.totalPrice
-                        )}
+                        {isFetching ? <Loader isCircle /> : totalPrice}
                     </span>
 
                     <h3 className="title-books-store">COMPRE TAMBÉM</h3>

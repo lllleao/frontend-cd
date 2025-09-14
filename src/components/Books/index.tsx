@@ -90,14 +90,13 @@ const Book = () => {
             const channel = new BroadcastChannel(channelName)
 
             addToCart({
-                items: [
-                    {
-                        photo: data.photo,
-                        price: priceCalc,
-                        quant: Number(valueQuant),
-                        name: data.title
-                    }
-                ],
+                items: {
+                    photo: data.photo,
+                    price: priceCalc,
+                    quant: Number(valueQuant),
+                    name: data.title,
+                    id: data.id as number
+                },
                 csrfToken
             })
                 .then((res) => {
@@ -116,14 +115,13 @@ const Book = () => {
                                         }
 
                                         addToCart({
-                                            items: [
-                                                {
-                                                    photo: data.photo,
-                                                    price: priceCalc,
-                                                    quant: Number(valueQuant),
-                                                    name: data.title
-                                                }
-                                            ],
+                                            items: {
+                                                photo: data.photo,
+                                                price: priceCalc,
+                                                quant: Number(valueQuant),
+                                                name: data.title,
+                                                id: data.id as number
+                                            },
                                             csrfToken
                                         }).then((resAddTo) => {
                                             if (isErrorMessageExist(resAddTo)) {
