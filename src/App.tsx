@@ -30,6 +30,7 @@ function App() {
             30 * 60 * 1000
         ) // A cada 30 min
         return () => clearInterval(interval)
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [fetchCsrfToken])
 
     function AppLayout() {
