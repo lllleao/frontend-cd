@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 import Card from '@/components/Card'
 import { useNavigate } from 'react-router-dom'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
-import { calcFrete, isLoginAndCsrf } from '@/utils'
+import { calcFrete } from '@/utils'
 import { getItemFromCache, verifyIfIsCached } from '@/utils/cacheConfig'
 import SkeletonCard from '@/components/SkeletonCard'
 import { useSelector } from 'react-redux'
@@ -27,7 +27,6 @@ const ProductsListCart = () => {
     }>('booksStore')
 
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
-    const logado = localStorage.getItem('logado')
     const [totalPrice, setTotalPrice] = useState(0)
 
     const refreshTokenWarn = useCsrfTokenStore(
@@ -132,7 +131,7 @@ const ProductsListCart = () => {
     }, [refreshTokenWarn])
 
     useEffect(() => {
-        if (!isLoginAndCsrf(logado, csrfToken)) return
+        if (!csrfToken) return
         getDataItems(csrfToken).then((res) => {
             if (res.error) {
                 return refresheTokenFunction(res, () => {

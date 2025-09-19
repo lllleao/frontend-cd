@@ -7,7 +7,6 @@ import {
 } from '@/services/api'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 import { updateNumberCart } from '@/store/reducers/cart'
-import { isLoginAndCsrf } from '@/utils'
 import useRefreshToken from '@/hooks/useRefreshToken'
 import { useNavigate } from 'react-router-dom'
 import Loader from '../Loader'
@@ -23,7 +22,6 @@ const Pix = () => {
     const [getIsPaid, { isFetching: fetchingIsPaid }] = useLazyIsPaidQuery()
     const [deleteAllItems] = useLazyDeleteAllItemsQuery()
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
-    const logado = localStorage.getItem('logado')
     const [isItemAdd, setIsItemAdd] = useState(false)
     const [isPaymentWarn, setIsPaymentDoneWarn] = useState(false)
 
@@ -36,7 +34,7 @@ const Pix = () => {
     }
 
     const handleSeePurchasePaid = () => {
-        if (!isLoginAndCsrf(logado, csrfToken)) return
+        if (!csrfToken) return
         getIsPaid(csrfToken).then((res) => {
             if (res.error) {
                 return refresheTokenFunction(res, () => {
@@ -93,7 +91,7 @@ const Pix = () => {
     }
 
     useEffect(() => {
-        if (!isLoginAndCsrf(logado, csrfToken)) return
+        if (!csrfToken) return
         getPixInfos(csrfToken).then((res) => {
             if (res.error) {
                 return refresheTokenFunction(res, () => {
@@ -114,7 +112,7 @@ const Pix = () => {
             }
         })
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
-    }, [csrfToken, logado])
+    }, [csrfToken])
 
     return (
         <>

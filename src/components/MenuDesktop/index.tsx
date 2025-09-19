@@ -10,6 +10,8 @@ type MenuProps = {
 }
 
 const MenuDesktop = ({ dataLength, addAnimateCart }: MenuProps) => {
+    const logadoIos = useCsrfTokenStore((state) => state.logadoIos)
+
     const logado = localStorage.getItem('logado')
     const iconLoginProfileRef = useRef<HTMLLIElement>(null)
     const viweNumberCart = useCsrfTokenStore((state) => state.viweNumberCart)
@@ -53,9 +55,9 @@ const MenuDesktop = ({ dataLength, addAnimateCart }: MenuProps) => {
                     </HashLink>
                 </li>
                 <li className="nav__list__item__desk cartIcon">
-                    {logado ? (
+                    {logado || logadoIos ? (
                         <Link
-                            to={logado ? '/cart' : '/login'}
+                            to={logado || logadoIos ? '/cart' : '/login'}
                             className={`nav__list__item__desk__link`}
                         >
                             <div
@@ -73,7 +75,7 @@ const MenuDesktop = ({ dataLength, addAnimateCart }: MenuProps) => {
                     className="nav__list__item__desk userIcon"
                     ref={iconLoginProfileRef}
                 >
-                    {!logado ? (
+                    {!logado || !logadoIos ? (
                         <>
                             <Link
                                 to="/login"

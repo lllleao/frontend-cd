@@ -5,14 +5,13 @@ import { useLazyGetItemsCartQuery } from '@/services/api'
 import { HeaderContainer } from './styles'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 import { useVerifyLogin } from '@/hooks/useVerifyLogin'
-import { isLoginAndCsrf, isOnDevelopment } from '@/utils'
+import { isOnDevelopment } from '@/utils'
 import { addItemToCache, getItemFromCache } from '@/utils/cacheConfig'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootReducer } from '@/store'
 import { updateNumberCart } from '@/store/reducers/cart'
 
 const Header = () => {
-    const logado = localStorage.getItem('logado')
     const numberCartCache = getItemFromCache<{
         cache: number
         timeExpiration: number
@@ -32,7 +31,7 @@ const Header = () => {
 
     useVerifyLogin()
     useEffect(() => {
-        if (!isLoginAndCsrf(logado, csrfToken)) return
+        if (!csrfToken) return
 
         if (numberCartCache && now < numberCartCache.timeExpiration) {
             dispatch(updateNumberCart(numberCartCache.cache))

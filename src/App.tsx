@@ -11,15 +11,19 @@ import ScrollToTop from './components/ScrollToTop'
 import Header from './containers/Header'
 
 function App() {
+    const setLogged = useCsrfTokenStore((state) => state.setLogged)
+
     const fetchCsrfToken = useCsrfTokenStore((state) => state.fetchCsrfToken)
 
     useEffect(() => {
         fetchCsrfToken().catch(() => {
+            setLogged(false)
             localStorage.removeItem('logado')
         })
         const interval = setInterval(
             () => {
                 fetchCsrfToken().catch(() => {
+                    setLogged(false)
                     localStorage.removeItem('logado')
                 })
             },

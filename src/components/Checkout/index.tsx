@@ -3,7 +3,7 @@ import { CheckoutContainer, ChoseAddress, ValidAddres } from './styles'
 
 import ProfileAddress from '@/components/AddressCard'
 import { Finish } from '@/components/FormAddress/styles'
-import { calcFrete, isLoginAndCsrf } from '@/utils'
+import { calcFrete } from '@/utils'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 import { GetAddressProps } from '@/interfaces/interfaces'
 import {
@@ -22,7 +22,6 @@ const Checkout = () => {
     const navigate = useNavigate()
 
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
-    const logado = localStorage.getItem('logado')
     const sortAddress = useSortAddress()
     const defaultAddress = useProfileData((state) => state.address)
 
@@ -46,7 +45,7 @@ const Checkout = () => {
     const titlesAddress = ['Endereço padrão', 'Endereço secundário']
 
     useEffect(() => {
-        if (!isLoginAndCsrf(logado, csrfToken)) return
+        if (!csrfToken) return
         getDataItems(csrfToken).then((res) => {
             if (res.error) {
                 return refresheTokenFunction(res, () => {
@@ -80,7 +79,7 @@ const Checkout = () => {
     }, [csrfToken, refreshTokenWarn])
 
     useEffect(() => {
-        if (!isLoginAndCsrf(logado, csrfToken)) return
+        if (!csrfToken) return
         getDataAddress({ csrfToken }).then((res) => {
             setDataAddress(sortAddress(res.data))
         })

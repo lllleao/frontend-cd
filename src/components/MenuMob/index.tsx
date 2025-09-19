@@ -9,6 +9,7 @@ type MenuProps = {
 }
 
 const MenuMob = ({ dataLength }: MenuProps) => {
+    const logadoIos = useCsrfTokenStore((state) => state.logadoIos)
     const viweNumberCart = useCsrfTokenStore((state) => state.viweNumberCart)
     const setViweNumberCar = useCsrfTokenStore(
         (state) => state.setViweNumberCart
@@ -66,9 +67,9 @@ const MenuMob = ({ dataLength }: MenuProps) => {
                     </HashLink>
                 </li>
                 <li>
-                    {logado ? (
+                    {logado || logadoIos ? (
                         <Link
-                            to={logado ? '/cart' : '/login'}
+                            to={logado || logadoIos ? '/cart' : '/login'}
                             className="menu-mob__item cartIcon menu-mob__item__cart"
                             onClick={handleClickCart}
                         >
@@ -84,7 +85,7 @@ const MenuMob = ({ dataLength }: MenuProps) => {
                     )}
                 </li>
                 <li>
-                    {!logado ? (
+                    {!logado || !logadoIos ? (
                         <>
                             <Link
                                 to="/login"

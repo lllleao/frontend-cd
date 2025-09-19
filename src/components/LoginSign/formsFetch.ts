@@ -46,7 +46,8 @@ export const handleLogin = (
     navigate: NavigateFunction,
     fetchCsrfToken: () => Promise<unknown>,
     errorHandlers: Record<LoginErrorMessage, () => void>,
-    logout: (route: string) => void
+    logout: (route: string) => void,
+    setLogged: (status: boolean) => void
 ) => {
     event.preventDefault()
     if (!isPasswordValid) {
@@ -85,6 +86,7 @@ export const handleLogin = (
                 }
                 dispatch(checkLoginUser({ loginUserExist: false }))
                 fetchCsrfToken()
+                setLogged(true)
                 localStorage.setItem('logado', 'true')
                 navigate('/')
                 return res.data
