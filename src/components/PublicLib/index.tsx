@@ -103,14 +103,6 @@ const PublicLib = () => {
         setPage((p) => p - 1)
     }
 
-    const hancleClick = () => {
-        localStorage.setItem('algo', 'algo')
-    }
-
-    const handleGetItem = () => {
-        return localStorage.getItem('algo') as string
-    }
-
     return (
         <PublicLibContainer
             ref={mainLibElement}
@@ -174,8 +166,6 @@ const PublicLib = () => {
                     >
                         VER TODAS
                     </ButtonSeeAll>
-                    <button onClick={hancleClick}>CLICA</button>
-                    <div>{handleGetItem()}</div>
                 </NavPageAllBooks>
             </div>
         </PublicLibContainer>
