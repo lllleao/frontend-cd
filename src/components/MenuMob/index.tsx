@@ -9,12 +9,12 @@ type MenuProps = {
 }
 
 const MenuMob = ({ dataLength }: MenuProps) => {
-    const logadoIos = useCsrfTokenStore((state) => state.logadoIos)
+    // const logadoIos = useCsrfTokenStore((state) => state.logadoIos)
     const viweNumberCart = useCsrfTokenStore((state) => state.viweNumberCart)
     const setViweNumberCar = useCsrfTokenStore(
         (state) => state.setViweNumberCart
     )
-    const logado = localStorage.getItem('logado')
+    const logado = localStorage.getItem('logado') as string
     const [menuClicked, setMenuClicked] = useState(false)
 
     function handleClickCart(): void {
@@ -32,6 +32,7 @@ const MenuMob = ({ dataLength }: MenuProps) => {
 
     return (
         <MenuBobContainer>
+            {`${logado}`}
             <div className={`alert ${viweNumberCart ? 'alert--visible' : ''}`}>
                 !
             </div>
@@ -67,9 +68,9 @@ const MenuMob = ({ dataLength }: MenuProps) => {
                     </HashLink>
                 </li>
                 <li>
-                    {logado || logadoIos ? (
+                    {logado ? (
                         <Link
-                            to={logado || logadoIos ? '/cart' : '/login'}
+                            to={logado ? '/cart' : '/login'}
                             className="menu-mob__item cartIcon menu-mob__item__cart"
                             onClick={handleClickCart}
                         >
@@ -85,7 +86,7 @@ const MenuMob = ({ dataLength }: MenuProps) => {
                     )}
                 </li>
                 <li>
-                    {!logado || !logadoIos ? (
+                    {!logado ? (
                         <>
                             <Link
                                 to="/login"

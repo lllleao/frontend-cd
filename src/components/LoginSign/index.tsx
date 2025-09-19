@@ -9,11 +9,11 @@ import logo3 from '@/assets/logo-nova/logo3.png'
 import Sign from './Sign'
 import Login from './Login'
 import { useDispatch, useSelector } from 'react-redux'
-import { checkLoginUser, checkSignUser } from '@/store/reducers/loginSign'
+import { checkSignUser } from '@/store/reducers/loginSign'
 import { RootReducer } from '@/store'
 
 const LoginSign = () => {
-    const isLoginScreen = localStorage.getItem('isLoginScreen')
+    const isLoginScreen = localStorage.getItem('isLoginScreen') as string
     const [loginScreenState, setLoginScreenState] = useState(
         Boolean(isLoginScreen)
     )
@@ -25,15 +25,11 @@ const LoginSign = () => {
     const dispatch = useDispatch()
 
     const handleChangeLogin = () => {
-        dispatch(checkSignUser({ signUserExist: false }))
         localStorage.setItem('isLoginScreen', 'true')
         setLoginScreenState(!loginScreenState)
     }
 
     const handleChangeSign = () => {
-        dispatch(
-            checkLoginUser({ loginUserExist: false, passWordCorrect: false })
-        )
         localStorage.removeItem('isLoginScreen')
         setLoginScreenState(!loginScreenState)
     }
@@ -46,6 +42,15 @@ const LoginSign = () => {
         )
         localStorage.setItem('isLoginScreen', 'true')
         setLoginScreenState(!loginScreenState)
+    }
+
+    const handleChangeMob = (loginScreen: boolean) => {
+        setLoginScreenState(!loginScreen)
+        if (loginScreen) {
+            return localStorage.removeItem('isLoginScreen')
+        }
+
+        return localStorage.setItem('isLoginScreen', 'true')
     }
 
     if (signSuccess || missToken) {
@@ -97,7 +102,7 @@ const LoginSign = () => {
                             </p>
                             <ButtonLoginSign
                                 onClick={() =>
-                                    setLoginScreenState(!loginScreenState)
+                                    handleChangeMob(loginScreenState)
                                 }
                             >
                                 {loginScreenState ? 'Cadastro' : 'Login'}
