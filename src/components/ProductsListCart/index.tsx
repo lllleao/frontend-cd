@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 import Card from '@/components/Card'
 import { useNavigate } from 'react-router-dom'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
-import { isLoginAndCsrf } from '@/utils'
+import { calcFrete, isLoginAndCsrf } from '@/utils'
 import { getItemFromCache, verifyIfIsCached } from '@/utils/cacheConfig'
 import SkeletonCard from '@/components/SkeletonCard'
 import { useSelector } from 'react-redux'
@@ -17,6 +17,7 @@ import { RootReducer } from '@/store'
 import { channelBroadcast } from '@/utils/channelBroadcast'
 import Loader from '@/components/Loader'
 import useRefreshToken from '@/hooks/useRefreshToken'
+import WitheBar from '../WitheBar'
 
 const ProductsListCart = () => {
     const refresheTokenFunction = useRefreshToken()
@@ -50,7 +51,7 @@ const ProductsListCart = () => {
     const navigate = useNavigate()
 
     const handleDoPurchase = () => {
-        if (totalPrice !== 0 && data && !loading) {
+        if (totalPrice && totalPrice !== 0 && data && !loading) {
             navigate('/checkout')
         }
     }
@@ -128,7 +129,7 @@ const ProductsListCart = () => {
             'booksStore'
         )
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
-    }, [getStoreBooks, refreshTokenWarn])
+    }, [refreshTokenWarn])
 
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
@@ -170,11 +171,18 @@ const ProductsListCart = () => {
                 <div className="container">
                     <ItemsOnCart>
                         <h3>ITENS NO CARRINHO</h3>
-                        <div className="bar" />
+                        <WitheBar />
                         <ul className="books-list">
                             {data &&
                                 data.items.map(
-                                    ({ id, photo, price, name, quant }) => (
+                                    ({
+                                        id,
+                                        photo,
+                                        price,
+                                        name,
+                                        quant,
+                                        stock
+                                    }) => (
                                         <li key={id}>
                                             <div className="img-delete">
                                                 <img
@@ -199,9 +207,18 @@ const ProductsListCart = () => {
                                                     value={quant}
                                                     disabled={loading}
                                                 >
-                                                    <option value="1">1</option>
-                                                    <option value="2">2</option>
-                                                    <option value="3">3</option>
+                                                    {Array(stock)
+                                                        .fill(stock)
+                                                        .map((_, index) => (
+                                                            <option
+                                                                key={index}
+                                                                value={
+                                                                    index + 1
+                                                                }
+                                                            >
+                                                                {index + 1}
+                                                            </option>
+                                                        ))}
                                                 </select>
                                                 <i
                                                     className={`fa-solid fa-trash ${loading ? 'disabled' : ''}`}
@@ -224,10 +241,24 @@ const ProductsListCart = () => {
                         ) : (
                             <></>
                         )}
+                        <br />
+                        <WitheBar />
                     </ItemsOnCart>
+                    <span className="frete-message">
+                        Compras a partir de R$ 50,00{' '}
+                        <strong>EM PRODUTOS</strong> tem{' '}
+                        <strong>FRETE GRÁTIS</strong>
+                    </span>
+                    <span className="frete">Frete: R$ 10,00</span>
                     <span className="total">
                         Preço total: R${' '}
-                        {isFetching ? <Loader isCircle /> : totalPrice}
+                        {isFetching ? (
+                            <Loader isCircle />
+                        ) : totalPrice ? (
+                            calcFrete(totalPrice)
+                        ) : (
+                            0
+                        )}
                     </span>
 
                     <h3 className="title-books-store">COMPRE TAMBÉM</h3>

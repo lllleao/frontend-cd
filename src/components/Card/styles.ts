@@ -22,7 +22,6 @@ export const CardContainerStore = styled(Link)`
         text-decoration: none;
         font-size: clamp(18px, 4vw, 20px);
         font-weight: bold;
-        width: 80%;
     }
 `
 export const CardContainer = styled.a`
@@ -44,7 +43,6 @@ export const CardContainer = styled.a`
         text-decoration: none;
         font-size: clamp(18px, 4vw, 20px);
         font-weight: bold;
-        width: 80%;
     }
 
     @media screen and (max-width: 767px) {

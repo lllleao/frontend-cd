@@ -1,17 +1,37 @@
 import styled from 'styled-components'
-import { CardContainerStore } from '@/components/Card/styles'
+import { CardContainer } from '@/components/Card/styles'
 
-export const OrderItems = styled(CardContainerStore)`
-    width: 250px;
-    @media screen and (max-width: 767px) {
-        display: block;
+export const PurchaseCompleted = styled.div`
+    margin-top: 2rem;
 
-        img {
-            width: 250px;
-        }
-        h3 {
-            width: auto;
+    .title-order {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .dateCreate {
+        font-size: 1.2rem;
+        margin: 2rem 0;
+        text-align: center;
+    }
+
+    .order-list {
+        &__item {
+            margin: 4rem 0;
+
+            .list-items-purchase {
+                display: flex;
+                gap: 2rem;
+                justify-content: center;
+                @media (max-width: 881px) {
+                    flex-direction: column;
+                    align-items: center;
+                }
+            }
         }
     }
-    /* width: clamp(150px, 60vw, 250px); */
+`
+
+export const OrderItems = styled(CardContainer)`
+    width: 250px;
 `

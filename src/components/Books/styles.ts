@@ -165,10 +165,21 @@ export const AboutBook = styled.div<{ $isSeeMore: boolean }>`
         margin-bottom: 1rem;
     }
 
-    .sinopse-title {
+    .sinopse-title,
+    .summary-title {
         font-weight: bold;
     }
-    .sinopse {
+    .summary {
+        margin-top: 1rem;
+    }
+
+    .summary-span {
+        display: block;
+        margin-top: 1rem;
+    }
+
+    .sinopse,
+    .summary {
         text-align: justify;
         font-size: clamp(1.2rem, 2vw, 1.5rem);
         line-height: 2rem;

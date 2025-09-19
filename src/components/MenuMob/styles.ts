@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 export const MenuBobContainer = styled.nav`
     .hamburguer-wrapper {
+        background-color: #000;
         display: none;
         z-index: 2;
         padding: 8px;

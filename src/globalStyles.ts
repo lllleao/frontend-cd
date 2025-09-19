@@ -20,6 +20,7 @@ const GlobalStyle = createGlobalStyle`
     }
 
     body {
+        background-color: #000;
         scrollbar-color: #000;
         &::-webkit-scrollbar {
             color: #000;

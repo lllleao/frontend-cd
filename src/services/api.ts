@@ -7,11 +7,13 @@ import {
     EmailDataProp,
     GetBooksCart,
     PixDatProps,
+    PurchaseDone,
     TotalPriceProps,
     UpdatePrice,
     User
 } from '@/types/types'
 import {
+    BooksPurchaseInterface,
     DataLoginProp,
     GetAddressProps,
     PurchaseDataProps
@@ -88,7 +90,7 @@ const api = createApi({
         getStoreBooks: builder.query<BooksFromStore[], void>({
             query: () => 'books/store'
         }),
-        getSpecificStoreBook: builder.query<BooksPurchase, string>({
+        getSpecificStoreBook: builder.query<BooksPurchaseInterface, string>({
             query: (id) => `books/store/${id}`
         }),
         getItemsCart: builder.query<GetBooksCart, string>({
@@ -201,9 +203,8 @@ const api = createApi({
                 body: data.data
             })
         }),
-        purchaseData: builder.mutation<PixDatProps, PurchaseDataProps>({
+        purchaseData: builder.mutation<{ message: string }, PurchaseDataProps>({
             query: ({ addressId, csrfToken, itemsInfo }) => {
-                console.log(itemsInfo[0])
                 return {
                     url: 'cart/create-purchase',
                     method: 'POST',
@@ -216,11 +217,56 @@ const api = createApi({
                     }
                 }
             }
+        }),
+        payWithPix: builder.query<PixDatProps, string>({
+            query: (csrfToken) => {
+                return {
+                    url: 'api-pix/pay-pix',
+                    headers: {
+                        'csrf-token': csrfToken
+                    }
+                }
+            }
+        }),
+        isPaid: builder.query<{ status: string }, string>({
+            query: (csrfToken) => {
+                return {
+                    url: 'api-pix/is-paid',
+                    headers: {
+                        'csrf-token': csrfToken
+                    }
+                }
+            }
+        }),
+        deleteAllItems: builder.query<void, string>({
+            query: (csrfToken) => {
+                return {
+                    url: 'cart/delete-all',
+                    headers: {
+                        'csrf-token': csrfToken
+                    },
+                    method: 'DELETE'
+                }
+            }
+        }),
+        purchasePaid: builder.query<PurchaseDone[], string>({
+            query: (csrfToken) => {
+                return {
+                    url: 'cart/purchase-paid',
+                    headers: {
+                        'csrf-token': csrfToken
+                    }
+                }
+            }
         })
     })
 })
 
 export const {
+    useLazyPayWithPixQuery,
+    useLazyDeleteAllItemsQuery,
+    useLazyPurchasePaidQuery,
+    useLazyIsPaidQuery,
     useLazyGetPublicBooksQuery,
     useGetPublicBooksLengthQuery,
     useVerifyCSRFTokenMutation,

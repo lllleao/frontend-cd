@@ -1,8 +1,9 @@
-import { ButtonLogout, ProfileContainer, PurchaseCompleted } from './styles'
+import { ButtonLogout, ProfileContainer } from './styles'
 import { useEffect } from 'react'
 import {
     useLazyGetAddressQuery,
-    useLazyGetProfileDataQuery
+    useLazyGetProfileDataQuery,
+    useLazyPurchasePaidQuery
 } from '@/services/api'
 import OrdersCompleted from '@/components/OrdersCompleted'
 import ProfileAddress from '@/components/AddressCard'
@@ -11,10 +12,15 @@ import useLogout from '@/hooks/useLogout'
 import { useProfileData } from '@/hooks/useProfileData'
 import useRefreshToken from '@/hooks/useRefreshToken'
 import useSortAddress from '@/hooks/useSortAddress'
+import { PurchaseDone } from '@/types/types'
+import WitheBar from '../WitheBar'
+import SkeletonCard from '../SkeletonCard'
 
 const Profile = () => {
     const refresheTokenFunction = useRefreshToken()
     const sortAddress = useSortAddress()
+    const [getPurchasePaid, { data: purchasesPaid, isFetching }] =
+        useLazyPurchasePaidQuery()
 
     const profileAddressTitle = ['Endereço padrão', 'Endereço secundário']
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
@@ -30,7 +36,7 @@ const Profile = () => {
         (state) => state.refreshTokenWarn
     )
 
-    const [getDataProfile, { data }] = useLazyGetProfileDataQuery()
+    const [getDataProfile] = useLazyGetProfileDataQuery()
     const logout = useLogout()
     const [getDataAddress] = useLazyGetAddressQuery()
 
@@ -77,6 +83,12 @@ const Profile = () => {
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
     }, [csrfToken, refreshTokenWarn])
 
+    useEffect(() => {
+        if (!csrfToken) return
+        getPurchasePaid(csrfToken)
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [csrfToken])
+
     return (
         <>
             <ProfileContainer>
@@ -114,10 +126,19 @@ const Profile = () => {
                     <ButtonLogout onClick={() => logout('/')}>
                         SAIR
                     </ButtonLogout>
-                    <PurchaseCompleted>
-                        <h4 className="title-order">COMPRAS REALIZADAS</h4>
-                        <OrdersCompleted data={data} />
-                    </PurchaseCompleted>
+                    <WitheBar />
+
+                    {isFetching ? (
+                        <>
+                            <SkeletonCard />
+                            <SkeletonCard />
+                            <SkeletonCard />
+                        </>
+                    ) : (
+                        <OrdersCompleted
+                            data={purchasesPaid as PurchaseDone[]}
+                        ></OrdersCompleted>
+                    )}
                 </div>
             </ProfileContainer>
         </>

@@ -57,6 +57,7 @@ const Purchase = () => {
                 [ENTREGA SOMENTE PARA FORTALEZA/CE]
             </h2>
             <span>[clique na capa para comprar]</span>
+            <span>[entrega em até 10 dias úteis]</span>
             <div className={`store ${inView ? 'store--is-active' : ''}`}>
                 {data ? (
                     data.map(({ descBooks, id, photo, title, price }) => (

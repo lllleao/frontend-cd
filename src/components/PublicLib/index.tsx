@@ -56,7 +56,6 @@ const PublicLib = () => {
         }
 
         if (window.innerWidth <= 767) {
-            console.log(publicBooksTotalLength)
             setData(publicBooksTotalLength.slice(0, 3))
             hasMounted.current = true
 

@@ -40,6 +40,7 @@ export type BooksCart = {
         name: string
         photo: string
         id: number
+        stock: number
     }
 
     csrfToken: string
@@ -53,6 +54,7 @@ export type GetBooksCart = {
         name: string
         photo: string
         productId?: number
+        stock: number
     }[]
 }
 
@@ -92,9 +94,21 @@ export type ItemsInfo = {
 }
 
 export type PixDatProps = {
-    pixData: {
-        qrcode: string
-        imagemQrcode: string
-        linkVisualizacao: string
-    }
+    qrCodeBase64: string
+    copyPastePix: string
+    status: string
+}
+
+export type PurchaseDone = {
+    id: number
+    buyerAddress: string
+    totalPrice: number
+    createdAt: string
+    status: string
+    items: {
+        id: number
+        name: 'David Friedrich [Pedro Monteiro]'
+        photo: 'https://raw.githubusercontent.com/lllleao/servidor_estatico/main/david.jpg'
+        quant: 1
+    }[]
 }

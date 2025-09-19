@@ -18,6 +18,7 @@ import { useSelector } from 'react-redux'
 import { RootReducer } from '@/store'
 import useLogout from '@/hooks/useLogout'
 import { channelBroadcast } from '@/utils/channelBroadcast'
+import { BooksPurchaseInterface } from '@/interfaces/interfaces'
 
 let isSeeMore: boolean = false
 
@@ -40,7 +41,8 @@ const Book = () => {
     const [addCartLoader, setAddCartLoader] = useState(false)
     const [buttonMessage, setButtonMessage] = useState('Adicionar ao carrinho')
     const [priceCalc, setPriceCalc] = useState(10)
-    const [textIsHidden, setTextIsHidden] = useState(true)
+    const [synopsisIsHidden, setSynopsisIsHidden] = useState(true)
+    const [summaryIsHidden, setSummaryIsHidden] = useState(true)
     const [isItemAdd, setIsItemAdd] = useState(false)
     const { id } = useParams() as BookParams
 
@@ -51,21 +53,21 @@ const Book = () => {
 
     const [booksStore, setBooksStore] = useState<BooksFromStore[]>()
     const [getSpecificBook] = useLazyGetSpecificStoreBookQuery()
-    const [data, setData] = useState<BooksPurchase>()
+    const [data, setData] = useState<BooksPurchaseInterface>()
     const specificBook = getItemFromCache<{
-        cache: BooksPurchase
+        cache: BooksPurchaseInterface
         timeExpiration: number
     }>(`specific${id}`)
     const [getStoreBooks] = useLazyGetStoreBooksQuery()
 
     const [getRefresh] = useRefreshTokenMutation()
 
-    const only212Characters = () => {
-        const appear = data?.summary.slice(0, 212)
-        const allText = data?.summary
-        const lengthCheck = data?.summary.length || 0
+    const only212Characters = (text: string, isHidden: boolean) => {
+        const appear = text.slice(0, 212)
+        const allText = text
+        const lengthCheck = text.length || 0
 
-        if (lengthCheck > 212 && textIsHidden) {
+        if (lengthCheck > 212 && isHidden) {
             isSeeMore = true
             return appear + '...'
         } else {
@@ -92,10 +94,11 @@ const Book = () => {
             addToCart({
                 items: {
                     photo: data.photo,
-                    price: priceCalc,
+                    price: data.price,
                     quant: Number(valueQuant),
                     name: data.title,
-                    id: data.id as number
+                    id: data.id as number,
+                    stock: data.stock
                 },
                 csrfToken
             })
@@ -117,10 +120,11 @@ const Book = () => {
                                         addToCart({
                                             items: {
                                                 photo: data.photo,
-                                                price: priceCalc,
+                                                price: data.price,
                                                 quant: Number(valueQuant),
                                                 name: data.title,
-                                                id: data.id as number
+                                                id: data.id as number,
+                                                stock: data.stock
                                             },
                                             csrfToken
                                         }).then((resAddTo) => {
@@ -213,7 +217,7 @@ const Book = () => {
                     {data ? (
                         <div className="book">
                             <BookImg>
-                                <img srcSet={data?.photo} alt="" />
+                                <img srcSet={data.photo} alt="" />
                                 <p className="price-container">
                                     <span className="price">
                                         [ R$ {priceCalc},00 ]
@@ -224,9 +228,16 @@ const Book = () => {
                                         name="quant"
                                         value={valueQuant}
                                     >
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
+                                        {Array(data.stock)
+                                            .fill(data.stock)
+                                            .map((_, index) => (
+                                                <option
+                                                    key={index}
+                                                    value={index + 1}
+                                                >
+                                                    {index + 1}
+                                                </option>
+                                            ))}
                                     </select>
                                 </p>
                             </BookImg>
@@ -238,17 +249,24 @@ const Book = () => {
                                     </span>
                                     <span className="sinopse__view">
                                         <span className="sinopse__view__all">
-                                            {data?.summary}
+                                            {data.synopsis}
                                         </span>
                                         <span className="sinopse__view__part">
                                             <span className="sinopse__view__first">
-                                                {only212Characters()}
+                                                {only212Characters(
+                                                    data.synopsis,
+                                                    synopsisIsHidden
+                                                )}
                                             </span>
                                             <span className="sinopse__view__second"></span>
-                                            {textIsHidden ? (
+                                            {data.synopsis.length <= 211 ? (
+                                                <></>
+                                            ) : synopsisIsHidden ? (
                                                 <span
                                                     onClick={() =>
-                                                        setTextIsHidden(false)
+                                                        setSynopsisIsHidden(
+                                                            false
+                                                        )
                                                     }
                                                     className="see-more"
                                                 >
@@ -257,7 +275,9 @@ const Book = () => {
                                             ) : (
                                                 <span
                                                     onClick={() =>
-                                                        setTextIsHidden(true)
+                                                        setSynopsisIsHidden(
+                                                            true
+                                                        )
                                                     }
                                                     className="see-more"
                                                 >
@@ -267,22 +287,81 @@ const Book = () => {
                                         </span>
                                     </span>
                                 </p>
+                                {data.summary ? (
+                                    <p className="summary">
+                                        <span className="summary-title">
+                                            Sumário:{' '}
+                                        </span>
+                                        <span className="summary__view">
+                                            <span className="summary__view__all">
+                                                {data.summary
+                                                    .split(';')
+                                                    .map((textSum, index) => (
+                                                        <span
+                                                            className="summary-span"
+                                                            key={index}
+                                                        >
+                                                            {textSum}
+                                                            <br />
+                                                        </span>
+                                                    ))}
+                                            </span>
+                                            <span className="summary__view__part">
+                                                <span className="summary__view__first">
+                                                    {only212Characters(
+                                                        data.summary,
+                                                        summaryIsHidden
+                                                    )
+                                                        .split(';')
+                                                        .map(
+                                                            (
+                                                                textSum,
+                                                                index
+                                                            ) => (
+                                                                <span
+                                                                    className="summary-span"
+                                                                    key={index}
+                                                                >
+                                                                    {textSum}
+                                                                    <br />
+                                                                </span>
+                                                            )
+                                                        )}
+                                                </span>
+                                                <span className="summary__view__second"></span>
+                                                {data.summary.length <= 211 ? (
+                                                    <></>
+                                                ) : summaryIsHidden ? (
+                                                    <span
+                                                        onClick={() =>
+                                                            setSummaryIsHidden(
+                                                                false
+                                                            )
+                                                        }
+                                                        className="see-more"
+                                                    >
+                                                        [Ver mais]
+                                                    </span>
+                                                ) : (
+                                                    <span
+                                                        onClick={() =>
+                                                            setSummaryIsHidden(
+                                                                true
+                                                            )
+                                                        }
+                                                        className="see-more"
+                                                    >
+                                                        [Ver menos]
+                                                    </span>
+                                                )}
+                                            </span>
+                                        </span>
+                                    </p>
+                                ) : (
+                                    <></>
+                                )}
                                 <div className="others-informations">
                                     <ul>
-                                        {data?.isbn && (
-                                            <li>
-                                                <span className="sinopse-title">
-                                                    ISBN:{' '}
-                                                </span>
-                                                {data.isbn}
-                                            </li>
-                                        )}
-                                        <li>
-                                            <span className="sinopse-title">
-                                                Tamanho:{' '}
-                                            </span>{' '}
-                                            {data?.width}
-                                        </li>
                                         <li>
                                             <span className="sinopse-title">
                                                 Número de Páginas:{' '}

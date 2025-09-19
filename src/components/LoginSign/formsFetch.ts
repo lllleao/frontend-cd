@@ -63,12 +63,10 @@ export const handleLogin = (
             .then((res) => {
                 if (res.error) {
                     if (isErrorMessageExist(res)) {
-                        console.log(res)
                         const errorData = res.error.data as {
                             message?: string
                             error?: string
                         }
-                        console.log(errorData.message)
                         const handler =
                             errorHandlers[
                                 errorData.message as LoginErrorMessage

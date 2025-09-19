@@ -3,7 +3,7 @@ import { CheckoutContainer, ChoseAddress, ValidAddres } from './styles'
 
 import ProfileAddress from '@/components/AddressCard'
 import { Finish } from '@/components/FormAddress/styles'
-import { isLoginAndCsrf } from '@/utils'
+import { calcFrete, isLoginAndCsrf } from '@/utils'
 import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 import { GetAddressProps } from '@/interfaces/interfaces'
 import {
@@ -14,9 +14,12 @@ import {
 import { useProfileData } from '@/hooks/useProfileData'
 import useSortAddress from '@/hooks/useSortAddress'
 import useRefreshToken from '@/hooks/useRefreshToken'
+import { useNavigate } from 'react-router-dom'
+import Loader from '../Loader'
 
 const Checkout = () => {
     const refresheTokenFunction = useRefreshToken()
+    const navigate = useNavigate()
 
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
     const logado = localStorage.getItem('logado')
@@ -30,7 +33,7 @@ const Checkout = () => {
     const [getDataAddress] = useLazyGetAddressQuery()
     const [isWarnDefaultVisible, setIsWarnDefaultVisible] = useState(false)
     const [isWarnSecondaryVisible, setIsWarnSecondaryVisible] = useState(false)
-    const [doPurchase] = usePurchaseDataMutation()
+    const [doPurchase, { isLoading }] = usePurchaseDataMutation()
     const refreshTokenWarn = useCsrfTokenStore(
         (state) => state.refreshTokenWarn
     )
@@ -97,6 +100,9 @@ const Checkout = () => {
     const acceptPurchase = (
         dataAddressFunction: GetAddressProps | undefined
     ) => {
+        if (!data?.items[0]) {
+            return navigate('/cart')
+        }
         if (data && totalPrice && dataAddressFunction) {
             doPurchase({
                 itemsInfo: data.items.map(
@@ -132,14 +138,15 @@ const Checkout = () => {
                                 addressId: dataAddressFunction.id as number,
                                 csrfToken
                             }).then((response) => {
-                                console.log(response)
+                                if (response.data) {
+                                    navigate('/pix-payment')
+                                }
                             })
                         })
                     }
-                    console.log(res)
-                    // localStorage.setItem('qrCode', res.data.pixData.imagemQrcode)
-                    // localStorage.setItem('copPaste', res.data.pixData.qrcode)
-                    // navigate('/pix')
+                    if (res.data) {
+                        navigate('/pix-payment')
+                    }
                 })
                 .catch((err) => console.log(err))
         }
@@ -174,6 +181,7 @@ const Checkout = () => {
                         <div className="bar" />
                     </div>
                     <h3 className="title-chose-address">Escolha o endereço</h3>
+                    <span className="fortalcity">SOMENTE PARA FORTALEZA</span>
                     <ul className="books-list">
                         {data &&
                             data.items.map(({ id, photo, name, quant }) => (
@@ -190,7 +198,9 @@ const Checkout = () => {
                                 </li>
                             ))}
                     </ul>
-                    <p className="price-tot">Preço Total R$ {totalPrice},00</p>
+                    <p className="price-tot">
+                        Preço Total R$ {calcFrete(totalPrice)},00
+                    </p>
                     {dataAddress.map(
                         (
                             {
@@ -265,7 +275,8 @@ const Checkout = () => {
                             className={`${isWarnDefaultVisible || isWarnSecondaryVisible ? 'error' : ''}`}
                             onClick={handlePurchase}
                         >
-                            Finalizar compra
+                            Finalizar compra{' '}
+                            {isLoading ? <Loader isCircle /> : <></>}
                         </Finish>
                     </div>
                 </div>

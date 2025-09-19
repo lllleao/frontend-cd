@@ -59,3 +59,8 @@ export const isLoginAndCsrf = (
 }
 export const isOnDevelopment =
     import.meta.env.VITE_ON_DEVELOPMENT === 'true' ? true : false
+
+export const calcFrete = (totalPrice: number) => {
+    if (totalPrice >= 50) return totalPrice
+    return totalPrice + 10
+}

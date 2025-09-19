@@ -22,9 +22,6 @@ const Header = () => {
     const setViweNumberCart = useCsrfTokenStore(
         (state) => state.setViweNumberCart
     )
-    const refreshTokenWarn = useCsrfTokenStore(
-        (state) => state.refreshTokenWarn
-    )
 
     const { numberCart } = useSelector((state: RootReducer) => state.cart)
     const dispatch = useDispatch()
@@ -61,7 +58,7 @@ const Header = () => {
             })
             .catch((err) => console.log(err))
         // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
-    }, [csrfToken, refreshTokenWarn])
+    }, [csrfToken])
 
     return (
         <HeaderContainer

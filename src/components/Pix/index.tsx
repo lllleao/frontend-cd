@@ -1,26 +1,131 @@
-import { useState } from 'react'
-import ButtonPurchase from '@/components/ButtonPurchase'
+import { useEffect, useState } from 'react'
 import { ButtonCopyPaste, PixContainer } from './styles'
+import {
+    useLazyIsPaidQuery,
+    useLazyPayWithPixQuery,
+    useLazyDeleteAllItemsQuery
+} from '@/services/api'
+import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
+import { updateNumberCart } from '@/store/reducers/cart'
+import { isLoginAndCsrf } from '@/utils'
+import useRefreshToken from '@/hooks/useRefreshToken'
+import { useNavigate } from 'react-router-dom'
+import Loader from '../Loader'
+import { useDispatch } from 'react-redux'
+import { removeFromCache } from '@/utils/cacheConfig'
 
 const Pix = () => {
-    const qrcode = localStorage.getItem('qrCode') as string
-    const copyPaste = localStorage.getItem('copPaste') as string
+    const refresheTokenFunction = useRefreshToken()
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+
+    const [getPixInfos, { data, isFetching }] = useLazyPayWithPixQuery()
+    const [getIsPaid, { isFetching: fetchingIsPaid }] = useLazyIsPaidQuery()
+    const [deleteAllItems] = useLazyDeleteAllItemsQuery()
+    const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
+    const logado = localStorage.getItem('logado')
     const [isItemAdd, setIsItemAdd] = useState(false)
+    const [isPaymentWarn, setIsPaymentDoneWarn] = useState(false)
 
     const handleCopy = () => {
-        const textQrCode = String(copyPaste)
-        navigator.clipboard.writeText(textQrCode)
+        navigator.clipboard.writeText(data?.copyPastePix as string)
         setIsItemAdd(!isItemAdd)
         setTimeout(() => {
             setIsItemAdd(false)
         }, 2000)
     }
+
+    const handleSeePurchasePaid = () => {
+        if (!isLoginAndCsrf(logado, csrfToken)) return
+        getIsPaid(csrfToken).then((res) => {
+            if (res.error) {
+                return refresheTokenFunction(res, () => {
+                    getIsPaid(csrfToken).then((response) => {
+                        if (response.data) {
+                            deleteAllItems(csrfToken).then((resDelete) => {
+                                if (resDelete.error) {
+                                    return refresheTokenFunction(
+                                        resDelete,
+                                        () => {
+                                            deleteAllItems(csrfToken).then(
+                                                () => {
+                                                    if (res.data) {
+                                                        return navigate(
+                                                            '/profile'
+                                                        )
+                                                    }
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
+                                return navigate('/profile')
+                            })
+                            setIsPaymentDoneWarn(true)
+                            setTimeout(() => setIsPaymentDoneWarn(false), 2000)
+                        }
+                    })
+                })
+            }
+            if (res.data) {
+                if (!res.data.status) {
+                    deleteAllItems(csrfToken).then((resDelete) => {
+                        if (resDelete.error) {
+                            return refresheTokenFunction(resDelete, () => {
+                                deleteAllItems(csrfToken).then(() => {
+                                    if (res.data) {
+                                        removeFromCache('numberCart')
+                                        dispatch(updateNumberCart(0))
+                                        return navigate('/profile')
+                                    }
+                                })
+                            })
+                        }
+                        dispatch(updateNumberCart(0))
+                        removeFromCache('numberCart')
+                        return navigate('/profile')
+                    })
+                }
+                setIsPaymentDoneWarn(true)
+                setTimeout(() => setIsPaymentDoneWarn(false), 2000)
+            }
+        })
+    }
+
+    useEffect(() => {
+        if (!isLoginAndCsrf(logado, csrfToken)) return
+        getPixInfos(csrfToken).then((res) => {
+            if (res.error) {
+                return refresheTokenFunction(res, () => {
+                    getPixInfos(csrfToken).then((response) => {
+                        if (response.data) {
+                            if (response.data.qrCodeBase64 === 'undefined') {
+                                navigate('/')
+                            }
+                        }
+                    })
+                })
+            }
+            if (res.data) {
+                if (res.data.qrCodeBase64 === 'undefined') {
+                    dispatch(updateNumberCart(0))
+                    navigate('/')
+                }
+            }
+        })
+        // eslint-disable-next-line reactHooksPlugin/exhaustive-deps
+    }, [csrfToken, logado])
+
     return (
         <>
             <PixContainer>
                 <div className="container">
                     <div className="pix-code">
-                        <img srcSet={qrcode} />
+                        {isFetching ? (
+                            <Loader isCircle />
+                        ) : (
+                            <img srcSet={data?.qrCodeBase64} />
+                        )}
                         <ButtonCopyPaste
                             $isItemAdd={isItemAdd}
                             onClick={handleCopy}
@@ -33,10 +138,20 @@ const Pix = () => {
                         <br />
                         <br />
                         Depois de efetuar o pagamento, clique em ACOMPANHAR
-                        PEDIDO. Você receberá um email com os detalhes da sua
-                        compra.
+                        PEDIDO, você será redirecionade ao seu perfil. Você
+                        receberá um email com os detalhes da sua compra. Se não
+                        recebeu o email VERIFIQUE A CAIXA DE SPAM.
                     </p>
-                    <ButtonPurchase>Acompanhar Pedido</ButtonPurchase>
+                    <ButtonCopyPaste
+                        className={`${isPaymentWarn && 'not-paid'} ${fetchingIsPaid && 'is-fetching'}`}
+                        onClick={handleSeePurchasePaid}
+                        disabled={fetchingIsPaid}
+                    >
+                        {isPaymentWarn
+                            ? 'Pedido sendo processado'
+                            : 'Acompanhar Pedido'}
+                    </ButtonCopyPaste>
+                    {fetchingIsPaid ? <Loader isCircle /> : <></>}
                 </div>
             </PixContainer>
         </>

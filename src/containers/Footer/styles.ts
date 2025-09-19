@@ -9,9 +9,9 @@ export const FooterContainer = styled.footer`
     background-color: #141414;
 
     .footer-list {
-        &__item {
-            margin-bottom: 1rem;
-        }
+        display: flex;
+        gap: 3rem;
+        flex-wrap: wrap;
     }
 
     .copy-right {

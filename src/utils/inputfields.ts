@@ -5,7 +5,7 @@ export const nameVerify = (name: string): boolean => {
     const parts = name.trim().split(' ')
     if (!isOnlySapce) return false
     if (parts.length < 2) return false
-    if (parts[0].length < 3 || parts[1].length < 3) return false
+    if (parts[0].length < 3 || parts[1].length < 2) return false
     return true
 }
 

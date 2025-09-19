@@ -29,32 +29,3 @@ export const ButtonLogout = styled.button`
         background-color: rgb(103, 100, 100);
     }
 `
-export const PurchaseCompleted = styled.div`
-    margin-top: 2rem;
-
-    .title-order {
-        font-size: 2rem;
-        margin-bottom: 1rem;
-    }
-
-    .dateCreate {
-        font-size: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
-    .order-list {
-        &__item {
-            margin-bottom: 3rem;
-
-            .list-items-purchase {
-                display: flex;
-                gap: 2rem;
-                justify-content: space-between;
-                @media (max-width: 881px) {
-                    flex-direction: column;
-                    align-items: center;
-                }
-            }
-        }
-    }
-`

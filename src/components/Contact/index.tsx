@@ -51,7 +51,6 @@ const Contact = () => {
             name: name.trim(),
             ...(phone ? { phone: phone.replace(/[^\d]/g, '').trim() } : {})
         }
-        console.log(data)
 
         const { nameIsValid, messageIsValid, emailIsValid, phoneIsValid } =
             authentic(emailUser, phone, name, text)
@@ -71,7 +70,6 @@ const Contact = () => {
             csrfToken
         ) {
             if (!phoneIsValid && phone) return
-            console.log('entrou')
             setSuccessForm(true)
 
             sendEmailForm({

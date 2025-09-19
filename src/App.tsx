@@ -1,4 +1,4 @@
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, useLocation } from 'react-router-dom'
 import Footer from './containers/Footer'
 import GlobalStyle from './globalStyles'
 import Rotas from './routes/routes'
@@ -28,6 +28,24 @@ function App() {
         return () => clearInterval(interval)
     }, [fetchCsrfToken])
 
+    function AppLayout() {
+        const location = useLocation()
+        const isPixRoute = location.pathname === '/pix-payment'
+
+        return (
+            <>
+                <CartListenner />
+                <GlobalStyle />
+                <ScrollToTop />
+                {!isPixRoute && <Header />}
+                <main className="main">
+                    <Rotas />
+                </main>
+                {!isPixRoute && <Footer />}
+            </>
+        )
+    }
+
     return (
         <Provider store={store}>
             <BrowserRouter
@@ -36,14 +54,7 @@ function App() {
                     v7_relativeSplatPath: true
                 }}
             >
-                <CartListenner />
-                <GlobalStyle />
-                <ScrollToTop />
-                <Header />
-                <main className="main">
-                    <Rotas />
-                </main>
-                <Footer />
+                <AppLayout />
             </BrowserRouter>
         </Provider>
     )

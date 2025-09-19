@@ -1,4 +1,4 @@
-import { DataSignupProp, ItemsInfo } from '@/types/types'
+import { CreditsValues, DataSignupProp, ItemsInfo } from '@/types/types'
 
 export interface DataLoginProp {
     data: Omit<DataSignupProp['data'], 'name'>
@@ -21,4 +21,15 @@ export interface GetAddressProps {
     number: string
     isDefault: boolean
     id?: number
+}
+
+export interface BooksPurchaseInterface
+    extends Omit<BooksFromStore, 'descBooks'> {
+    summary: string
+    pageQuant: string
+    tags: string
+    synopsis: string
+    stock: number
+    author: string
+    store_books_credits: CreditsValues[]
 }

@@ -82,10 +82,25 @@ export const ProductsListCartContainer = styled.section`
     }
 
     .total {
-        display: block;
-        margin-top: 5rem;
-        font-size: 1.5rem;
         font-weight: bold;
+    }
+
+    .total,
+    .frete {
+        margin-top: 1rem;
+    }
+
+    .total,
+    .frete,
+    .frete-message {
+        display: block;
+        font-size: 1.2rem;
+    }
+
+    .frete-message {
+        font-size: 1.5rem;
+        margin-top: 5rem;
+        margin-bottom: 2rem;
     }
 
     .cards-store-container {
@@ -136,10 +151,6 @@ export const ProductsListCartContainer = styled.section`
     }
     h3 {
         font-size: 1.4rem;
-    }
-
-    .bar {
-        border: 2px solid #fff;
     }
 
     .title-books-store {

@@ -23,10 +23,8 @@ export const Documentario = styled.div`
 export const HeroContainer = styled.section`
     display: flex;
     align-items: center;
-    height: calc(100vh - 107px);
 
     @media screen and (max-width: 767px) {
-        // width: 90%;
         flex-direction: column;
         justify-content: center;
         align-items: center;

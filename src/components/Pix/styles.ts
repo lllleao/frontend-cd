@@ -3,8 +3,6 @@ import { ButtonContainer } from '@/components/ButtonPurchase/styles'
 
 export const PixContainer = styled.div`
     text-align: center;
-    background-color: #000;
-    height: 100vh;
     padding-top: 6rem;
 
     .pix-code {
@@ -34,7 +32,7 @@ export const ButtonCopyPaste = styled.button<{ $isItemAdd?: boolean }>`
     font-size: 1rem;
     font-weight: bold;
     background-color: ${({ $isItemAdd }) =>
-        $isItemAdd ? '#c91515' : '#148d14'};
+        $isItemAdd ? '#6b453e' : '#148d14'};
     padding: 0.5rem 1rem;
     border: none;
     border: 2px solid #fff;
@@ -43,6 +41,14 @@ export const ButtonCopyPaste = styled.button<{ $isItemAdd?: boolean }>`
 
     &:hover {
         background-color: ${({ $isItemAdd }) =>
-            $isItemAdd ? '#e51717' : '#1eb51e'};
+            $isItemAdd ? '#6b453e' : '#1eb51e'};
+    }
+
+    &.not-paid {
+        background-color: #da5139ff;
+    }
+
+    &.is-fetching {
+        background-color: #777372ff;
     }
 `

@@ -8,6 +8,14 @@ export const CheckoutContainer = styled.div`
         font-size: 2.5rem;
         margin-bottom: 4rem;
     }
+
+    .fortalcity {
+        display: block;
+        text-align: center;
+        font-size: 1.8rem;
+        margin-bottom: 3rem;
+    }
+
     .books-list {
         display: flex;
         justify-content: space-around;
