@@ -23,17 +23,17 @@ jobs:
 
             - name: Build project
               env:
-                VITE_API_URL: ${{ secrets.VITE_API_URL }}
+                  VITE_API_URL: ${{ secrets.VITE_API_URL }}
+                  VITE_ON_DEVELOPMENT: ${{ secrets.VITE_ON_DEVELOPMENT }}
               run: npm run build
 
             - name: Enviar arquivos via SCP (SSH)
               uses: appleboy/scp-action@v1
               with:
-                host: ${{ secrets.HOSTINGER_HOST }}
-                username: ${{ secrets.HOSTINGER_USER }}
-                key: ${{ secrets.SSH_PRIVATE_KEY }}
-                port: ${{ secrets.PORT }}
-                source: "dist/**"
-                target: ${{ secrets.HOSTINGER_TARGET_PATH }}
-                strip_components: 1
-
+                  host: ${{ secrets.HOSTINGER_HOST }}
+                  username: ${{ secrets.HOSTINGER_USER }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  port: ${{ secrets.PORT }}
+                  source: 'dist/**'
+                  target: ${{ secrets.HOSTINGER_TARGET_PATH }}
+                  strip_components: 1
