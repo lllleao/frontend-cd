@@ -41,14 +41,14 @@ const Hero = () => {
                 <h3 className="documentario-title">
                     pseudocumentário-pseudocológico-N-81
                 </h3>
-                <iframe
+                {/* <iframe
                     src="https://www.youtube.com/embed/nweBC3MMPIU"
                     title="Pseudocumentário-pseudocológico-N-81"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     referrerPolicy="strict-origin-when-cross-origin"
                     allowFullScreen
                     className="iframe-doc"
-                />
+                /> */}
             </Documentario>
         </>
     )
