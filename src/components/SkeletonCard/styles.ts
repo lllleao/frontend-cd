@@ -17,7 +17,6 @@ export const SkeletonContainer = styled.div`
     height: min-content;
     max-width: 314px;
     width: 100%;
-
     .skeleton-img {
         border: 4px solid #fff;
         border-radius: 18px;
