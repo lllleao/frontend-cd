@@ -31,7 +31,6 @@ const PublicLib = () => {
     const [offSet, setOffSet] = useState(0)
     const [nextDisabled, setNextDisabled] = useState(false)
     const [prevDisabled, setPrevDisabled] = useState(true)
-    const [qualq, setQualq] = useState('')
     const mainLibElement = useRef<HTMLElement>(null)
 
     useEffect(() => {
@@ -104,11 +103,6 @@ const PublicLib = () => {
         setPage((p) => p - 1)
     }
 
-    const handleteste = () => {
-        const coisa = localStorage.getItem('isLoginScreen') as string
-        setQualq(coisa)
-    }
-
     return (
         <PublicLibContainer
             ref={mainLibElement}
@@ -172,10 +166,6 @@ const PublicLib = () => {
                     >
                         VER TODAS
                     </ButtonSeeAll>
-                    <button className="see-all" onClick={handleteste}>
-                        VER TODAS
-                    </button>
-                    <div>{qualq}</div>
                 </NavPageAllBooks>
             </div>
         </PublicLibContainer>
