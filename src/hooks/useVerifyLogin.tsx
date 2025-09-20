@@ -15,10 +15,13 @@ export function useVerifyLogin() {
 
     const [getToken] = useGetCookieMutation()
 
+    const setLogged = useCsrfTokenStore((state) => state.setLogged)
     useEffect(() => {
         if (!isLoginAndCsrf(logado, csrfToken)) return
+        console.log('open')
         getToken(csrfToken)
             .then((res) => {
+                setLogged(JSON.stringify(res, null, 2))
                 if (res.error) {
                     return refresheTokenFunction(res, () => {
                         localStorage.setItem('logado', 'true')

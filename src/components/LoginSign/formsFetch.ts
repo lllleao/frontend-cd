@@ -46,8 +46,7 @@ export const handleLogin = (
     navigate: NavigateFunction,
     fetchCsrfToken: () => Promise<unknown>,
     errorHandlers: Record<LoginErrorMessage, () => void>,
-    logout: (route: string) => void,
-    setLogged: (status: string) => void
+    logout: (route: string) => void
 ) => {
     event.preventDefault()
     if (!isPasswordValid) {
@@ -62,7 +61,6 @@ export const handleLogin = (
     if (isEmailValid && isPasswordValid) {
         makeLogin(data)
             .then((res) => {
-                setLogged(JSON.stringify(res, null, 2))
                 if (res.error) {
                     if (isErrorMessageExist(res)) {
                         const errorData = res.error.data as {
