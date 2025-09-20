@@ -6,7 +6,6 @@ import { useProfileData } from './useProfileData'
 
 const useLogout = () => {
     const [logoutApi] = useLogoutMutation()
-    const setLogged = useCsrfTokenStore((state) => state.setLogged)
     const csrfToken = useCsrfTokenStore((state) => state.csrfToken) as string
     const setProfileAddress = useProfileData((state) => state.setProfileAddress)
     const navigate = useNavigate()
@@ -40,7 +39,6 @@ const useLogout = () => {
         logoutApi(csrfToken)
             .then(() => {
                 removeAllCache()
-                setLogged(false)
                 setProfileAddress(defaultAddress)
                 navigate(route)
             })

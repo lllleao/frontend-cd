@@ -16,6 +16,7 @@ import useLogout from '@/hooks/useLogout'
 const Login = () => {
     const logout = useLogout()
     const setLogged = useCsrfTokenStore((state) => state.setLogged)
+
     const [viewPassword, setViewPassword] = useState(false)
     const errorHandlers = useUserLoginResults()
     const { loginUserExist, msg } = useSelector(

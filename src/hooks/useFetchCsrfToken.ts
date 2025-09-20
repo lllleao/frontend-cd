@@ -8,17 +8,17 @@ type CsrfStore = {
     viweNumberCart: boolean
     refreshTokenWarn: boolean
     setRefreshTokenWarn: (value: boolean) => Promise<unknown>
-    logadoIos: boolean
-    setLogged: (status: boolean) => void
+    logadoIos: string
+    setLogged: (status: string) => void
 }
 
 export const useCsrfTokenStore = create<CsrfStore>((set) => ({
     csrfToken: undefined,
     viweNumberCart: false,
     refreshTokenWarn: false,
-    logadoIos: false,
+    logadoIos: 'padrão',
 
-    setLogged: (status: boolean) => set({ logadoIos: status }),
+    setLogged: (status: string) => set({ logadoIos: status }),
 
     setCsrfToken: (token: string) => set({ csrfToken: token }),
 

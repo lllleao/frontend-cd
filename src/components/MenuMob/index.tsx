@@ -9,7 +9,6 @@ type MenuProps = {
 }
 
 const MenuMob = ({ dataLength }: MenuProps) => {
-    // const logadoIos = useCsrfTokenStore((state) => state.logadoIos)
     const viweNumberCart = useCsrfTokenStore((state) => state.viweNumberCart)
     const setViweNumberCar = useCsrfTokenStore(
         (state) => state.setViweNumberCart
@@ -32,7 +31,6 @@ const MenuMob = ({ dataLength }: MenuProps) => {
 
     return (
         <MenuBobContainer>
-            {`${logado}`}
             <div className={`alert ${viweNumberCart ? 'alert--visible' : ''}`}>
                 !
             </div>

@@ -13,8 +13,6 @@ export function useVerifyLogin() {
         (state) => state.setRefreshTokenWarn
     )
 
-    const setLogged = useCsrfTokenStore((state) => state.setLogged)
-
     const [getToken] = useGetCookieMutation()
 
     useEffect(() => {
@@ -24,13 +22,11 @@ export function useVerifyLogin() {
                 if (res.error) {
                     return refresheTokenFunction(res, () => {
                         localStorage.setItem('logado', 'true')
-                        setLogged(true)
                         setRefreshTokenWarn(true).finally(() =>
                             setRefreshTokenWarn(false)
                         )
                     })
                 }
-                setLogged(true)
                 localStorage.setItem('logado', 'true')
             })
             .catch((err) => console.log(err))

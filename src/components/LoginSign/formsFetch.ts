@@ -47,7 +47,7 @@ export const handleLogin = (
     fetchCsrfToken: () => Promise<unknown>,
     errorHandlers: Record<LoginErrorMessage, () => void>,
     logout: (route: string) => void,
-    setLogged: (status: boolean) => void
+    setLogged: (status: string) => void
 ) => {
     event.preventDefault()
     if (!isPasswordValid) {
@@ -63,6 +63,7 @@ export const handleLogin = (
         makeLogin(data)
             .then((res) => {
                 if (res.error) {
+                    setLogged(JSON.stringify(res.error, null, 2))
                     if (isErrorMessageExist(res)) {
                         const errorData = res.error.data as {
                             message?: string
@@ -86,7 +87,6 @@ export const handleLogin = (
                 }
                 dispatch(checkLoginUser({ loginUserExist: false }))
                 fetchCsrfToken()
-                setLogged(true)
                 localStorage.setItem('logado', 'true')
                 navigate('/')
                 return res.data
