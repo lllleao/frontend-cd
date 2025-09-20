@@ -62,8 +62,8 @@ export const handleLogin = (
     if (isEmailValid && isPasswordValid) {
         makeLogin(data)
             .then((res) => {
+                setLogged(JSON.stringify(res, null, 2))
                 if (res.error) {
-                    setLogged(JSON.stringify(res.error, null, 2))
                     if (isErrorMessageExist(res)) {
                         const errorData = res.error.data as {
                             message?: string
