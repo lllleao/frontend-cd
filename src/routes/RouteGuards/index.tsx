@@ -1,5 +1,3 @@
-import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
-import { useVerifyLogin } from '@/hooks/useVerifyLogin'
 import { Navigate } from 'react-router-dom'
 
 type RouteGuardsType = {
@@ -7,16 +5,11 @@ type RouteGuardsType = {
 }
 
 export const PrivateRoute = ({ children }: RouteGuardsType) => {
-    const loggedIOS = useCsrfTokenStore((state) => state.logadoIos)
-    useVerifyLogin()
-
-    const isLoggedIn = localStorage.getItem('logado') || loggedIOS
+    const isLoggedIn = localStorage.getItem('logado')
     return isLoggedIn ? children : <Navigate to="/" replace />
 }
 
 export const PublicRoute = ({ children }: RouteGuardsType) => {
-    const loggedIOS = useCsrfTokenStore((state) => state.logadoIos)
-
-    const isLoggedIn = localStorage.getItem('logado') || loggedIOS
+    const isLoggedIn = localStorage.getItem('logado')
     return isLoggedIn ? <Navigate to="/profile" replace /> : children
 }

@@ -15,11 +15,9 @@ import { getItemFromCache, verifyIfIsCached } from '@/utils/cacheConfig'
 import SkeletonCard from '@/components/SkeletonCard'
 import { isOnDevelopment } from '@/utils'
 import { Link } from 'react-router-dom'
-import { useCsrfTokenStore } from '@/hooks/useFetchCsrfToken'
 
 const PublicLib = () => {
     const [getPublicBooks, { isFetching }] = useLazyGetPublicBooksQuery()
-    const logadoIos = useCsrfTokenStore((state) => state.logadoIos)
 
     const { data: publicBooksTotalLength } = useGetPublicBooksLengthQuery()
     const [data, setData] = useState<Books[]>()
@@ -112,7 +110,6 @@ const PublicLib = () => {
             id="public-lb"
             className="public-lb container"
         >
-            {`${logadoIos}`}
             <h2 className="public-lb__title">TÁRTARO CAFETERIA</h2>
             <div>
                 {!isFetching ? (
