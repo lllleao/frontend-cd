@@ -1,4 +1,4 @@
-# Cidadeclipse - TARTARU'S CAFETERIA ☕🌘 *(Em andamento)*
+# [Cidadeclipse - TARTARU'S CAFETERIA ☕🌘](https://www.cidadeclipse.com)
 
 ### Uma editora cooperativa de artistas emergentes
 
