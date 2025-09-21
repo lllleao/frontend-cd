@@ -52,8 +52,6 @@ Indicadores visuais de carregamento assíncrono.
 
 ### ✅ Em produção:
 - API pública para entrega de livros gratuitos diretamente no site.
-
-### 🚧 Em desenvolvimento:
 - Sistema de autenticação com JWT e proteção CSRF.
 - Registro e login de usuários com senha criptografada (bcrypt).
 - Carrinho de compras: adicionar, remover e listar itens.
@@ -66,48 +64,12 @@ Indicadores visuais de carregamento assíncrono.
 - **Prisma ORM**: abstração moderna e tipada para MySQL.
 - **JWT + CSRF**: autenticação segura com tokens e proteção contra ataques cross-site.
 - **Nodemailer**: (instalado) para futuros recursos de notificação por e-mail.
-- **Express-rate-limit + Helmet**: hardening básico de segurança HTTP.
-
----
-
-## 🛒 Futuro do Projeto
-
-A plataforma será expandida para um **e-commerce completo**, permitindo a venda direta de livros, zines, prints, ilustrações e outros produtos artísticos dos membros cooperados da Cidadeclipse. Essa estrutura oferecerá uma alternativa independente e autossustentável para artistas emergentes.
+- **Nest-Throttle + Helmet**: hardening básico de segurança HTTP.
+- **Oracle Cloud + Docker + Nginx**: O backend está em contêiner Docker, implantado na Oracle Cloud, com o Nginx configurado como proxy reverso para gerenciar requisições HTTPS e terminação TLS
 
 ---
 
 ## 📜 Licença
 
 Este projeto é de uso interno e artístico. Direitos reservados aos autores da Cidadeclipse.
-
----
-
-## 🐳 Como Rodar com Docker
-
-1. Clonar o repositório e instalar dependências:
-
-```shell
-git clone https://github.com/lllleao/frontend-cd.git
-cd frontend-cd
-npm install
-```
-
-2. Subir o container:
-
-```shell
-docker build -t frontend-cd .
-docker run -d -p 8080:80 frontend-cd
-```
-
-🌐 Acesso
-
-Disponível em: http://localhost:8080
-
-## ⚡ Alternativa sem Docker
-```shell
-git clone https://github.com/lllleao/frontend-cd.git
-cd frontend-cd
-npm install
-npm run dev
-```
 
