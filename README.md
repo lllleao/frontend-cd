@@ -48,7 +48,7 @@ Indicadores visuais de carregamento assíncrono.
 
 ## 🧪 Backend — NestJS + Prisma + MySQL
 
-<strong>[O backend do projeto](https://github.com/lllleao/backend-cd)</strong> está sendo desenvolvido com [NestJS](https://nestjs.com/) e gerenciado com [Prisma ORM](https://www.prisma.io/) usando banco de dados MySQL. Está dividido entre funcionalidades já disponíveis em produção e funcionalidades em desenvolvimento.
+<strong>[O backend do projeto](https://github.com/lllleao/backend-cd)</strong> está sendo desenvolvido com [NestJS](https://nestjs.com/) e gerenciado com [Prisma ORM](https://www.prisma.io/) usando banco de dados MySQL.
 
 ### ✅ Em produção:
 - API pública para entrega de livros gratuitos diretamente no site.
