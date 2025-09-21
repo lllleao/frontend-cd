@@ -7,7 +7,7 @@ Em uma cidade escondida de tudo há uma cafeteria exótica na beira de uma fenda
 </p>
 
 <p align="justify">
-Este projeto está sendo desenvolvido como uma vitrine digital e, em breve, se tornará um <strong>e-commerce artístico</strong>, onde será possível adquirir obras e produtos criados por artistas cooperados da editora Cidadeclipse.
+Este projeto está sendo desenvolvido como uma vitrine digital, é nosso <strong>e-commerce artístico</strong>, onde é possível adquirir obras e produtos criados por artistas cooperados da editora Cidade Eclipse.
 </p>
 
 ---
