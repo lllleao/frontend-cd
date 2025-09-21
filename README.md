@@ -1,4 +1,4 @@
-# Cidadeclipse - TARTARU'S CAFETERIA ☕🌘 *(Em andamento)*
+# [Cidadeclipse - TARTARU'S CAFETERIA ☕🌘](https://www.cidadeclipse.com)
 
 ### Uma editora cooperativa de artistas emergentes
 
@@ -48,66 +48,29 @@ Indicadores visuais de carregamento assíncrono.
 
 ## 🧪 Backend — NestJS + Prisma + MySQL
 
-<strong>[O backend do projeto](https://github.com/lllleao/backend-cd)</strong> está sendo desenvolvido com [NestJS](https://nestjs.com/) e gerenciado com [Prisma ORM](https://www.prisma.io/) usando banco de dados MySQL. Está dividido entre funcionalidades já disponíveis em produção e funcionalidades em desenvolvimento.
+<strong>[O backend do projeto](https://github.com/lllleao/backend-cd)</strong> está sendo desenvolvido com [NestJS](https://nestjs.com/) e gerenciado com [Prisma ORM](https://www.prisma.io/) usando banco de dados MySQL.
 
 ### ✅ Em produção:
 - API pública para entrega de livros gratuitos diretamente no site.
-
-### 🚧 Em desenvolvimento:
 - Sistema de autenticação com JWT e proteção CSRF.
 - Registro e login de usuários com senha criptografada (bcrypt).
 - Carrinho de compras: adicionar, remover e listar itens.
 - Finalização de pedidos com integração de pagamento via **PIX**.
-- Middleware de segurança com **Helmet**, **rate limiting**, e **cookie-parser**.
+- Middleware de segurança com **helmet**, e **cookie-parser**.
 - Validação de dados com `class-validator` e `class-transformer`.
+- Suporte para envio de e-mails com `nodemailer`.
 
 ### 🛠️ Tecnologias backend:
 - **NestJS**: framework escalável e modular para aplicações Node.js.
 - **Prisma ORM**: abstração moderna e tipada para MySQL.
 - **JWT + CSRF**: autenticação segura com tokens e proteção contra ataques cross-site.
-- **Nodemailer**: (instalado) para futuros recursos de notificação por e-mail.
-- **Express-rate-limit + Helmet**: hardening básico de segurança HTTP.
-
----
-
-## 🛒 Futuro do Projeto
-
-A plataforma será expandida para um **e-commerce completo**, permitindo a venda direta de livros, zines, prints, ilustrações e outros produtos artísticos dos membros cooperados da Cidadeclipse. Essa estrutura oferecerá uma alternativa independente e autossustentável para artistas emergentes.
+- **Nodemailer**: para recursos de notificação por e-mail.
+- **Nest-Throttle + Helmet**: hardening de segurança com rate limiting e proteção de cabeçalhos HTTP.
+- **Oracle Cloud + Docker + Nginx**: O backend está em contêiner Docker, implantado na Oracle Cloud, com o Nginx configurado como proxy reverso para gerenciar requisições HTTPS e terminação TLS
 
 ---
 
 ## 📜 Licença
 
 Este projeto é de uso interno e artístico. Direitos reservados aos autores da Cidadeclipse.
-
----
-
-## 🐳 Como Rodar com Docker
-
-1. Clonar o repositório e instalar dependências:
-
-```shell
-git clone https://github.com/lllleao/frontend-cd.git
-cd frontend-cd
-npm install
-```
-
-2. Subir o container:
-
-```shell
-docker build -t frontend-cd .
-docker run -d -p 8080:80 frontend-cd
-```
-
-🌐 Acesso
-
-Disponível em: http://localhost:8080
-
-## ⚡ Alternativa sem Docker
-```shell
-git clone https://github.com/lllleao/frontend-cd.git
-cd frontend-cd
-npm install
-npm run dev
-```
 
