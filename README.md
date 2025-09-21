@@ -56,15 +56,16 @@ Indicadores visuais de carregamento assíncrono.
 - Registro e login de usuários com senha criptografada (bcrypt).
 - Carrinho de compras: adicionar, remover e listar itens.
 - Finalização de pedidos com integração de pagamento via **PIX**.
-- Middleware de segurança com **Helmet**, **rate limiting**, e **cookie-parser**.
+- Middleware de segurança com **helmet**, e **cookie-parser**.
 - Validação de dados com `class-validator` e `class-transformer`.
+- Suporte para envio de e-mails com `nodemailer`.
 
 ### 🛠️ Tecnologias backend:
 - **NestJS**: framework escalável e modular para aplicações Node.js.
 - **Prisma ORM**: abstração moderna e tipada para MySQL.
 - **JWT + CSRF**: autenticação segura com tokens e proteção contra ataques cross-site.
-- **Nodemailer**: (instalado) para futuros recursos de notificação por e-mail.
-- **Nest-Throttle + Helmet**: hardening básico de segurança HTTP.
+- **Nodemailer**: para recursos de notificação por e-mail.
+- **Nest-Throttle + Helmet**: hardening de segurança com rate limiting e proteção de cabeçalhos HTTP.
 - **Oracle Cloud + Docker + Nginx**: O backend está em contêiner Docker, implantado na Oracle Cloud, com o Nginx configurado como proxy reverso para gerenciar requisições HTTPS e terminação TLS
 
 ---
